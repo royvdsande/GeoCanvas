@@ -259,13 +259,21 @@
 
     .property-row {
       display: flex;
-      align-items: center;
-      gap: 8px;
+      align-items: stretch;
+      gap: 12px;
     }
 
     .property-row label {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
       font-weight: 500;
       color: #475569;
+    }
+
+    .property-row label input,
+    .property-row label select {
+      margin-top: 4px;
     }
 
     .property-inline {
@@ -298,35 +306,67 @@
       gap: 12px;
     }
 
+    .algebra-actions {
+      display: inline-flex;
+      flex-direction: row;
+      gap: 6px;
+      align-items: center;
+      flex: 0 0 auto;
+    }
+
+    @media (max-width: 520px) {
+      .algebra-actions {
+        flex-direction: column;
+        align-items: stretch;
+      }
+    }
+
     .algebra-item.slider {
-      align-items: stretch;
+      align-items: flex-start;
+    }
+
+    .algebra-item.slider .algebra-actions {
+      align-self: flex-start;
+      margin-top: 4px;
     }
 
     .slider-body {
       flex: 1;
+      min-width: 0;
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 10px;
     }
 
     .slider-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 8px;
+      gap: 12px;
+      flex-wrap: wrap;
       font-size: 0.9rem;
       font-weight: 600;
       color: #1f2933;
     }
 
+    .slider-header [data-role="slider-title"] {
+      flex: 1;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
     .slider-controls {
-      display: flex;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
     }
 
     .slider-controls input[type="range"] {
-      flex: 1;
+      width: 100%;
+      min-width: 0;
     }
 
     .slider-value {
@@ -337,9 +377,23 @@
     }
 
     .slider-helpers {
-      display: flex;
+      display: inline-flex;
       align-items: center;
       gap: 8px;
+      flex-wrap: nowrap;
+      justify-self: flex-end;
+    }
+
+    @media (max-width: 520px) {
+      .slider-controls {
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+
+      .slider-helpers {
+        justify-self: flex-start;
+        flex-wrap: wrap;
+      }
     }
 
     .slider-helpers button {
@@ -441,6 +495,7 @@
       color: #555;
     }
 
+    .options-button,
     .delete-button {
       flex: 0 0 auto;
       border: 1px solid transparent;
@@ -455,6 +510,7 @@
       transition: background 0.2s ease, color 0.2s ease;
     }
 
+    .options-button svg,
     .delete-button svg {
       width: 18px;
       height: 18px;
@@ -463,9 +519,13 @@
       fill: none;
     }
 
-    .delete-button:hover {
+    .options-button:hover,
+    .options-button:focus-visible,
+    .delete-button:hover,
+    .delete-button:focus-visible {
       background: rgba(0,0,0,0.08);
       color: #444;
+      outline: none;
     }
 
     .graph-container {
@@ -1090,28 +1150,61 @@
 
     function refreshPropertiesPanel(preferred) {
       if (!propertiesPanel || !propertiesContent) return;
-      let target = preferred;
-      if (!target || !target.id || !target.type) {
+      if (preferred && preferred.type && preferred.id) {
+        propertiesState.type = preferred.type;
+        propertiesState.id = preferred.id;
+        if (preferred.forceOpen) {
+          propertiesState.visible = true;
+        }
+      } else if (!propertiesState.type || !propertiesState.id) {
         if (state.selectedPointId) {
-          target = { type: 'point', id: state.selectedPointId };
+          propertiesState.type = 'point';
+          propertiesState.id = state.selectedPointId;
         } else if (state.highlightedFunctionId) {
-          target = { type: 'function', id: state.highlightedFunctionId };
+          propertiesState.type = 'function';
+          propertiesState.id = state.highlightedFunctionId;
         } else if (state.selectedSliderId) {
-          target = { type: 'slider', id: state.selectedSliderId };
+          propertiesState.type = 'slider';
+          propertiesState.id = state.selectedSliderId;
         } else if (state.selectedVariableId) {
-          target = { type: 'variable', id: state.selectedVariableId };
+          propertiesState.type = 'variable';
+          propertiesState.id = state.selectedVariableId;
+        } else if (state.selectedSegmentId) {
+          propertiesState.type = 'segment';
+          propertiesState.id = state.selectedSegmentId;
+        } else if (state.selectedLineId) {
+          propertiesState.type = 'line';
+          propertiesState.id = state.selectedLineId;
+        } else if (state.selectedCircleId) {
+          propertiesState.type = 'circle';
+          propertiesState.id = state.selectedCircleId;
         } else {
-          target = null;
+          propertiesState.type = null;
+          propertiesState.id = null;
         }
       }
-      propertiesState.type = target ? target.type : null;
-      propertiesState.id = target ? target.id : null;
-      if (!target) {
+      if (!propertiesState.visible) {
         propertiesPanel.classList.add('hidden');
         propertiesContent.innerHTML = '';
         return;
       }
-      renderPropertiesContent(target);
+      if (!propertiesState.type || !propertiesState.id) {
+        closePropertiesPanel();
+        return;
+      }
+      renderPropertiesContent({ type: propertiesState.type, id: propertiesState.id });
+    }
+
+    function closePropertiesPanel() {
+      propertiesState.visible = false;
+      propertiesState.type = null;
+      propertiesState.id = null;
+      if (propertiesPanel) {
+        propertiesPanel.classList.add('hidden');
+      }
+      if (propertiesContent) {
+        propertiesContent.innerHTML = '';
+      }
     }
 
     function renderPropertiesContent(target) {
@@ -1121,31 +1214,34 @@
       if (target.type === 'point') {
         entity = state.points.find(entry => entry.id === target.id);
         if (!entity) {
-          propertiesPanel.classList.add('hidden');
+          closePropertiesPanel();
           return;
         }
         renderPointProperties(entity);
       } else if (target.type === 'function') {
         entity = state.functions.find(entry => entry.id === target.id);
         if (!entity) {
-          propertiesPanel.classList.add('hidden');
+          closePropertiesPanel();
           return;
         }
         renderFunctionProperties(entity);
       } else if (target.type === 'slider') {
         entity = findSliderById(target.id);
         if (!entity) {
-          propertiesPanel.classList.add('hidden');
+          closePropertiesPanel();
           return;
         }
         renderSliderProperties(entity);
       } else if (target.type === 'variable') {
         entity = findNumberById(target.id);
         if (!entity) {
-          propertiesPanel.classList.add('hidden');
+          closePropertiesPanel();
           return;
         }
         renderVariableProperties(entity);
+      } else {
+        closePropertiesPanel();
+        return;
       }
       propertiesPanel.classList.remove('hidden');
     }
@@ -1239,15 +1335,6 @@
       thicknessField.appendChild(thicknessInput);
       propertiesContent.appendChild(thicknessField);
 
-      const labelToggle = document.createElement('label');
-      labelToggle.className = 'property-checkbox';
-      const labelInput = document.createElement('input');
-      labelInput.type = 'checkbox';
-      labelInput.checked = Boolean(fn.showLabel);
-      labelInput.addEventListener('change', () => setFunctionLabelVisibility(fn.id, labelInput.checked));
-      labelToggle.appendChild(labelInput);
-      labelToggle.appendChild(document.createTextNode('Label op grafiek'));
-      propertiesContent.appendChild(labelToggle);
     }
 
     function renderSliderProperties(slider) {
@@ -1496,6 +1583,150 @@
       refreshPropertiesPanel({ type: 'variable', id });
     }
 
+    function setSelectedSegment(id, options = {}) {
+      const { scroll = true, force = false } = options;
+      if (!id) {
+        if (!state.selectedSegmentId) return;
+        clearHighlightedAlgebra({
+          keepFunction: true,
+          keepPoint: true,
+          keepSlider: true,
+          keepVariable: true,
+          keepLine: true,
+          keepCircle: true,
+          clearInput: false
+        });
+        if (propertiesState.visible) {
+          refreshPropertiesPanel();
+        }
+        draw();
+        return;
+      }
+      if (state.selectedSegmentId === id && !force) {
+        if (scroll && algebraList) {
+          const current = algebraList.querySelector(`[data-id="${id}"]`);
+          if (current) {
+            current.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+          }
+        }
+        return;
+      }
+      clearHighlightedAlgebra();
+      if (propertiesState.visible) {
+        refreshPropertiesPanel();
+      }
+      state.selectedSegmentId = id;
+      if (algebraList) {
+        const item = algebraList.querySelector(`[data-id="${id}"]`);
+        if (item) {
+          item.classList.add('selected');
+          item.style.setProperty('--highlight-outline', withAlpha(COLORS.segment, 0.5));
+          item.style.setProperty('--highlight-glow', withAlpha(COLORS.segment, 0.35));
+          if (scroll) {
+            item.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+          }
+        }
+      }
+      state.lastSelectionType = 'segment';
+      draw();
+    }
+
+    function setSelectedLine(id, options = {}) {
+      const { scroll = true, force = false } = options;
+      if (!id) {
+        if (!state.selectedLineId) return;
+        clearHighlightedAlgebra({
+          keepFunction: true,
+          keepPoint: true,
+          keepSlider: true,
+          keepVariable: true,
+          keepSegment: true,
+          keepCircle: true,
+          clearInput: false
+        });
+        if (propertiesState.visible) {
+          refreshPropertiesPanel();
+        }
+        draw();
+        return;
+      }
+      if (state.selectedLineId === id && !force) {
+        if (scroll && algebraList) {
+          const current = algebraList.querySelector(`[data-id="${id}"]`);
+          if (current) {
+            current.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+          }
+        }
+        return;
+      }
+      clearHighlightedAlgebra();
+      if (propertiesState.visible) {
+        refreshPropertiesPanel();
+      }
+      state.selectedLineId = id;
+      if (algebraList) {
+        const item = algebraList.querySelector(`[data-id="${id}"]`);
+        if (item) {
+          item.classList.add('selected');
+          item.style.setProperty('--highlight-outline', withAlpha(COLORS.line, 0.5));
+          item.style.setProperty('--highlight-glow', withAlpha(COLORS.line, 0.35));
+          if (scroll) {
+            item.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+          }
+        }
+      }
+      state.lastSelectionType = 'line';
+      draw();
+    }
+
+    function setSelectedCircle(id, options = {}) {
+      const { scroll = true, force = false } = options;
+      if (!id) {
+        if (!state.selectedCircleId) return;
+        clearHighlightedAlgebra({
+          keepFunction: true,
+          keepPoint: true,
+          keepSlider: true,
+          keepVariable: true,
+          keepSegment: true,
+          keepLine: true,
+          clearInput: false
+        });
+        if (propertiesState.visible) {
+          refreshPropertiesPanel();
+        }
+        draw();
+        return;
+      }
+      if (state.selectedCircleId === id && !force) {
+        if (scroll && algebraList) {
+          const current = algebraList.querySelector(`[data-id="${id}"]`);
+          if (current) {
+            current.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+          }
+        }
+        return;
+      }
+      clearHighlightedAlgebra();
+      if (propertiesState.visible) {
+        refreshPropertiesPanel();
+      }
+      state.selectedCircleId = id;
+      if (algebraList) {
+        const item = algebraList.querySelector(`[data-id="${id}"]`);
+        if (item) {
+          item.classList.add('selected');
+          item.style.setProperty('--highlight-outline', withAlpha(COLORS.circle, 0.5));
+          item.style.setProperty('--highlight-glow', withAlpha(COLORS.circle, 0.35));
+          if (scroll) {
+            item.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+          }
+        }
+      }
+      state.lastSelectionType = 'circle';
+      draw();
+    }
+
 
     const canvas = document.getElementById('board');
     const ctx = canvas.getContext('2d');
@@ -1571,6 +1802,9 @@
       editingPointId: null,
       selectedSliderId: null,
       selectedVariableId: null,
+      selectedSegmentId: null,
+      selectedLineId: null,
+      selectedCircleId: null,
       lastSelectionType: 'none'
     };
 
@@ -1596,7 +1830,8 @@
       minus: `<svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M6 12h12" /></svg>`,
       plus: `<svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14" /><path d="M5 12h14" /></svg>`,
       play: `<svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M8 5v14l11-7z" /></svg>`,
-      pause: `<svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M7 5h4v14H7z" /><path d="M13 5h4v14h-4z" /></svg>`
+      pause: `<svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M7 5h4v14H7z" /><path d="M13 5h4v14h-4z" /></svg>`,
+      dots: `<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.6" /><circle cx="12" cy="12" r="1.6" /><circle cx="12" cy="19" r="1.6" /></svg>`
     };
 
     function withAlpha(color, alpha) {
@@ -1632,7 +1867,7 @@
     let suspendHistory = false;
     let restoringState = false;
     let sliderAnimationFrame = null;
-    const propertiesState = { type: null, id: null };
+    const propertiesState = { type: null, id: null, visible: false };
 
     function toSubscript(number) {
       return String(number)
@@ -1656,6 +1891,9 @@
         selectedPointId: state.selectedPointId,
         selectedSliderId: state.selectedSliderId,
         selectedVariableId: state.selectedVariableId,
+        selectedSegmentId: state.selectedSegmentId,
+        selectedLineId: state.selectedLineId,
+        selectedCircleId: state.selectedCircleId,
         lastSelectionType: state.lastSelectionType,
         points: state.points.map(point => ({
           id: point.id,
@@ -1720,6 +1958,9 @@
       const previousFunction = state.highlightedFunctionId;
       const previousSlider = state.selectedSliderId;
       const previousVariable = state.selectedVariableId;
+      const previousSegment = state.selectedSegmentId;
+      const previousLine = state.selectedLineId;
+      const previousCircle = state.selectedCircleId;
       algebraList.innerHTML = '';
       for (const point of state.points) {
         registerAlgebraEntry(point.id, `${point.name} = (${formatNumber(point.position.x)}, ${formatNumber(point.position.y)})`, 'point', point.color || COLORS.point);
@@ -1757,6 +1998,12 @@
         setActiveSlider(previousSlider, { scroll: false, force: true, preserveOthers: true });
       } else if (lastSelection === 'variable' && previousVariable) {
         setActiveVariable(previousVariable, { scroll: false, force: true, preserveOthers: true });
+      } else if (lastSelection === 'segment' && previousSegment) {
+        setSelectedSegment(previousSegment, { scroll: false, force: true });
+      } else if (lastSelection === 'line' && previousLine) {
+        setSelectedLine(previousLine, { scroll: false, force: true });
+      } else if (lastSelection === 'circle' && previousCircle) {
+        setSelectedCircle(previousCircle, { scroll: false, force: true });
       } else {
         if (previousFunction) {
           setHighlightedFunction(previousFunction, { scroll: false, force: true });
@@ -1766,6 +2013,12 @@
           setActiveSlider(previousSlider, { scroll: false, force: true, preserveOthers: true });
         } else if (previousVariable) {
           setActiveVariable(previousVariable, { scroll: false, force: true, preserveOthers: true });
+        } else if (previousSegment) {
+          setSelectedSegment(previousSegment, { scroll: false, force: true });
+        } else if (previousLine) {
+          setSelectedLine(previousLine, { scroll: false, force: true });
+        } else if (previousCircle) {
+          setSelectedCircle(previousCircle, { scroll: false, force: true });
         }
       }
     }
@@ -1832,6 +2085,9 @@
       state.variables = { ...(snapshot.variables || {}) };
       state.selectedSliderId = snapshot.selectedSliderId || null;
       state.selectedVariableId = snapshot.selectedVariableId || null;
+      state.selectedSegmentId = snapshot.selectedSegmentId || null;
+      state.selectedLineId = snapshot.selectedLineId || null;
+      state.selectedCircleId = snapshot.selectedCircleId || null;
       algebraList.innerHTML = '';
       state.functions = [];
       const savedFunctions = snapshot.functions || [];
@@ -1945,25 +2201,14 @@
       keyboard.classList.remove('desktop-floating');
       if (!isCoarsePointer) {
         resetFloatingKeyboardStyles();
-        if (keyboardVisible) {
-          setKeyboardVisibility(false);
-        }
       }
     }
 
     function updateKeyboardToggleVisibility() {
       if (!keyboardToggle) return;
-      const showKeyboard = isCoarsePointer;
-      keyboardToggle.classList.toggle('hidden', !showKeyboard);
-      keyboardToggle.setAttribute('aria-hidden', String(!showKeyboard));
-      if (showKeyboard) {
-        keyboardToggle.removeAttribute('tabindex');
-      } else {
-        keyboardToggle.setAttribute('tabindex', '-1');
-        if (keyboardVisible) {
-          setKeyboardVisibility(false);
-        }
-      }
+      keyboardToggle.classList.remove('hidden');
+      keyboardToggle.setAttribute('aria-hidden', 'false');
+      keyboardToggle.removeAttribute('tabindex');
     }
 
     function enforceStandaloneViewport() {
@@ -2432,10 +2677,10 @@
     function drawLines() {
       ctx.save();
       ctx.scale(DPR, DPR);
-      ctx.lineWidth = 2 / DPR;
 
       for (const line of state.lines) {
-        ctx.strokeStyle = COLORS.line;
+        const color = COLORS.line;
+        const isSelected = state.selectedLineId === line.id;
         const { p1, p2 } = line;
         const a = state.points.find(p => p.id === p1);
         const b = state.points.find(p => p.id === p2);
@@ -2446,6 +2691,18 @@
         const len = Math.hypot(dir.x, dir.y) || 1;
         const unit = { x: dir.x / len, y: dir.y / len };
         const large = 4000;
+        if (isSelected) {
+          ctx.save();
+          ctx.lineWidth = 6 / DPR;
+          ctx.strokeStyle = withAlpha(color, 0.25);
+          ctx.beginPath();
+          ctx.moveTo(A.x - unit.x * large, A.y - unit.y * large);
+          ctx.lineTo(A.x + unit.x * large, A.y + unit.y * large);
+          ctx.stroke();
+          ctx.restore();
+        }
+        ctx.lineWidth = 2 / DPR;
+        ctx.strokeStyle = color;
         ctx.beginPath();
         ctx.moveTo(A.x - unit.x * large, A.y - unit.y * large);
         ctx.lineTo(A.x + unit.x * large, A.y + unit.y * large);
@@ -2453,13 +2710,26 @@
       }
 
       for (const segment of state.segments) {
-        ctx.strokeStyle = COLORS.segment;
+        const color = COLORS.segment;
+        const isSelected = state.selectedSegmentId === segment.id;
         const { p1, p2 } = segment;
         const a = state.points.find(p => p.id === p1);
         const b = state.points.find(p => p.id === p2);
         if (!a || !b) continue;
         const A = worldToScreen(a.position);
         const B = worldToScreen(b.position);
+        if (isSelected) {
+          ctx.save();
+          ctx.lineWidth = 6 / DPR;
+          ctx.strokeStyle = withAlpha(color, 0.25);
+          ctx.beginPath();
+          ctx.moveTo(A.x, A.y);
+          ctx.lineTo(B.x, B.y);
+          ctx.stroke();
+          ctx.restore();
+        }
+        ctx.lineWidth = 2 / DPR;
+        ctx.strokeStyle = color;
         ctx.beginPath();
         ctx.moveTo(A.x, A.y);
         ctx.lineTo(B.x, B.y);
@@ -2492,7 +2762,19 @@
         if (!center || !edge) continue;
         const C = worldToScreen(center.position);
         const radius = distance(center.position, edge.position) * state.scale;
-        ctx.strokeStyle = COLORS.circle;
+        const color = COLORS.circle;
+        const isSelected = state.selectedCircleId === circle.id;
+        if (isSelected) {
+          ctx.save();
+          ctx.lineWidth = 6 / DPR;
+          ctx.strokeStyle = withAlpha(color, 0.25);
+          ctx.beginPath();
+          ctx.arc(C.x, C.y, radius, 0, Math.PI * 2);
+          ctx.stroke();
+          ctx.restore();
+        }
+        ctx.lineWidth = 2 / DPR;
+        ctx.strokeStyle = color;
         ctx.beginPath();
         ctx.arc(C.x, C.y, radius, 0, Math.PI * 2);
         ctx.stroke();
@@ -2664,6 +2946,9 @@
         keepPoint = false,
         keepSlider = false,
         keepVariable = false,
+        keepSegment = false,
+        keepLine = false,
+        keepCircle = false,
         clearInput = false
       } = options;
       algebraList.querySelectorAll('.algebra-item.selected').forEach(item => {
@@ -2680,23 +2965,67 @@
         if (keepVariable && type === 'variable' && item.dataset.id === state.selectedVariableId) {
           return;
         }
-        item.classList.remove('selected');
-        if (type === 'function') {
-          item.style.removeProperty('--highlight-outline');
-          item.style.removeProperty('--highlight-glow');
+        if (keepSegment && type === 'segment' && item.dataset.id === state.selectedSegmentId) {
+          return;
         }
+        if (keepLine && type === 'line' && item.dataset.id === state.selectedLineId) {
+          return;
+        }
+        if (keepCircle && type === 'circle' && item.dataset.id === state.selectedCircleId) {
+          return;
+        }
+        item.classList.remove('selected');
+        item.style.removeProperty('--highlight-outline');
+        item.style.removeProperty('--highlight-glow');
       });
       if (!keepFunction) {
         state.highlightedFunctionId = null;
+        if (propertiesState.type === 'function') {
+          propertiesState.type = null;
+          propertiesState.id = null;
+        }
       }
       if (!keepPoint) {
         state.selectedPointId = null;
+        if (propertiesState.type === 'point') {
+          propertiesState.type = null;
+          propertiesState.id = null;
+        }
       }
       if (!keepSlider) {
         state.selectedSliderId = null;
+        if (propertiesState.type === 'slider') {
+          propertiesState.type = null;
+          propertiesState.id = null;
+        }
       }
       if (!keepVariable) {
         state.selectedVariableId = null;
+        if (propertiesState.type === 'variable') {
+          propertiesState.type = null;
+          propertiesState.id = null;
+        }
+      }
+      if (!keepSegment) {
+        state.selectedSegmentId = null;
+        if (propertiesState.type === 'segment') {
+          propertiesState.type = null;
+          propertiesState.id = null;
+        }
+      }
+      if (!keepLine) {
+        state.selectedLineId = null;
+        if (propertiesState.type === 'line') {
+          propertiesState.type = null;
+          propertiesState.id = null;
+        }
+      }
+      if (!keepCircle) {
+        state.selectedCircleId = null;
+        if (propertiesState.type === 'circle') {
+          propertiesState.type = null;
+          propertiesState.id = null;
+        }
       }
       if (state.highlightedFunctionId) {
         state.lastSelectionType = 'function';
@@ -2706,6 +3035,12 @@
         state.lastSelectionType = 'slider';
       } else if (state.selectedVariableId) {
         state.lastSelectionType = 'variable';
+      } else if (state.selectedSegmentId) {
+        state.lastSelectionType = 'segment';
+      } else if (state.selectedLineId) {
+        state.lastSelectionType = 'line';
+      } else if (state.selectedCircleId) {
+        state.lastSelectionType = 'circle';
       } else {
         state.lastSelectionType = 'none';
       }
@@ -2714,7 +3049,10 @@
         !state.highlightedFunctionId &&
         !state.selectedPointId &&
         !state.selectedSliderId &&
-        !state.selectedVariableId
+        !state.selectedVariableId &&
+        !state.selectedSegmentId &&
+        !state.selectedLineId &&
+        !state.selectedCircleId
       ) {
         state.editingFunctionId = null;
         state.editingPointId = null;
@@ -2887,6 +3225,83 @@
       return closestDistance <= tolerance ? closest : null;
     }
 
+    function distancePointToSegment(A, B, P) {
+      const vx = B.x - A.x;
+      const vy = B.y - A.y;
+      const lengthSq = vx * vx + vy * vy;
+      if (lengthSq === 0) {
+        return Math.hypot(P.x - A.x, P.y - A.y);
+      }
+      let t = ((P.x - A.x) * vx + (P.y - A.y) * vy) / lengthSq;
+      t = Math.max(0, Math.min(1, t));
+      const proj = { x: A.x + t * vx, y: A.y + t * vy };
+      return Math.hypot(P.x - proj.x, P.y - proj.y);
+    }
+
+    function findSegmentNearScreen(x, y) {
+      const tolerance = Math.max(10, Math.min(18, state.scale * 0.25));
+      let closest = null;
+      let min = tolerance;
+      const pointScreen = { x, y };
+      for (const segment of state.segments) {
+        const a = state.points.find(p => p.id === segment.p1);
+        const b = state.points.find(p => p.id === segment.p2);
+        if (!a || !b) continue;
+        const A = worldToScreen(a.position);
+        const B = worldToScreen(b.position);
+        const distance = distancePointToSegment(A, B, pointScreen);
+        if (distance < min) {
+          min = distance;
+          closest = segment;
+        }
+      }
+      return closest;
+    }
+
+    function findLineNearScreen(x, y) {
+      const tolerance = Math.max(10, Math.min(18, state.scale * 0.22));
+      let closest = null;
+      let min = tolerance;
+      for (const line of state.lines) {
+        const a = state.points.find(p => p.id === line.p1);
+        const b = state.points.find(p => p.id === line.p2);
+        if (!a || !b) continue;
+        const A = worldToScreen(a.position);
+        const B = worldToScreen(b.position);
+        const dx = B.x - A.x;
+        const dy = B.y - A.y;
+        const length = Math.hypot(dx, dy);
+        if (!length) continue;
+        const distance = Math.abs(dy * (x - A.x) - dx * (y - A.y)) / length;
+        if (distance < min) {
+          min = distance;
+          closest = line;
+        }
+      }
+      return closest;
+    }
+
+    function findCircleNearScreen(x, y) {
+      const tolerance = Math.max(10, Math.min(18, state.scale * 0.25));
+      let closest = null;
+      let min = tolerance;
+      for (const circle of state.circles) {
+        const center = state.points.find(p => p.id === circle.center);
+        const edge = state.points.find(p => p.id === circle.edge);
+        if (!center || !edge) continue;
+        const C = worldToScreen(center.position);
+        const E = worldToScreen(edge.position);
+        const radius = Math.hypot(E.x - C.x, E.y - C.y);
+        if (!radius) continue;
+        const distance = Math.abs(Math.hypot(x - C.x, y - C.y) - radius);
+        if (distance < min) {
+          min = distance;
+          closest = circle;
+        }
+      }
+      return closest;
+    }
+
     function snapWorldToGrid(world) {
       const position = { x: world.x, y: world.y };
       if (!Number.isFinite(state.scale) || state.scale <= 0) {
@@ -2919,7 +3334,7 @@
       const originalScreen = worldToScreen(position);
       const snappedScreen = worldToScreen(snapped);
       const distancePx = Math.hypot(originalScreen.x - snappedScreen.x, originalScreen.y - snappedScreen.y);
-      const thresholdPx = Math.max(5, Math.min(16, state.scale * 0.2));
+      const thresholdPx = Math.max(5, Math.min(14, state.scale * 0.16));
       if (distancePx <= thresholdPx) {
         return snapped;
       }
@@ -3049,6 +3464,18 @@
         label.appendChild(span);
         item.appendChild(label);
 
+        const actions = document.createElement('div');
+        actions.className = 'algebra-actions';
+        if (type === 'function' || type === 'point' || type === 'variable') {
+          const optionsButton = document.createElement('button');
+          optionsButton.type = 'button';
+          optionsButton.className = 'options-button';
+          optionsButton.dataset.action = 'properties';
+          optionsButton.setAttribute('aria-label', 'Toon eigenschappen');
+          optionsButton.innerHTML = ICONS.dots;
+          actions.appendChild(optionsButton);
+        }
+
         const removeButton = document.createElement('button');
         removeButton.type = 'button';
         removeButton.className = 'delete-button';
@@ -3059,7 +3486,8 @@
             <path d="M6 18 18 6" />
           </svg>
         `;
-        item.appendChild(removeButton);
+        actions.appendChild(removeButton);
+        item.appendChild(actions);
 
         algebraList.appendChild(item);
       }
@@ -3169,6 +3597,17 @@
         body.appendChild(controls);
         item.appendChild(body);
 
+        const actions = document.createElement('div');
+        actions.className = 'algebra-actions';
+
+        const optionsButton = document.createElement('button');
+        optionsButton.type = 'button';
+        optionsButton.className = 'options-button';
+        optionsButton.dataset.action = 'properties';
+        optionsButton.setAttribute('aria-label', 'Toon eigenschappen');
+        optionsButton.innerHTML = ICONS.dots;
+        actions.appendChild(optionsButton);
+
         const removeButton = document.createElement('button');
         removeButton.type = 'button';
         removeButton.className = 'delete-button';
@@ -3179,7 +3618,8 @@
             <path d="M6 18 18 6" />
           </svg>
         `;
-        item.appendChild(removeButton);
+        actions.appendChild(removeButton);
+        item.appendChild(actions);
 
         algebraList.appendChild(item);
       }
@@ -3976,7 +4416,7 @@
         const position = value.length;
         commandInput.setSelectionRange(position, position);
         focusCommandInput();
-        if (isCoarsePointer && !keyboardVisible) {
+        if (!keyboardVisible) {
           setKeyboardVisibility(true);
         }
         return;
@@ -4058,7 +4498,6 @@
     }
 
     function ensureKeyboardBuilt() {
-      if (!isCoarsePointer) return;
       if (keyboardBuilt) return;
       keyboardBuilt = true;
       keyboardTabs.innerHTML = '';
@@ -4282,7 +4721,7 @@
 
     function setKeyboardVisibility(visible) {
       if (!keyboard || !keyboardToggle) return;
-      const allowKeyboard = isCoarsePointer;
+      const allowKeyboard = true;
       const nextVisible = allowKeyboard && Boolean(visible);
       if (nextVisible) {
         ensureKeyboardBuilt();
@@ -4297,19 +4736,14 @@
       if (nextVisible) {
         focusCommandInput();
       }
-      if (!allowKeyboard) {
-        document.body.classList.remove('keyboard-open');
-        document.body.style.setProperty('--keyboard-offset', '0px');
+      document.body.classList.toggle('keyboard-open', nextVisible);
+      if (nextVisible) {
+        requestAnimationFrame(() => {
+          const height = keyboard.offsetHeight || 0;
+          document.body.style.setProperty('--keyboard-offset', `${height}px`);
+        });
       } else {
-        document.body.classList.toggle('keyboard-open', nextVisible);
-        if (nextVisible) {
-          requestAnimationFrame(() => {
-            const height = keyboard.offsetHeight || 0;
-            document.body.style.setProperty('--keyboard-offset', `${height}px`);
-          });
-        } else {
-          document.body.style.setProperty('--keyboard-offset', '0px');
-        }
+        document.body.style.setProperty('--keyboard-offset', '0px');
       }
       requestAnimationFrame(resizeCanvas);
     }
@@ -4599,6 +5033,15 @@
             recordHistory();
           }
           state.segments.splice(index, 1);
+          if (state.selectedSegmentId === id) {
+            state.selectedSegmentId = null;
+            if (state.lastSelectionType === 'segment') {
+              state.lastSelectionType = 'none';
+            }
+            if (propertiesState.type === 'segment') {
+              refreshPropertiesPanel();
+            }
+          }
           break;
         }
         case 'line': {
@@ -4608,6 +5051,15 @@
             recordHistory();
           }
           state.lines.splice(index, 1);
+          if (state.selectedLineId === id) {
+            state.selectedLineId = null;
+            if (state.lastSelectionType === 'line') {
+              state.lastSelectionType = 'none';
+            }
+            if (propertiesState.type === 'line') {
+              refreshPropertiesPanel();
+            }
+          }
           break;
         }
         case 'circle': {
@@ -4617,6 +5069,15 @@
             recordHistory();
           }
           state.circles.splice(index, 1);
+          if (state.selectedCircleId === id) {
+            state.selectedCircleId = null;
+            if (state.lastSelectionType === 'circle') {
+              state.lastSelectionType = 'none';
+            }
+            if (propertiesState.type === 'circle') {
+              refreshPropertiesPanel();
+            }
+          }
           break;
         }
         case 'polygon': {
@@ -4747,7 +5208,7 @@
       }
 
       if (state.tool === 'move') {
-        const point = findPointNear(world, 0.3);
+        const point = findPointNear(world, 0.18);
         if (point) {
           state.pendingFunctionHighlight = null;
           state.panCandidate = null;
@@ -4759,6 +5220,39 @@
         } else {
           if (state.selectedPointId) {
             setSelectedPoint(null);
+          }
+          if (state.selectedSegmentId) {
+            setSelectedSegment(null);
+          }
+          if (state.selectedLineId) {
+            setSelectedLine(null);
+          }
+          if (state.selectedCircleId) {
+            setSelectedCircle(null);
+          }
+          const nearbySegment = findSegmentNearScreen(x, y);
+          if (nearbySegment) {
+            state.pendingFunctionHighlight = null;
+            state.panning = false;
+            state.panCandidate = null;
+            setSelectedSegment(nearbySegment.id, { force: true });
+            return;
+          }
+          const nearbyLine = findLineNearScreen(x, y);
+          if (nearbyLine) {
+            state.pendingFunctionHighlight = null;
+            state.panning = false;
+            state.panCandidate = null;
+            setSelectedLine(nearbyLine.id, { force: true });
+            return;
+          }
+          const nearbyCircle = findCircleNearScreen(x, y);
+          if (nearbyCircle) {
+            state.pendingFunctionHighlight = null;
+            state.panning = false;
+            state.panCandidate = null;
+            setSelectedCircle(nearbyCircle.id, { force: true });
+            return;
           }
           const nearbyFunction = findFunctionNearScreen(x, y);
           if (nearbyFunction) {
@@ -5183,8 +5677,8 @@
       });
       if (closePropertiesBtn) {
         closePropertiesBtn.addEventListener('click', () => {
+          closePropertiesPanel();
           clearHighlightedAlgebra({ clearInput: true });
-          refreshPropertiesPanel();
           ensureMoveTool();
           draw();
         });
@@ -5192,12 +5686,36 @@
     }
 
     algebraList.addEventListener('click', event => {
+      const optionsButton = event.target.closest('.options-button');
+      if (optionsButton) {
+        const item = optionsButton.closest('.algebra-item');
+        if (!item) return;
+        const type = item.dataset.type;
+        const id = item.dataset.id;
+        if (!id || !type) return;
+        if (type === 'slider') {
+          setActiveSlider(id, { force: true });
+        } else if (type === 'function') {
+          setHighlightedFunction(id, { scroll: true, force: true });
+        } else if (type === 'point') {
+          setSelectedPoint(id, { force: true });
+        } else if (type === 'variable') {
+          setActiveVariable(id, { force: true });
+        }
+        refreshPropertiesPanel({ type, id, forceOpen: true });
+        ensureMoveTool();
+        event.preventDefault();
+        event.stopPropagation();
+        return;
+      }
+
       const sliderActionButton = event.target.closest('[data-slider-action]');
       if (sliderActionButton) {
         const sliderItem = sliderActionButton.closest('.algebra-item.slider');
         if (!sliderItem) return;
         const slider = findSliderById(sliderItem.dataset.id);
         if (!slider) return;
+        setActiveSlider(slider.id, { force: true });
         const action = sliderActionButton.dataset.sliderAction;
         if (action === 'step-back') {
           stepSlider(slider, -1);
@@ -5255,7 +5773,7 @@
         commandInput.setSelectionRange(position, position);
         focusCommandInput();
         setHighlightedFunction(fn.id, { scroll: true, force: true });
-        if (isCoarsePointer && !keyboardVisible) {
+        if (!keyboardVisible) {
           setKeyboardVisibility(true);
         }
       } else if (item.dataset.type === 'point') {
@@ -5269,9 +5787,15 @@
         commandInput.setSelectionRange(position, position);
         focusCommandInput();
         setSelectedPoint(point.id, { force: true });
-        if (isCoarsePointer && !keyboardVisible) {
+        if (!keyboardVisible) {
           setKeyboardVisibility(true);
         }
+      } else if (item.dataset.type === 'segment') {
+        setSelectedSegment(item.dataset.id, { force: true });
+      } else if (item.dataset.type === 'line') {
+        setSelectedLine(item.dataset.id, { force: true });
+      } else if (item.dataset.type === 'circle') {
+        setSelectedCircle(item.dataset.id, { force: true });
       }
       ensureMoveTool();
     });
@@ -5283,6 +5807,7 @@
         if (!sliderItem) return;
         const slider = findSliderById(sliderItem.dataset.id);
         if (!slider) return;
+        setActiveSlider(slider.id, { force: true });
         const numeric = parseFloat(range.value);
         if (Number.isFinite(numeric)) {
           updateSliderValue(slider, numeric, { record: false });
@@ -5303,6 +5828,7 @@
         if (!sliderItem) return;
         const slider = findSliderById(sliderItem.dataset.id);
         if (!slider) return;
+        setActiveSlider(slider.id, { force: true });
         const numeric = parseFloat(range.value);
         if (Number.isFinite(numeric)) {
           updateSliderValue(slider, numeric, { record: true });
@@ -5317,6 +5843,7 @@
         if (!sliderItem) return;
         const slider = findSliderById(sliderItem.dataset.id);
         if (!slider) return;
+        setActiveSlider(slider.id, { force: true });
         setSliderSpeed(slider, speedSelect.value);
         return;
       }
@@ -5360,7 +5887,7 @@
     window.addEventListener('resize', () => {
       handleResponsiveSidebar();
       refreshPointerMode();
-      if (isCoarsePointer && !keyboardBuilt) {
+      if (!keyboardBuilt) {
         ensureKeyboardBuilt();
       }
       positionFloatingKeyboard();
@@ -5436,10 +5963,6 @@
 
     keyboardToggle.addEventListener('pointerdown', event => {
       event.preventDefault();
-      if (!isCoarsePointer) {
-        setKeyboardVisibility(false);
-        return;
-      }
       keyboardToggle.focus();
       ensureMoveTool();
       setKeyboardVisibility(!keyboardVisible);
@@ -5452,20 +5975,12 @@
         skipNextKeyboardToggleClick = false;
         return;
       }
-      if (!isCoarsePointer) {
-        setKeyboardVisibility(false);
-        return;
-      }
       setKeyboardVisibility(!keyboardVisible);
     });
 
     keyboardToggle.addEventListener('keydown', event => {
       if (event.key === 'Enter' || event.key === ' ') {
         event.preventDefault();
-        if (!isCoarsePointer) {
-          setKeyboardVisibility(false);
-          return;
-        }
         setKeyboardVisibility(!keyboardVisible);
         skipNextKeyboardToggleClick = true;
       }
@@ -5473,33 +5988,35 @@
 
     commandInput.addEventListener('focus', () => {
       ensureMoveTool();
-      if (isCoarsePointer && !keyboardVisible) {
+      if (!keyboardVisible) {
         setKeyboardVisibility(true);
       }
     });
 
     commandInput.addEventListener('pointerdown', event => {
       ensureMoveTool();
-      if (!isCoarsePointer) return;
-      event.preventDefault();
-      focusCommandInput();
-      const position = commandInput.value.length;
-      commandInput.setSelectionRange(position, position);
       if (!keyboardVisible) {
         setKeyboardVisibility(true);
+      }
+      if (isCoarsePointer) {
+        event.preventDefault();
+        focusCommandInput();
+        const position = commandInput.value.length;
+        commandInput.setSelectionRange(position, position);
       }
     });
 
     commandInput.addEventListener('touchstart', event => {
       ensureMoveTool();
       if (window.PointerEvent) return;
-      if (!isCoarsePointer) return;
-      event.preventDefault();
-      focusCommandInput();
-      const position = commandInput.value.length;
-      commandInput.setSelectionRange(position, position);
       if (!keyboardVisible) {
         setKeyboardVisibility(true);
+      }
+      if (isCoarsePointer) {
+        event.preventDefault();
+        focusCommandInput();
+        const position = commandInput.value.length;
+        commandInput.setSelectionRange(position, position);
       }
     }, { passive: false });
 
@@ -5529,6 +6046,46 @@
       if (keyboardToggle.contains(target)) return;
       if (commandBar && commandBar.contains(target)) return;
       setKeyboardVisibility(false);
+    });
+
+    document.addEventListener('keydown', event => {
+      if (event.key !== 'Delete' && event.key !== 'Backspace') {
+        return;
+      }
+      if (event.metaKey || event.ctrlKey || event.altKey || event.shiftKey) {
+        return;
+      }
+      const activeElement = document.activeElement;
+      if (activeElement && (activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA' || activeElement.isContentEditable)) {
+        return;
+      }
+      let handled = false;
+      if (state.highlightedFunctionId) {
+        removeObject(state.highlightedFunctionId, 'function');
+        handled = true;
+      } else if (state.selectedPointId) {
+        removeObject(state.selectedPointId, 'point');
+        handled = true;
+      } else if (state.selectedSegmentId) {
+        removeObject(state.selectedSegmentId, 'segment');
+        handled = true;
+      } else if (state.selectedLineId) {
+        removeObject(state.selectedLineId, 'line');
+        handled = true;
+      } else if (state.selectedCircleId) {
+        removeObject(state.selectedCircleId, 'circle');
+        handled = true;
+      } else if (state.selectedSliderId) {
+        removeObject(state.selectedSliderId, 'slider');
+        handled = true;
+      } else if (state.selectedVariableId) {
+        removeObject(state.selectedVariableId, 'variable');
+        handled = true;
+      }
+      if (handled) {
+        event.preventDefault();
+        ensureMoveTool();
+      }
     });
 
     window.addEventListener('keydown', event => {
@@ -5601,9 +6158,7 @@
       commandBar.removeAttribute('hidden');
     }
 
-    if (isCoarsePointer) {
-      ensureKeyboardBuilt();
-    }
+    ensureKeyboardBuilt();
 
     initTools();
     initSidebar();
