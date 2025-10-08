@@ -14,6 +14,7 @@
       --bg: #f8f8fb;
       --panel-bg: #ffffff;
       font-family: "Inter", "Segoe UI", sans-serif;
+      --keyboard-offset: 0px;
     }
 
     * {
@@ -303,15 +304,23 @@
     .math-keyboard {
       background: #f4f4fb;
       border-top: 1px solid var(--border);
-      padding: 12px;
+      padding: 16px;
       display: none;
       flex-direction: column;
       gap: 12px;
       box-shadow: 0 -12px 40px rgba(0,0,0,0.08);
+      border-radius: 20px 20px 0 0;
+      width: 100%;
+      max-width: 720px;
+      margin: 0 auto;
     }
 
     .math-keyboard.active {
       display: flex;
+    }
+
+    body.keyboard-open {
+      overflow: hidden;
     }
 
     .quick-actions {
@@ -357,12 +366,13 @@
     }
 
     .keyboard-key {
-      flex: 1;
+      flex: 1 1 0;
+      min-width: 0;
       border: 1px solid rgba(67, 79, 110, 0.18);
       background: rgba(255,255,255,0.96);
       border-radius: 12px;
-      min-height: 44px;
-      font-size: 1rem;
+      min-height: 48px;
+      font-size: clamp(0.85rem, 2.6vw, 1rem);
       font-weight: 600;
       color: #2d2d2d;
       display: inline-flex;
@@ -372,14 +382,15 @@
       cursor: pointer;
       transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
       user-select: none;
+      white-space: nowrap;
     }
 
     .keyboard-key.small {
-      flex: 0 0 54px;
+      flex: 0.75 1 0;
     }
 
     .keyboard-key.wide {
-      flex: 0 0 96px;
+      flex: 1.5 1 0;
     }
 
     .keyboard-key:hover {
@@ -399,6 +410,12 @@
       flex-direction: column;
       gap: 8px;
       z-index: 1;
+      align-items: flex-end;
+    }
+
+    .control-row {
+      display: flex;
+      gap: 8px;
     }
 
     .round-button {
@@ -414,7 +431,13 @@
       transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
 
-    .round-button:hover {
+    .round-button[disabled] {
+      opacity: 0.45;
+      cursor: default;
+      box-shadow: none;
+    }
+
+    .round-button:hover:not([disabled]) {
       transform: translateY(-1px);
       box-shadow: 0 12px 30px rgba(0,0,0,0.12);
     }
@@ -470,11 +493,21 @@
 
       .math-keyboard {
         box-shadow: 0 -8px 28px rgba(0,0,0,0.12);
+        max-width: none;
+        margin: 0;
+      }
+
+      .math-keyboard.active {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 6;
       }
 
       .command-bar {
         position: sticky;
-        bottom: 0;
+        bottom: var(--keyboard-offset, 0px);
         background: rgba(255,255,255,0.96);
         backdrop-filter: blur(12px);
         box-shadow: 0 -12px 24px rgba(0,0,0,0.12);
@@ -516,6 +549,18 @@
 
       .command-bar {
         padding: 10px;
+      }
+    }
+
+    @media (min-width: 921px) {
+      .math-keyboard {
+        position: relative;
+        border-radius: 24px;
+        box-shadow: 0 -16px 48px rgba(0,0,0,0.1);
+      }
+
+      .math-keyboard.active {
+        position: relative;
       }
     }
 
@@ -601,9 +646,8 @@
       </button>
       <button class="tool-button" data-tool="text" aria-label="Tekst gereedschap">
         <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M4 5h16" />
-          <path d="M9 5v14" />
-          <path d="M15 19V5" />
+          <path d="M5 6h14" />
+          <path d="M12 6v12" />
         </svg>
       </button>
       <span class="badge">Beta</span>
@@ -624,27 +668,41 @@
     </aside>
     <section class="graph-container">
       <div class="floating-controls">
-        <div class="round-button" id="zoom-in" aria-label="Zoom in">
+        <div class="control-row">
+          <button type="button" class="round-button" id="undo" aria-label="Ongedaan maken" disabled>
+            <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M7 10H3V6" />
+              <path d="M3 10c0 6 6 8 10 8 4.97 0 8-2.9 8-7a7 7 0 0 0-7-7c-2.7 0-5.2 1.1-6.8 3" />
+            </svg>
+          </button>
+          <button type="button" class="round-button" id="redo" aria-label="Opnieuw uitvoeren" disabled>
+            <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M17 10h4V6" />
+              <path d="M21 10c0 6-6 8-10 8-4.97 0-8-2.9-8-7a7 7 0 0 1 7-7c2.7 0 5.2 1.1 6.8 3" />
+            </svg>
+          </button>
+        </div>
+        <button type="button" class="round-button" id="zoom-in" aria-label="Zoom in">
           <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="11" cy="11" r="7" />
             <path d="M11 8v6" />
             <path d="M8 11h6" />
             <path d="m20 20-3-3" />
           </svg>
-        </div>
-        <div class="round-button" id="zoom-out" aria-label="Zoom uit">
+        </button>
+        <button type="button" class="round-button" id="zoom-out" aria-label="Zoom uit">
           <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="11" cy="11" r="7" />
             <path d="M8 11h6" />
             <path d="m20 20-3-3" />
           </svg>
-        </div>
-        <div class="round-button" id="reset-view" aria-label="Reset weergave">
+        </button>
+        <button type="button" class="round-button" id="reset-view" aria-label="Reset weergave">
           <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
             <path d="M3 12a9 9 0 1 0 3.1-6.9L3 8" />
             <path d="M3 3v5h5" />
           </svg>
-        </div>
+        </button>
       </div>
       <canvas id="board" width="1600" height="1200" aria-label="Coördinaatvlak"></canvas>
       <div class="quick-actions" id="quick-actions" role="group" aria-label="Snelle functievoorbeelden"></div>
@@ -684,8 +742,12 @@
     const keyboardTabs = keyboard.querySelector('.keyboard-tabs');
     const keyboardRows = keyboard.querySelector('.keyboard-rows');
     const quickActions = document.getElementById('quick-actions');
+    const undoButton = document.getElementById('undo');
+    const redoButton = document.getElementById('redo');
 
     const DPR = window.devicePixelRatio || 1;
+    const coarsePointerMedia = window.matchMedia('(pointer: coarse)');
+    let isCoarsePointer = coarsePointerMedia.matches;
 
     const state = {
       tool: 'move',
@@ -706,6 +768,7 @@
       panStart: { x: 0, y: 0 },
       tempPoints: [],
       pinch: null,
+      dragHistoryArmed: false,
     };
 
     const COLORS = {
@@ -721,6 +784,10 @@
     const FUNCTION_COLORS = ['#d83b01', '#1f6feb', '#2da44e', '#8b3dd9', '#e36209'];
     const SUBSCRIPTS = ['₀','₁','₂','₃','₄','₅','₆','₇','₈','₉'];
     const activeTouches = new Map();
+    const history = { past: [], future: [] };
+    const HISTORY_LIMIT = 100;
+    let suspendHistory = false;
+    let restoringState = false;
 
     function toSubscript(number) {
       return String(number)
@@ -732,6 +799,181 @@
     function nextFunctionLabel() {
       state.functionCounter += 1;
       return `f${toSubscript(state.functionCounter)}(x)`;
+    }
+
+    function serializeState() {
+      return {
+        origin: { x: state.origin.x, y: state.origin.y },
+        scale: state.scale,
+        functionColorIndex: state.functionColorIndex,
+        functionCounter: state.functionCounter,
+        pointCounter,
+        points: state.points.map(point => ({
+          id: point.id,
+          name: point.name,
+          position: { x: point.position.x, y: point.position.y }
+        })),
+        segments: state.segments.map(segment => ({ ...segment })),
+        lines: state.lines.map(line => ({ ...line })),
+        circles: state.circles.map(circle => ({ ...circle })),
+        polygons: state.polygons.map(polygon => ({ id: polygon.id, points: [...polygon.points] })),
+        texts: state.texts.map(label => ({
+          id: label.id,
+          content: label.content,
+          position: { x: label.position.x, y: label.position.y }
+        })),
+        functions: state.functions.map(fn => ({
+          id: fn.id,
+          label: fn.label,
+          algebraLabel: fn.algebraLabel,
+          expression: fn.expression,
+          source: fn.source,
+          color: fn.color,
+          displayName: fn.displayName,
+          evaluationExpression: fn.evaluationExpression
+        }))
+      };
+    }
+
+    function recordHistory() {
+      if (suspendHistory) return;
+      const snapshot = serializeState();
+      history.past.push(snapshot);
+      if (history.past.length > HISTORY_LIMIT) {
+        history.past.shift();
+      }
+      history.future.length = 0;
+      updateUndoRedoButtons();
+    }
+
+    function rebuildAlgebraList() {
+      if (!algebraList) return;
+      algebraList.innerHTML = '';
+      for (const point of state.points) {
+        registerAlgebraEntry(point.id, `${point.name} = (${formatNumber(point.position.x)}, ${formatNumber(point.position.y)})`, 'point');
+      }
+      for (const line of state.lines) {
+        registerAlgebraEntry(line.id, `l: lijn(${pointName(line.p1)}, ${pointName(line.p2)})`, 'line');
+      }
+      for (const segment of state.segments) {
+        registerAlgebraEntry(segment.id, `s: segment(${pointName(segment.p1)}, ${pointName(segment.p2)})`, 'segment');
+      }
+      for (const circle of state.circles) {
+        registerAlgebraEntry(circle.id, `c: cirkel(${pointName(circle.center)}, ${pointName(circle.edge)})`, 'circle');
+      }
+      for (const polygon of state.polygons) {
+        registerAlgebraEntry(polygon.id, `p: veelhoek(${polygon.points.map(pointName).join(', ')})`, 'polygon');
+      }
+      for (const text of state.texts) {
+        registerAlgebraEntry(text.id, `tekst: "${text.content}"`, 'text');
+      }
+      for (const fn of state.functions) {
+        registerAlgebraEntry(fn.id, `${fn.algebraLabel} = ${fn.expression}`, 'function', fn.color);
+      }
+    }
+
+    function restoreState(snapshot) {
+      if (!snapshot) return;
+      suspendHistory = true;
+      restoringState = true;
+      state.points = snapshot.points.map(point => ({
+        id: point.id,
+        name: point.name,
+        position: { x: point.position.x, y: point.position.y }
+      }));
+      state.segments = snapshot.segments.map(segment => ({ ...segment }));
+      state.lines = snapshot.lines.map(line => ({ ...line }));
+      state.circles = snapshot.circles.map(circle => ({ ...circle }));
+      state.polygons = snapshot.polygons.map(polygon => ({ id: polygon.id, points: [...polygon.points] }));
+      state.texts = snapshot.texts.map(text => ({
+        id: text.id,
+        content: text.content,
+        position: { x: text.position.x, y: text.position.y }
+      }));
+      state.origin = { x: snapshot.origin.x, y: snapshot.origin.y };
+      state.scale = snapshot.scale;
+      state.functionCounter = snapshot.functionCounter;
+      pointCounter = snapshot.pointCounter ?? pointCounter;
+      state.functionColorIndex = 0;
+      state.tempPoints = [];
+      state.tempPolygon = null;
+      state.draggingPoint = null;
+      state.dragOffset = { x: 0, y: 0 };
+      state.panStart = { x: 0, y: 0 };
+      state.panning = false;
+      state.pinch = null;
+      state.dragHistoryArmed = false;
+      algebraList.innerHTML = '';
+      state.functions = [];
+      const savedFunctions = snapshot.functions || [];
+      for (const fn of savedFunctions) {
+        registerFunction({
+          algebraLabel: fn.algebraLabel,
+          expression: fn.expression,
+          source: fn.source,
+          graphLabel: fn.label,
+          evaluationExpression: fn.evaluationExpression
+        }, { id: fn.id, color: fn.color, displayName: fn.displayName, skipHistory: true, skipDraw: true, skipColorAdvance: true, skipAlgebra: true });
+      }
+      rebuildAlgebraList();
+      state.functionColorIndex = snapshot.functionColorIndex;
+      restoringState = false;
+      suspendHistory = false;
+      draw();
+    }
+
+    function undo() {
+      if (!history.past.length) return;
+      const snapshot = history.past.pop();
+      history.future.push(serializeState());
+      restoreState(snapshot);
+      updateUndoRedoButtons();
+    }
+
+    function redo() {
+      if (!history.future.length) return;
+      const snapshot = history.future.pop();
+      history.past.push(serializeState());
+      restoreState(snapshot);
+      updateUndoRedoButtons();
+    }
+
+    function updateUndoRedoButtons() {
+      if (undoButton) {
+        undoButton.disabled = history.past.length === 0;
+      }
+      if (redoButton) {
+        redoButton.disabled = history.future.length === 0;
+      }
+    }
+
+    function focusCommandInput() {
+      if (!commandInput) return;
+      try {
+        commandInput.focus({ preventScroll: true });
+      } catch (error) {
+        commandInput.focus();
+      }
+    }
+
+    function updateInputMode() {
+      if (!commandInput) return;
+      if (isCoarsePointer) {
+        commandInput.setAttribute('inputmode', 'none');
+      } else {
+        commandInput.setAttribute('inputmode', 'text');
+      }
+    }
+
+    function handlePointerPreferenceChange(event) {
+      isCoarsePointer = event.matches;
+      updateInputMode();
+      if (!isCoarsePointer) {
+        document.body.classList.remove('keyboard-open');
+        document.body.style.setProperty('--keyboard-offset', '0px');
+      } else if (keyboardVisible) {
+        setKeyboardVisibility(true);
+      }
     }
 
     const KEYBOARD_SETS = [
@@ -1335,11 +1577,27 @@
     }
 
     function setTool(tool) {
+      if (state.tool === 'polygon' && tool !== 'polygon') {
+        cancelTempPolygon();
+      }
       state.tool = tool;
       document.querySelectorAll('.tool-button[data-tool]').forEach(btn => {
         btn.classList.toggle('active', btn.dataset.tool === tool);
       });
       state.tempPoints = [];
+      if (tool !== 'polygon') {
+        state.tempPolygon = null;
+      }
+      draw();
+    }
+
+    function cancelTempPolygon() {
+      if (!state.tempPolygon) return;
+      const created = state.tempPolygon.createdPoints || [];
+      for (const pointId of created) {
+        removeObject(pointId, 'point', { silent: true, skipHistory: true });
+      }
+      state.tempPolygon = null;
     }
 
     function distance(a, b) {
@@ -1391,8 +1649,12 @@
     }
 
     function createPoint(world, existingName, options = {}) {
+      const { snap = true, skipHistory = false } = options;
+      if (!skipHistory) {
+        recordHistory();
+      }
       const name = existingName || nextPointName();
-      const shouldSnap = options.snap !== false;
+      const shouldSnap = snap;
       const position = shouldSnap ? snapWorldToGrid(world) : { x: world.x, y: world.y };
       const point = {
         id: crypto.randomUUID(),
@@ -1458,7 +1720,8 @@
         detailEl.textContent = detailText ? `= ${detailText}` : '';
       }
 
-      algebraList.scrollTo({ top: algebraList.scrollHeight, behavior: 'smooth' });
+      const behavior = restoringState ? 'auto' : 'smooth';
+      algebraList.scrollTo({ top: algebraList.scrollHeight, behavior });
     }
 
     function removeAlgebraEntry(id) {
@@ -1486,7 +1749,7 @@
       commandInput.value = value;
       const position = value.length;
       commandInput.setSelectionRange(position, position);
-      commandInput.focus();
+      focusCommandInput();
       if (window.innerWidth < 920 && !keyboardVisible) {
         setKeyboardVisibility(true);
       }
@@ -1540,7 +1803,7 @@
     }
 
     function handleKeyboardKey(key) {
-      commandInput.focus();
+      focusCommandInput();
       if (key.action === 'backspace') {
         deleteAtCursor();
         return;
@@ -1610,11 +1873,22 @@
       keyboard.classList.toggle('active', visible);
       keyboard.setAttribute('aria-hidden', String(!visible));
       keyboardToggle.classList.toggle('active', visible);
-      if (visible) {
-        commandInput.focus();
-      }
       keyboardToggle.setAttribute('aria-label', visible ? 'Verberg toetsenbord' : 'Toon toetsenbord');
       keyboardToggle.setAttribute('aria-pressed', String(visible));
+      if (visible) {
+        focusCommandInput();
+      }
+      if (isCoarsePointer) {
+        document.body.classList.toggle('keyboard-open', visible);
+        if (visible) {
+          requestAnimationFrame(() => {
+            const height = keyboard.offsetHeight || 0;
+            document.body.style.setProperty('--keyboard-offset', `${height}px`);
+          });
+        } else {
+          document.body.style.setProperty('--keyboard-offset', '0px');
+        }
+      }
       requestAnimationFrame(resizeCanvas);
     }
 
@@ -1685,8 +1959,17 @@
       return normalized;
     }
 
-    function registerFunction({ algebraLabel, expression, source, graphLabel, evaluationExpression }) {
-      const color = FUNCTION_COLORS[state.functionColorIndex % FUNCTION_COLORS.length];
+    function registerFunction({ algebraLabel, expression, source, graphLabel, evaluationExpression }, options = {}) {
+      const {
+        id,
+        color: providedColor,
+        displayName,
+        skipHistory = false,
+        skipDraw = false,
+        skipColorAdvance = false,
+        skipAlgebra = false
+      } = options;
+      const color = providedColor ?? FUNCTION_COLORS[state.functionColorIndex % FUNCTION_COLORS.length];
       try {
         const prepared = prepareExpression(evaluationExpression || expression);
         const compiled = new Function(
@@ -1707,20 +1990,30 @@
            const tau = Math.PI * 2;
            with (Math) { return ${prepared}; }`
         );
+        if (!skipHistory) {
+          recordHistory();
+        }
         const fn = {
-          id: crypto.randomUUID(),
+          id: id || crypto.randomUUID(),
           label: graphLabel,
           algebraLabel,
           expression,
           source,
           eval: compiled,
           color,
-          displayName: `${graphLabel} = ${expression}`
+          displayName: displayName || `${graphLabel} = ${expression}`,
+          evaluationExpression: evaluationExpression || expression
         };
         state.functions.push(fn);
-        state.functionColorIndex = (state.functionColorIndex + 1) % FUNCTION_COLORS.length;
-        registerAlgebraEntry(fn.id, `${algebraLabel} = ${expression}`, 'function', color);
-        draw();
+        if (!skipColorAdvance) {
+          state.functionColorIndex = (state.functionColorIndex + 1) % FUNCTION_COLORS.length;
+        }
+        if (!skipAlgebra) {
+          registerAlgebraEntry(fn.id, `${algebraLabel} = ${expression}`, 'function', color);
+        }
+        if (!skipDraw) {
+          draw();
+        }
         return fn;
       } catch (error) {
         console.error(error);
@@ -1794,22 +2087,25 @@
     }
 
     function removeObject(id, type, options = {}) {
-      const { silent = false } = options;
+      const { silent = false, skipHistory = false } = options;
       if (!id || !type) return;
 
       switch (type) {
         case 'point': {
           const index = state.points.findIndex(point => point.id === id);
           if (index === -1) break;
+          if (!skipHistory) {
+            recordHistory();
+          }
           state.points.splice(index, 1);
           const relatedSegments = state.segments.filter(segment => segment.p1 === id || segment.p2 === id);
-          relatedSegments.forEach(segment => removeObject(segment.id, 'segment', { silent: true }));
+          relatedSegments.forEach(segment => removeObject(segment.id, 'segment', { silent: true, skipHistory: true }));
           const relatedLines = state.lines.filter(line => line.p1 === id || line.p2 === id);
-          relatedLines.forEach(line => removeObject(line.id, 'line', { silent: true }));
+          relatedLines.forEach(line => removeObject(line.id, 'line', { silent: true, skipHistory: true }));
           const relatedCircles = state.circles.filter(circle => circle.center === id || circle.edge === id);
-          relatedCircles.forEach(circle => removeObject(circle.id, 'circle', { silent: true }));
+          relatedCircles.forEach(circle => removeObject(circle.id, 'circle', { silent: true, skipHistory: true }));
           const relatedPolygons = state.polygons.filter(polygon => polygon.points.includes(id));
-          relatedPolygons.forEach(polygon => removeObject(polygon.id, 'polygon', { silent: true }));
+          relatedPolygons.forEach(polygon => removeObject(polygon.id, 'polygon', { silent: true, skipHistory: true }));
           if (state.draggingPoint && state.draggingPoint.id === id) {
             state.draggingPoint = null;
           }
@@ -1823,27 +2119,57 @@
           break;
         }
         case 'segment': {
-          state.segments = state.segments.filter(segment => segment.id !== id);
+          const index = state.segments.findIndex(segment => segment.id === id);
+          if (index === -1) break;
+          if (!skipHistory) {
+            recordHistory();
+          }
+          state.segments.splice(index, 1);
           break;
         }
         case 'line': {
-          state.lines = state.lines.filter(line => line.id !== id);
+          const index = state.lines.findIndex(line => line.id === id);
+          if (index === -1) break;
+          if (!skipHistory) {
+            recordHistory();
+          }
+          state.lines.splice(index, 1);
           break;
         }
         case 'circle': {
-          state.circles = state.circles.filter(circle => circle.id !== id);
+          const index = state.circles.findIndex(circle => circle.id === id);
+          if (index === -1) break;
+          if (!skipHistory) {
+            recordHistory();
+          }
+          state.circles.splice(index, 1);
           break;
         }
         case 'polygon': {
-          state.polygons = state.polygons.filter(polygon => polygon.id !== id);
+          const index = state.polygons.findIndex(polygon => polygon.id === id);
+          if (index === -1) break;
+          if (!skipHistory) {
+            recordHistory();
+          }
+          state.polygons.splice(index, 1);
           break;
         }
         case 'text': {
-          state.texts = state.texts.filter(text => text.id !== id);
+          const index = state.texts.findIndex(text => text.id === id);
+          if (index === -1) break;
+          if (!skipHistory) {
+            recordHistory();
+          }
+          state.texts.splice(index, 1);
           break;
         }
         case 'function': {
-          state.functions = state.functions.filter(fn => fn.id !== id);
+          const index = state.functions.findIndex(fn => fn.id === id);
+          if (index === -1) break;
+          if (!skipHistory) {
+            recordHistory();
+          }
+          state.functions.splice(index, 1);
           break;
         }
         default:
@@ -1886,6 +2212,7 @@
           state.draggingPoint = point;
           const screenPos = worldToScreen(point.position);
           state.dragOffset = { x: screenPos.x - x, y: screenPos.y - y };
+          state.dragHistoryArmed = true;
         } else {
           state.panning = true;
           state.panStart = { x, y };
@@ -1925,6 +2252,10 @@
       const world = screenToWorld(x, y);
 
       if (state.draggingPoint) {
+        if (state.dragHistoryArmed) {
+          recordHistory();
+          state.dragHistoryArmed = false;
+        }
         const position = screenToWorld(x + state.dragOffset.x, y + state.dragOffset.y);
         state.draggingPoint.position = snapWorldToGrid(position);
         updatePointAlgebra(state.draggingPoint);
@@ -1955,6 +2286,7 @@
       }
       state.draggingPoint = null;
       state.panning = false;
+      state.dragHistoryArmed = false;
       if (state.tempPolygon) {
         state.tempPolygon.preview = null;
       }
@@ -1970,6 +2302,7 @@
 
       if (state.tool === 'line' && state.tempPoints.length === 2) {
         const [p1, p2] = state.tempPoints;
+        recordHistory();
         state.lines.push({ id: crypto.randomUUID(), p1, p2 });
         registerAlgebraEntry(state.lines[state.lines.length - 1].id, `l: lijn(${pointName(p1)}, ${pointName(p2)})`, 'line');
         state.tempPoints = [];
@@ -1978,6 +2311,7 @@
 
       if (state.tool === 'segment' && state.tempPoints.length === 2) {
         const [p1, p2] = state.tempPoints;
+        recordHistory();
         state.segments.push({ id: crypto.randomUUID(), p1, p2 });
         registerAlgebraEntry(state.segments[state.segments.length - 1].id, `s: segment(${pointName(p1)}, ${pointName(p2)})`, 'segment');
         state.tempPoints = [];
@@ -1986,6 +2320,7 @@
 
       if (state.tool === 'circle' && state.tempPoints.length === 2) {
         const [center, edge] = state.tempPoints;
+        recordHistory();
         state.circles.push({ id: crypto.randomUUID(), center, edge });
         registerAlgebraEntry(state.circles[state.circles.length - 1].id, `c: cirkel(${pointName(center)}, ${pointName(edge)})`, 'circle');
         state.tempPoints = [];
@@ -1995,17 +2330,23 @@
 
     function handlePolygonTool(world) {
       if (!state.tempPolygon) {
-        state.tempPolygon = { points: [], preview: null };
+        state.tempPolygon = { points: [], preview: null, createdPoints: [] };
       } else {
         state.tempPolygon.preview = null;
       }
       const snappedWorld = snapWorldToGrid(world);
       let point = findPointNear(snappedWorld);
-      if (!point) point = createPoint(snappedWorld);
+      if (!point) {
+        point = createPoint(snappedWorld);
+        if (point && state.tempPolygon) {
+          state.tempPolygon.createdPoints.push(point.id);
+        }
+      }
       state.tempPolygon.points.push(point.id);
       if (state.tempPolygon.points.length > 2 && point.id === state.tempPolygon.points[0]) {
         const uniquePoints = [...new Set(state.tempPolygon.points.slice(0, -1))];
         if (uniquePoints.length >= 3) {
+          recordHistory();
           const polygon = { id: crypto.randomUUID(), points: uniquePoints };
           state.polygons.push(polygon);
           registerAlgebraEntry(polygon.id, `p: veelhoek(${uniquePoints.map(pointName).join(', ')})`, 'polygon');
@@ -2018,6 +2359,7 @@
     function handleTextTool(world) {
       const content = prompt('Tekstinhoud:');
       if (!content) return;
+      recordHistory();
       const label = {
         id: crypto.randomUUID(),
         content,
@@ -2059,6 +2401,7 @@
     }
 
     function resetView() {
+      recordHistory();
       state.scale = 80;
       state.origin = { x: canvas.clientWidth / 2, y: canvas.clientHeight / 2 };
       draw();
@@ -2197,12 +2540,29 @@
 
     window.addEventListener('resize', () => {
       handleResponsiveSidebar();
+      if (window.innerWidth >= 920 && !keyboardBuilt) {
+        ensureKeyboardBuilt();
+      }
       resizeCanvas();
     });
 
     document.getElementById('zoom-in').addEventListener('click', () => zoom(1.2));
     document.getElementById('zoom-out').addEventListener('click', () => zoom(0.8));
     document.getElementById('reset-view').addEventListener('click', resetView);
+
+    if (undoButton) {
+      undoButton.addEventListener('click', event => {
+        event.preventDefault();
+        undo();
+      });
+    }
+
+    if (redoButton) {
+      redoButton.addEventListener('click', event => {
+        event.preventDefault();
+        redo();
+      });
+    }
 
     keyboardToggle.addEventListener('pointerdown', event => {
       event.preventDefault();
@@ -2234,6 +2594,29 @@
       }
     });
 
+    commandInput.addEventListener('pointerdown', event => {
+      if (!isCoarsePointer) return;
+      event.preventDefault();
+      focusCommandInput();
+      const position = commandInput.value.length;
+      commandInput.setSelectionRange(position, position);
+      if (!keyboardVisible) {
+        setKeyboardVisibility(true);
+      }
+    });
+
+    commandInput.addEventListener('touchstart', event => {
+      if (window.PointerEvent) return;
+      if (!isCoarsePointer) return;
+      event.preventDefault();
+      focusCommandInput();
+      const position = commandInput.value.length;
+      commandInput.setSelectionRange(position, position);
+      if (!keyboardVisible) {
+        setKeyboardVisibility(true);
+      }
+    }, { passive: false });
+
     document.addEventListener('pointerdown', event => {
       if (!keyboardVisible) return;
       const target = event.target;
@@ -2241,6 +2624,23 @@
       if (keyboardToggle.contains(target)) return;
       if (commandBar && commandBar.contains(target)) return;
       setKeyboardVisibility(false);
+    });
+
+    window.addEventListener('keydown', event => {
+      if ((event.ctrlKey || event.metaKey) && !event.altKey) {
+        const key = event.key.toLowerCase();
+        if (key === 'z') {
+          event.preventDefault();
+          if (event.shiftKey) {
+            redo();
+          } else {
+            undo();
+          }
+        } else if (key === 'y') {
+          event.preventDefault();
+          redo();
+        }
+      }
     });
 
     window.addEventListener('keydown', event => {
@@ -2263,12 +2663,29 @@
       resizeObserver.observe(graphContainer);
     }
 
+    updateInputMode();
+    if (typeof coarsePointerMedia.addEventListener === 'function') {
+      coarsePointerMedia.addEventListener('change', handlePointerPreferenceChange);
+    } else if (typeof coarsePointerMedia.addListener === 'function') {
+      coarsePointerMedia.addListener(handlePointerPreferenceChange);
+    }
+
+    if (commandBar) {
+      commandBar.style.display = 'flex';
+      commandBar.removeAttribute('hidden');
+    }
+
+    if (window.innerWidth >= 920) {
+      ensureKeyboardBuilt();
+    }
+
     initTools();
     initSidebar();
     if (window.innerWidth < 920) {
       sidebar.classList.add('hidden');
     }
     handleResponsiveSidebar();
+    updateUndoRedoButtons();
     buildQuickActions();
     resizeCanvas();
   </script>
