@@ -58,6 +58,15 @@
       font-weight: 600;
       letter-spacing: 0.01em;
       color: #3a3a3a;
+      user-select: none;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+    }
+
+    .brand * {
+      user-select: none;
+      -webkit-user-select: none;
+      -moz-user-select: none;
     }
 
     .brand svg {
@@ -141,6 +150,15 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
+      user-select: none;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+    }
+
+    .sidebar-header * {
+      user-select: none;
+      -webkit-user-select: none;
+      -moz-user-select: none;
     }
 
     .algebra-list {
@@ -258,6 +276,8 @@
       font-size: 1.25rem;
       color: #777;
       user-select: none;
+      -webkit-user-select: none;
+      -moz-user-select: none;
       pointer-events: none;
     }
 
@@ -326,6 +346,9 @@
       border-radius: 20px 20px 0 0;
       width: min(720px, 100%);
       margin: 0 auto;
+      user-select: none;
+      -webkit-user-select: none;
+      -moz-user-select: none;
     }
 
     .math-keyboard.active {
@@ -333,19 +356,29 @@
     }
 
     .math-keyboard.desktop-floating {
-      position: absolute;
-      right: 16px;
-      bottom: calc(96px + var(--keyboard-offset, 0px));
+      position: fixed;
+      right: 24px;
+      bottom: 24px;
       border-radius: 18px;
       border: 1px solid rgba(120, 132, 170, 0.24);
       box-shadow: 0 16px 32px rgba(15, 23, 42, 0.18);
       margin: 0;
       width: min(420px, calc(100% - 32px));
+      max-height: calc(100vh - 32px);
+      overflow: auto;
       z-index: 5;
     }
 
     .math-keyboard.desktop-floating.active {
       display: flex;
+    }
+
+    .math-keyboard.dragging {
+      cursor: grabbing;
+    }
+
+    .math-keyboard.dragging .keyboard-handle {
+      cursor: grabbing;
     }
 
     body.keyboard-open {
@@ -358,9 +391,31 @@
       gap: 8px;
     }
 
+    .keyboard-header {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .keyboard-handle {
+      width: 72px;
+      height: 6px;
+      border-radius: 999px;
+      background: rgba(80, 90, 120, 0.25);
+      cursor: grab;
+      touch-action: none;
+    }
+
+    .keyboard-handle:active {
+      cursor: grabbing;
+    }
+
     .keyboard-tabs {
       display: flex;
       gap: 8px;
+      flex-wrap: wrap;
+      justify-content: center;
     }
 
     .keyboard-tab {
@@ -386,6 +441,7 @@
       display: flex;
       flex-direction: column;
       gap: 8px;
+      min-height: 292px;
     }
 
     .keyboard-row {
@@ -413,6 +469,8 @@
       cursor: pointer;
       transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
       user-select: none;
+      -webkit-user-select: none;
+      -moz-user-select: none;
       white-space: nowrap;
     }
 
@@ -544,6 +602,14 @@
         right: 0;
         bottom: 0;
         z-index: 6;
+      }
+
+      .keyboard-header {
+        align-items: stretch;
+      }
+
+      .keyboard-handle {
+        display: none;
       }
 
       .command-bar {
@@ -758,7 +824,10 @@
         </button>
       </div>
       <div class="math-keyboard" id="math-keyboard" aria-hidden="true">
-        <div class="keyboard-tabs" role="tablist" aria-label="Toetsenbord categorieën"></div>
+        <div class="keyboard-header">
+          <div class="keyboard-handle" aria-hidden="true"></div>
+          <div class="keyboard-tabs" role="tablist" aria-label="Toetsenbord categorieën"></div>
+        </div>
         <div class="keyboard-rows" role="group" aria-live="polite"></div>
       </div>
     </section>
@@ -777,6 +846,7 @@
     const keyboard = document.getElementById('math-keyboard');
     const keyboardTabs = keyboard.querySelector('.keyboard-tabs');
     const keyboardRows = keyboard.querySelector('.keyboard-rows');
+    const keyboardHandle = keyboard.querySelector('.keyboard-handle');
     const quickActions = document.getElementById('quick-actions');
     const undoButton = document.getElementById('undo');
     const redoButton = document.getElementById('redo');
@@ -1053,7 +1123,13 @@
 
     function updateKeyboardPresentation() {
       if (!keyboard) return;
-      keyboard.classList.toggle('desktop-floating', !isCoarsePointer);
+      const floating = !isCoarsePointer;
+      keyboard.classList.toggle('desktop-floating', floating);
+      if (floating) {
+        positionFloatingKeyboard();
+      } else {
+        resetFloatingKeyboardStyles();
+      }
     }
 
     function enforceStandaloneViewport() {
@@ -1233,6 +1309,8 @@
     let skipNextKeyboardToggleClick = false;
     let activeKeyboardSet = KEYBOARD_SETS[0].id;
     let keyboardBuilt = false;
+    const keyboardPosition = { x: null, y: null };
+    const keyboardDragState = { active: false, pointerId: null, offsetX: 0, offsetY: 0 };
 
     function resizeCanvas() {
       const { clientWidth, clientHeight } = canvas;
@@ -1967,7 +2045,10 @@
         tab.className = 'keyboard-tab';
         tab.dataset.set = set.id;
         tab.textContent = set.label;
-        tab.addEventListener('click', () => setActiveKeyboardSet(set.id));
+        tab.addEventListener('click', () => {
+          ensureMoveTool();
+          setActiveKeyboardSet(set.id);
+        });
         keyboardTabs.appendChild(tab);
       }
       setActiveKeyboardSet(activeKeyboardSet);
@@ -1991,6 +2072,7 @@
         button.textContent = key.text;
         button.addEventListener('pointerdown', event => {
           event.preventDefault();
+          ensureMoveTool();
           handleKeyboardKey(key);
         });
         button.addEventListener('click', event => event.preventDefault());
@@ -2011,6 +2093,7 @@
 
     function handleKeyboardKey(key) {
       focusCommandInput();
+      ensureMoveTool();
       if (key.action === 'backspace') {
         deleteAtCursor();
         return;
@@ -2072,11 +2155,116 @@
       commandInput.value = '';
     }
 
+    function resetFloatingKeyboardStyles() {
+      if (!keyboard) return;
+      keyboardPosition.x = null;
+      keyboardPosition.y = null;
+      keyboard.style.removeProperty('left');
+      keyboard.style.removeProperty('top');
+      keyboard.style.removeProperty('right');
+      keyboard.style.removeProperty('bottom');
+    }
+
+    function moveKeyboardTo(x, y) {
+      if (!keyboard) return;
+      const rect = keyboard.getBoundingClientRect();
+      const width = rect.width || keyboard.offsetWidth || 0;
+      const height = rect.height || keyboard.offsetHeight || 0;
+      if (!width || !height) {
+        keyboardPosition.x = x;
+        keyboardPosition.y = y;
+        return;
+      }
+      const margin = 16;
+      const minX = margin;
+      const minY = margin;
+      const maxX = Math.max(minX, window.innerWidth - width - margin);
+      const maxY = Math.max(minY, window.innerHeight - height - margin);
+      const clampedX = Math.min(Math.max(minX, x), maxX);
+      const clampedY = Math.min(Math.max(minY, y), maxY);
+      keyboard.style.left = `${clampedX}px`;
+      keyboard.style.top = `${clampedY}px`;
+      keyboard.style.right = 'auto';
+      keyboard.style.bottom = 'auto';
+      keyboardPosition.x = clampedX;
+      keyboardPosition.y = clampedY;
+    }
+
+    function positionFloatingKeyboard() {
+      if (!keyboard || isCoarsePointer || !keyboard.classList.contains('desktop-floating')) {
+        return;
+      }
+      if (!keyboardVisible) {
+        return;
+      }
+      requestAnimationFrame(() => {
+        const rect = keyboard.getBoundingClientRect();
+        const width = rect.width || keyboard.offsetWidth || 0;
+        const height = rect.height || keyboard.offsetHeight || 0;
+        if (!width || !height) {
+          return;
+        }
+        const margin = 16;
+        let x = keyboardPosition.x;
+        let y = keyboardPosition.y;
+        if (!Number.isFinite(x)) {
+          x = window.innerWidth - width - margin;
+        }
+        if (!Number.isFinite(y)) {
+          y = window.innerHeight - height - margin;
+        }
+        moveKeyboardTo(x, y);
+      });
+    }
+
+    function startKeyboardDrag(event) {
+      if (isCoarsePointer) return;
+      if (!keyboard || !keyboard.classList.contains('desktop-floating')) return;
+      if (event.button !== 0 && event.pointerType === 'mouse') return;
+      ensureMoveTool();
+      keyboardDragState.active = true;
+      keyboardDragState.pointerId = event.pointerId;
+      const rect = keyboard.getBoundingClientRect();
+      keyboardDragState.offsetX = event.clientX - rect.left;
+      keyboardDragState.offsetY = event.clientY - rect.top;
+      try {
+        keyboard.setPointerCapture(event.pointerId);
+      } catch (error) {
+        /* noop */
+      }
+      keyboard.classList.add('dragging');
+      event.preventDefault();
+    }
+
+    function updateKeyboardDrag(event) {
+      if (!keyboardDragState.active || event.pointerId !== keyboardDragState.pointerId) return;
+      event.preventDefault();
+      const x = event.clientX - keyboardDragState.offsetX;
+      const y = event.clientY - keyboardDragState.offsetY;
+      moveKeyboardTo(x, y);
+    }
+
+    function endKeyboardDrag(event) {
+      if (!keyboardDragState.active || event.pointerId !== keyboardDragState.pointerId) return;
+      keyboardDragState.active = false;
+      keyboardDragState.pointerId = null;
+      keyboard.classList.remove('dragging');
+      try {
+        keyboard.releasePointerCapture(event.pointerId);
+      } catch (error) {
+        /* noop */
+      }
+      positionFloatingKeyboard();
+    }
+
     function setKeyboardVisibility(visible) {
       if (visible) {
         ensureKeyboardBuilt();
       }
       keyboardVisible = visible;
+      if (visible) {
+        ensureMoveTool();
+      }
       keyboard.classList.toggle('active', visible);
       keyboard.setAttribute('aria-hidden', String(!visible));
       keyboardToggle.classList.toggle('active', visible);
@@ -2084,6 +2272,9 @@
       keyboardToggle.setAttribute('aria-pressed', String(visible));
       if (visible) {
         focusCommandInput();
+      }
+      if (!isCoarsePointer && visible) {
+        positionFloatingKeyboard();
       }
       if (isCoarsePointer) {
         document.body.classList.toggle('keyboard-open', visible);
@@ -2867,6 +3058,7 @@
       if (window.innerWidth >= 920 && !keyboardBuilt) {
         ensureKeyboardBuilt();
       }
+      positionFloatingKeyboard();
       resizeCanvas();
     });
 
@@ -2902,6 +3094,7 @@
     keyboardToggle.addEventListener('pointerdown', event => {
       event.preventDefault();
       keyboardToggle.focus();
+      ensureMoveTool();
       setKeyboardVisibility(!keyboardVisible);
       skipNextKeyboardToggleClick = true;
     });
@@ -2924,12 +3117,14 @@
     });
 
     commandInput.addEventListener('focus', () => {
+      ensureMoveTool();
       if (window.innerWidth < 920 && !keyboardVisible) {
         setKeyboardVisibility(true);
       }
     });
 
     commandInput.addEventListener('pointerdown', event => {
+      ensureMoveTool();
       if (!isCoarsePointer) return;
       event.preventDefault();
       focusCommandInput();
@@ -2941,6 +3136,7 @@
     });
 
     commandInput.addEventListener('touchstart', event => {
+      ensureMoveTool();
       if (window.PointerEvent) return;
       if (!isCoarsePointer) return;
       event.preventDefault();
@@ -2951,6 +3147,21 @@
         setKeyboardVisibility(true);
       }
     }, { passive: false });
+
+    if (keyboardHandle) {
+      keyboardHandle.addEventListener('pointerdown', startKeyboardDrag);
+    }
+
+    if (keyboard) {
+      keyboard.addEventListener('pointermove', updateKeyboardDrag);
+      keyboard.addEventListener('pointerup', endKeyboardDrag);
+      keyboard.addEventListener('pointercancel', endKeyboardDrag);
+      keyboard.addEventListener('lostpointercapture', () => {
+        keyboardDragState.active = false;
+        keyboardDragState.pointerId = null;
+        keyboard.classList.remove('dragging');
+      });
+    }
 
     document.addEventListener('pointerdown', event => {
       if (!keyboardVisible) return;
