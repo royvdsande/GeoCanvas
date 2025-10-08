@@ -2659,7 +2659,13 @@
 
     function clearHighlightedAlgebra(options = {}) {
       if (!algebraList) return;
-      const { keepFunction = false, keepPoint = false, keepSlider = false, keepVariable = false } = options;
+      const {
+        keepFunction = false,
+        keepPoint = false,
+        keepSlider = false,
+        keepVariable = false,
+        clearInput = false
+      } = options;
       algebraList.querySelectorAll('.algebra-item.selected').forEach(item => {
         const type = item.dataset.type;
         if (keepFunction && type === 'function' && item.dataset.id === state.highlightedFunctionId) {
@@ -2703,12 +2709,31 @@
       } else {
         state.lastSelectionType = 'none';
       }
+      if (
+        clearInput &&
+        !state.highlightedFunctionId &&
+        !state.selectedPointId &&
+        !state.selectedSliderId &&
+        !state.selectedVariableId
+      ) {
+        state.editingFunctionId = null;
+        state.editingPointId = null;
+        if (commandInput) {
+          commandInput.value = '';
+          if (
+            typeof commandInput.setSelectionRange === 'function' &&
+            document.activeElement === commandInput
+          ) {
+            commandInput.setSelectionRange(0, 0);
+          }
+        }
+      }
     }
 
     function setSelectedPoint(id, options = {}) {
       const { scroll = true, force = false } = options;
       if (!id) {
-        clearHighlightedAlgebra();
+        clearHighlightedAlgebra({ clearInput: true });
         refreshPropertiesPanel();
         draw();
         return;
@@ -2742,7 +2767,10 @@
     function setHighlightedFunction(id, options = {}) {
       const { scroll = true, force = false, preservePoint = false } = options;
       if (!id) {
-        clearHighlightedAlgebra({ keepPoint: preservePoint && Boolean(state.selectedPointId) });
+        clearHighlightedAlgebra({
+          keepPoint: preservePoint && Boolean(state.selectedPointId),
+          clearInput: true
+        });
         refreshPropertiesPanel();
         draw();
         return;
@@ -5153,6 +5181,14 @@
         }
         ensureMoveTool();
       });
+      if (closePropertiesBtn) {
+        closePropertiesBtn.addEventListener('click', () => {
+          clearHighlightedAlgebra({ clearInput: true });
+          refreshPropertiesPanel();
+          ensureMoveTool();
+          draw();
+        });
+      }
     }
 
     algebraList.addEventListener('click', event => {
@@ -5369,6 +5405,32 @@
         event.preventDefault();
         redo();
         ensureMoveTool();
+      });
+    }
+
+    if (exportButton && canvas) {
+      exportButton.addEventListener('click', () => {
+        ensureMoveTool();
+        draw();
+        requestAnimationFrame(() => {
+          const exportCanvas = document.createElement('canvas');
+          exportCanvas.width = canvas.width;
+          exportCanvas.height = canvas.height;
+          const exportCtx = exportCanvas.getContext('2d');
+          exportCtx.fillStyle = '#ffffff';
+          exportCtx.fillRect(0, 0, exportCanvas.width, exportCanvas.height);
+          exportCtx.drawImage(canvas, 0, 0);
+          const dataUrl = exportCanvas.toDataURL('image/png');
+          const link = document.createElement('a');
+          const timestamp = new Date();
+          const name = `${timestamp.getFullYear()}${String(timestamp.getMonth() + 1).padStart(2, '0')}${String(timestamp.getDate()).padStart(2, '0')}_${String(timestamp.getHours()).padStart(2, '0')}${String(timestamp.getMinutes()).padStart(2, '0')}`;
+          link.download = `geocanvas_${name}.png`;
+          link.href = dataUrl;
+          link.rel = 'noopener';
+          document.body.appendChild(link);
+          link.click();
+          link.remove();
+        });
       });
     }
 
