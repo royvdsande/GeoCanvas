@@ -6,6 +6,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="white" />
   <meta name="theme-color" content="#ffffff" />
+  <link rel="icon" type="image/png" href="favicon.png" />
   <title>GeoCanvas Classic</title>
   <style>
     :root {
@@ -167,6 +168,126 @@
       padding: 0 12px 12px;
     }
 
+    .properties-panel {
+      border-top: 1px solid rgba(0,0,0,0.06);
+      padding: 14px 16px;
+      background: var(--panel-bg);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.6);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .properties-panel.hidden {
+      display: none;
+    }
+
+    .properties-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      font-weight: 600;
+      font-size: 0.92rem;
+      color: #475569;
+    }
+
+    .properties-close {
+      border: 1px solid transparent;
+      background: transparent;
+      border-radius: 10px;
+      width: 30px;
+      height: 30px;
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      color: #94a3b8;
+      transition: background 0.2s ease, color 0.2s ease;
+    }
+
+    .properties-close svg {
+      width: 16px;
+      height: 16px;
+      stroke-width: 1.8;
+      stroke: currentColor;
+      fill: none;
+    }
+
+    .properties-close:hover {
+      background: rgba(148,163,184,0.15);
+      color: #475569;
+    }
+
+    .properties-group {
+      display: grid;
+      gap: 10px;
+    }
+
+    .property-field {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      font-size: 0.85rem;
+      color: #475569;
+    }
+
+    .property-field label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 600;
+      color: #334155;
+    }
+
+    .property-field input[type="text"],
+    .property-field input[type="number"],
+    .property-field select {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 8px 10px;
+      font-size: 0.9rem;
+      background: #fff;
+    }
+
+    .property-field input[type="color"] {
+      width: 42px;
+      height: 32px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      padding: 0;
+    }
+
+    .property-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .property-row label {
+      font-weight: 500;
+      color: #475569;
+    }
+
+    .property-inline {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .property-checkbox {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 500;
+      color: #334155;
+    }
+
+    .property-checkbox input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      border-radius: 6px;
+    }
+
     .algebra-item {
       background: rgba(0,0,0,0.03);
       border-radius: 12px;
@@ -177,20 +298,130 @@
       gap: 12px;
     }
 
+    .algebra-item.slider {
+      align-items: stretch;
+    }
+
+    .slider-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .slider-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #1f2933;
+    }
+
+    .slider-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .slider-controls input[type="range"] {
+      flex: 1;
+    }
+
+    .slider-value {
+      min-width: 54px;
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+      color: #374151;
+    }
+
+    .slider-helpers {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .slider-helpers button {
+      border: 1px solid var(--border);
+      background: #fff;
+      border-radius: 999px;
+      width: 32px;
+      height: 32px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #3f4c63;
+      cursor: pointer;
+      transition: background 0.2s ease, border 0.2s ease;
+    }
+
+    .slider-helpers button svg {
+      width: 16px;
+      height: 16px;
+      stroke-width: 1.8;
+      stroke: currentColor;
+      fill: none;
+    }
+
+    .slider-helpers button:hover {
+      background: rgba(51,103,214,0.1);
+      border-color: rgba(51,103,214,0.3);
+    }
+
+    .slider-helpers select {
+      border: 1px solid var(--border);
+      background: #fff;
+      border-radius: 999px;
+      padding: 4px 12px;
+      font-size: 0.8rem;
+      color: #374151;
+    }
+
     .algebra-item.selected {
       background: rgba(51, 103, 214, 0.12);
       box-shadow: inset 0 0 0 1px var(--highlight-outline, rgba(51, 103, 214, 0.3));
     }
 
     .algebra-color {
-      width: 12px;
-      height: 12px;
+      width: 14px;
+      height: 14px;
       border-radius: 999px;
       flex: 0 0 auto;
+      border: none;
+      padding: 0;
+      background: transparent;
+      position: relative;
     }
 
-    .algebra-item.selected .algebra-color {
+    .algebra-color::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: currentColor;
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,0.05);
+    }
+
+    button.algebra-color {
+      cursor: pointer;
+    }
+
+    button.algebra-color:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    .algebra-item.selected .algebra-color::after {
       box-shadow: 0 0 0 3px var(--highlight-glow, rgba(51, 103, 214, 0.2));
+    }
+
+    .algebra-color-input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+      width: 0;
+      height: 0;
     }
 
     .algebra-label {
@@ -758,6 +989,13 @@
       </button>
       <span class="badge">Beta</span>
     </div>
+    <button class="tool-button" id="export-board" aria-label="Exporteer afbeelding" title="Exporteer afbeelding">
+      <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 3v14" />
+        <path d="m7 12 5 5 5-5" />
+        <path d="M5 21h14" />
+      </svg>
+    </button>
   </header>
   <main class="layout">
     <aside class="sidebar" id="sidebar">
@@ -771,6 +1009,18 @@
         </button>
       </div>
       <div class="algebra-list" id="algebra-list" aria-live="polite"></div>
+      <div class="properties-panel hidden" id="properties-panel" aria-live="polite">
+        <div class="properties-header">
+          Eigenschappen
+          <button type="button" class="properties-close" id="close-properties" aria-label="Verberg eigenschappen">
+            <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m8 8 8 8" />
+              <path d="m16 8-8 8" />
+            </svg>
+          </button>
+        </div>
+        <div class="properties-group" id="properties-content"></div>
+      </div>
     </aside>
     <section class="graph-container">
       <div class="floating-controls">
@@ -837,6 +1087,416 @@
     </section>
   </main>
   <script>
+
+    function refreshPropertiesPanel(preferred) {
+      if (!propertiesPanel || !propertiesContent) return;
+      let target = preferred;
+      if (!target || !target.id || !target.type) {
+        if (state.selectedPointId) {
+          target = { type: 'point', id: state.selectedPointId };
+        } else if (state.highlightedFunctionId) {
+          target = { type: 'function', id: state.highlightedFunctionId };
+        } else if (state.selectedSliderId) {
+          target = { type: 'slider', id: state.selectedSliderId };
+        } else if (state.selectedVariableId) {
+          target = { type: 'variable', id: state.selectedVariableId };
+        } else {
+          target = null;
+        }
+      }
+      propertiesState.type = target ? target.type : null;
+      propertiesState.id = target ? target.id : null;
+      if (!target) {
+        propertiesPanel.classList.add('hidden');
+        propertiesContent.innerHTML = '';
+        return;
+      }
+      renderPropertiesContent(target);
+    }
+
+    function renderPropertiesContent(target) {
+      if (!propertiesPanel || !propertiesContent) return;
+      propertiesContent.innerHTML = '';
+      let entity = null;
+      if (target.type === 'point') {
+        entity = state.points.find(entry => entry.id === target.id);
+        if (!entity) {
+          propertiesPanel.classList.add('hidden');
+          return;
+        }
+        renderPointProperties(entity);
+      } else if (target.type === 'function') {
+        entity = state.functions.find(entry => entry.id === target.id);
+        if (!entity) {
+          propertiesPanel.classList.add('hidden');
+          return;
+        }
+        renderFunctionProperties(entity);
+      } else if (target.type === 'slider') {
+        entity = findSliderById(target.id);
+        if (!entity) {
+          propertiesPanel.classList.add('hidden');
+          return;
+        }
+        renderSliderProperties(entity);
+      } else if (target.type === 'variable') {
+        entity = findNumberById(target.id);
+        if (!entity) {
+          propertiesPanel.classList.add('hidden');
+          return;
+        }
+        renderVariableProperties(entity);
+      }
+      propertiesPanel.classList.remove('hidden');
+    }
+
+    function renderPointProperties(point) {
+      const nameField = document.createElement('div');
+      nameField.className = 'property-field';
+      const nameLabel = document.createElement('label');
+      nameLabel.textContent = 'Naam';
+      const nameInput = document.createElement('input');
+      nameInput.type = 'text';
+      nameInput.value = point.name;
+      nameInput.addEventListener('change', () => updatePointName(point.id, nameInput.value));
+      nameField.appendChild(nameLabel);
+      nameField.appendChild(nameInput);
+      propertiesContent.appendChild(nameField);
+
+      const colorField = document.createElement('div');
+      colorField.className = 'property-field';
+      const colorLabel = document.createElement('label');
+      colorLabel.textContent = 'Kleur';
+      const colorInput = document.createElement('input');
+      colorInput.type = 'color';
+      colorInput.value = normalizeColor(point.color || COLORS.point, COLORS.point);
+      colorInput.addEventListener('input', () => updatePointColor(point.id, colorInput.value, { record: false }));
+      colorInput.addEventListener('change', () => updatePointColor(point.id, colorInput.value, { record: true }));
+      colorField.appendChild(colorLabel);
+      colorField.appendChild(colorInput);
+      propertiesContent.appendChild(colorField);
+
+      const labelToggle = document.createElement('label');
+      labelToggle.className = 'property-checkbox';
+      const labelInput = document.createElement('input');
+      labelInput.type = 'checkbox';
+      labelInput.checked = point.showLabel !== false;
+      labelInput.addEventListener('change', () => setPointLabelVisibility(point.id, labelInput.checked));
+      labelToggle.appendChild(labelInput);
+      labelToggle.appendChild(document.createTextNode('Toon label'));
+      propertiesContent.appendChild(labelToggle);
+
+      const traceToggle = document.createElement('label');
+      traceToggle.className = 'property-checkbox';
+      const traceInput = document.createElement('input');
+      traceInput.type = 'checkbox';
+      traceInput.checked = Boolean(point.traceEnabled);
+      traceInput.addEventListener('change', () => togglePointTrace(point.id, traceInput.checked));
+      traceToggle.appendChild(traceInput);
+      traceToggle.appendChild(document.createTextNode('Sporen aanzetten'));
+      propertiesContent.appendChild(traceToggle);
+    }
+
+    function renderFunctionProperties(fn) {
+      const nameField = document.createElement('div');
+      nameField.className = 'property-field';
+      const nameLabel = document.createElement('label');
+      nameLabel.textContent = 'Label';
+      const nameInput = document.createElement('input');
+      nameInput.type = 'text';
+      nameInput.value = fn.algebraLabel;
+      nameInput.addEventListener('change', () => updateFunctionLabel(fn.id, nameInput.value));
+      nameField.appendChild(nameLabel);
+      nameField.appendChild(nameInput);
+      propertiesContent.appendChild(nameField);
+
+      const colorField = document.createElement('div');
+      colorField.className = 'property-field';
+      const colorLabel = document.createElement('label');
+      colorLabel.textContent = 'Kleur';
+      const colorInput = document.createElement('input');
+      colorInput.type = 'color';
+      colorInput.value = normalizeColor(fn.color || COLORS.function, COLORS.function);
+      colorInput.addEventListener('input', () => updateFunctionColor(fn.id, colorInput.value, { skipHistory: true, preview: true }));
+      colorInput.addEventListener('change', () => updateFunctionColor(fn.id, colorInput.value));
+      colorField.appendChild(colorLabel);
+      colorField.appendChild(colorInput);
+      propertiesContent.appendChild(colorField);
+
+      const thicknessField = document.createElement('div');
+      thicknessField.className = 'property-field';
+      const thicknessLabel = document.createElement('label');
+      thicknessLabel.textContent = 'Lijndikte';
+      const thicknessInput = document.createElement('input');
+      thicknessInput.type = 'range';
+      thicknessInput.min = '1';
+      thicknessInput.max = '10';
+      thicknessInput.step = '0.5';
+      thicknessInput.value = fn.thickness || 2;
+      thicknessInput.addEventListener('input', () => updateFunctionThickness(fn.id, parseFloat(thicknessInput.value), { record: false }));
+      thicknessInput.addEventListener('change', () => updateFunctionThickness(fn.id, parseFloat(thicknessInput.value), { record: true }));
+      thicknessField.appendChild(thicknessLabel);
+      thicknessField.appendChild(thicknessInput);
+      propertiesContent.appendChild(thicknessField);
+
+      const labelToggle = document.createElement('label');
+      labelToggle.className = 'property-checkbox';
+      const labelInput = document.createElement('input');
+      labelInput.type = 'checkbox';
+      labelInput.checked = Boolean(fn.showLabel);
+      labelInput.addEventListener('change', () => setFunctionLabelVisibility(fn.id, labelInput.checked));
+      labelToggle.appendChild(labelInput);
+      labelToggle.appendChild(document.createTextNode('Label op grafiek'));
+      propertiesContent.appendChild(labelToggle);
+    }
+
+    function renderSliderProperties(slider) {
+      const nameField = document.createElement('div');
+      nameField.className = 'property-field';
+      const nameLabel = document.createElement('label');
+      nameLabel.textContent = 'Naam';
+      const nameInput = document.createElement('input');
+      nameInput.type = 'text';
+      nameInput.value = slider.name;
+      nameInput.addEventListener('change', () => renameSlider(slider.id, nameInput.value));
+      nameField.appendChild(nameLabel);
+      nameField.appendChild(nameInput);
+      propertiesContent.appendChild(nameField);
+
+      const valueField = document.createElement('div');
+      valueField.className = 'property-field';
+      const valueLabel = document.createElement('label');
+      valueLabel.textContent = 'Waarde';
+      const valueInput = document.createElement('input');
+      valueInput.type = 'number';
+      valueInput.step = slider.step || 0.1;
+      valueInput.value = slider.value;
+      valueInput.addEventListener('change', () => {
+        const numeric = parseFloat(valueInput.value);
+        if (Number.isFinite(numeric)) {
+          updateSliderValue(slider, numeric, { record: true });
+        } else {
+          valueInput.value = slider.value;
+        }
+      });
+      valueField.appendChild(valueLabel);
+      valueField.appendChild(valueInput);
+      propertiesContent.appendChild(valueField);
+
+      const boundsRow = document.createElement('div');
+      boundsRow.className = 'property-row';
+      const minInput = document.createElement('input');
+      minInput.type = 'number';
+      minInput.value = slider.min;
+      const maxInput = document.createElement('input');
+      maxInput.type = 'number';
+      maxInput.value = slider.max;
+      const stepInput = document.createElement('input');
+      stepInput.type = 'number';
+      stepInput.step = 'any';
+      stepInput.value = slider.step || 0.1;
+      minInput.addEventListener('change', () => {
+        const numeric = parseFloat(minInput.value);
+        if (Number.isFinite(numeric)) {
+          updateSliderBounds(slider.id, { min: numeric });
+        } else {
+          minInput.value = slider.min;
+        }
+      });
+      maxInput.addEventListener('change', () => {
+        const numeric = parseFloat(maxInput.value);
+        if (Number.isFinite(numeric)) {
+          updateSliderBounds(slider.id, { max: numeric });
+        } else {
+          maxInput.value = slider.max;
+        }
+      });
+      stepInput.addEventListener('change', () => {
+        const numeric = parseFloat(stepInput.value);
+        if (Number.isFinite(numeric) && numeric > 0) {
+          updateSliderBounds(slider.id, { step: numeric });
+        } else {
+          stepInput.value = slider.step;
+        }
+      });
+      const minLabel = document.createElement('label');
+      minLabel.textContent = 'Min';
+      minLabel.appendChild(minInput);
+      const maxLabel = document.createElement('label');
+      maxLabel.textContent = 'Max';
+      maxLabel.appendChild(maxInput);
+      const stepLabel = document.createElement('label');
+      stepLabel.textContent = 'Stap';
+      stepLabel.appendChild(stepInput);
+      boundsRow.appendChild(minLabel);
+      boundsRow.appendChild(maxLabel);
+      boundsRow.appendChild(stepLabel);
+      propertiesContent.appendChild(boundsRow);
+
+      const animationToggle = document.createElement('label');
+      animationToggle.className = 'property-checkbox';
+      const animationInput = document.createElement('input');
+      animationInput.type = 'checkbox';
+      animationInput.checked = Boolean(slider.animating);
+      animationInput.addEventListener('change', () => setSliderAnimating(slider, animationInput.checked));
+      animationToggle.appendChild(animationInput);
+      animationToggle.appendChild(document.createTextNode('Animatie'));
+      propertiesContent.appendChild(animationToggle);
+
+      const speedField = document.createElement('div');
+      speedField.className = 'property-field';
+      const speedLabel = document.createElement('label');
+      speedLabel.textContent = 'Snelheid';
+      const speedSelect = document.createElement('select');
+      for (const [key, label] of [['slow', 'Langzaam'], ['medium', 'Normaal'], ['fast', 'Snel']]) {
+        const option = document.createElement('option');
+        option.value = key;
+        option.textContent = label;
+        if (slider.speed === key) {
+          option.selected = true;
+        }
+        speedSelect.appendChild(option);
+      }
+      speedSelect.addEventListener('change', () => setSliderSpeed(slider, speedSelect.value));
+      speedField.appendChild(speedLabel);
+      speedField.appendChild(speedSelect);
+      propertiesContent.appendChild(speedField);
+    }
+
+    function renderVariableProperties(entry) {
+      const nameField = document.createElement('div');
+      nameField.className = 'property-field';
+      const nameLabel = document.createElement('label');
+      nameLabel.textContent = 'Naam';
+      const nameInput = document.createElement('input');
+      nameInput.type = 'text';
+      nameInput.value = entry.name;
+      nameInput.addEventListener('change', () => renameNumber(entry.id, nameInput.value));
+      nameField.appendChild(nameLabel);
+      nameField.appendChild(nameInput);
+      propertiesContent.appendChild(nameField);
+
+      const valueField = document.createElement('div');
+      valueField.className = 'property-field';
+      const valueLabel = document.createElement('label');
+      valueLabel.textContent = 'Waarde';
+      const valueInput = document.createElement('input');
+      valueInput.type = 'number';
+      valueInput.value = entry.value;
+      valueInput.addEventListener('change', () => {
+        const numeric = parseFloat(valueInput.value);
+        if (Number.isFinite(numeric)) {
+          updateNumberValue(entry, numeric, { record: true });
+        } else {
+          valueInput.value = entry.value;
+        }
+      });
+      valueField.appendChild(valueLabel);
+      valueField.appendChild(valueInput);
+      propertiesContent.appendChild(valueField);
+    }
+
+    function setActiveSlider(id, options = {}) {
+      const { scroll = true, force = false, preserveOthers = false } = options;
+      if (!id) {
+        const previous = state.selectedSliderId;
+        state.selectedSliderId = null;
+        if (!preserveOthers && previous) {
+          const item = algebraList.querySelector(`[data-id="${previous}"]`);
+          if (item) {
+            item.classList.remove('selected');
+          }
+          refreshPropertiesPanel();
+        }
+        if (!preserveOthers) {
+          if (state.highlightedFunctionId) {
+            state.lastSelectionType = 'function';
+          } else if (state.selectedPointId) {
+            state.lastSelectionType = 'point';
+          } else if (state.selectedVariableId) {
+            state.lastSelectionType = 'variable';
+          } else {
+            state.lastSelectionType = 'none';
+          }
+        }
+        return;
+      }
+      if (state.selectedSliderId === id && !force) {
+        if (scroll) {
+          const current = algebraList.querySelector(`[data-id="${id}"]`);
+          if (current) {
+            current.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+          }
+        }
+        refreshPropertiesPanel({ type: 'slider', id });
+        return;
+      }
+      if (!preserveOthers) {
+        clearHighlightedAlgebra();
+      }
+      state.selectedSliderId = id;
+      const item = algebraList.querySelector(`[data-id="${id}"]`);
+      if (item) {
+        item.classList.add('selected');
+        if (scroll) {
+          item.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+        }
+      }
+      state.lastSelectionType = 'slider';
+      refreshPropertiesPanel({ type: 'slider', id });
+    }
+
+    function setActiveVariable(id, options = {}) {
+      const { scroll = true, force = false, preserveOthers = false } = options;
+      if (!id) {
+        const previous = state.selectedVariableId;
+        state.selectedVariableId = null;
+        if (!preserveOthers && previous) {
+          const item = algebraList.querySelector(`[data-id="${previous}"]`);
+          if (item) {
+            item.classList.remove('selected');
+          }
+          refreshPropertiesPanel();
+        }
+        if (!preserveOthers) {
+          if (state.highlightedFunctionId) {
+            state.lastSelectionType = 'function';
+          } else if (state.selectedPointId) {
+            state.lastSelectionType = 'point';
+          } else if (state.selectedSliderId) {
+            state.lastSelectionType = 'slider';
+          } else {
+            state.lastSelectionType = 'none';
+          }
+        }
+        return;
+      }
+      if (state.selectedVariableId === id && !force) {
+        if (scroll) {
+          const current = algebraList.querySelector(`[data-id="${id}"]`);
+          if (current) {
+            current.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+          }
+        }
+        refreshPropertiesPanel({ type: 'variable', id });
+        return;
+      }
+      if (!preserveOthers) {
+        clearHighlightedAlgebra();
+      }
+      state.selectedVariableId = id;
+      const item = algebraList.querySelector(`[data-id="${id}"]`);
+      if (item) {
+        item.classList.add('selected');
+        if (scroll) {
+          item.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+        }
+      }
+      state.lastSelectionType = 'variable';
+      refreshPropertiesPanel({ type: 'variable', id });
+    }
+
+
     const canvas = document.getElementById('board');
     const ctx = canvas.getContext('2d');
     const graphContainer = document.querySelector('.graph-container');
@@ -854,6 +1514,10 @@
     const quickActions = document.getElementById('quick-actions');
     const undoButton = document.getElementById('undo');
     const redoButton = document.getElementById('redo');
+    const exportButton = document.getElementById('export-board');
+    const propertiesPanel = document.getElementById('properties-panel');
+    const propertiesContent = document.getElementById('properties-content');
+    const closePropertiesBtn = document.getElementById('close-properties');
     const viewportMeta = document.querySelector('meta[name="viewport"]');
     const defaultViewportContent = viewportMeta ? viewportMeta.getAttribute('content') : '';
 
@@ -887,6 +1551,9 @@
       polygons: [],
       texts: [],
       functions: [],
+      sliders: [],
+      numbers: [],
+      variables: {},
       functionColorIndex: 0,
       functionCounter: 0,
       draggingPoint: null,
@@ -900,6 +1567,11 @@
       highlightedFunctionId: null,
       pendingFunctionHighlight: null,
       editingFunctionId: null,
+      selectedPointId: null,
+      editingPointId: null,
+      selectedSliderId: null,
+      selectedVariableId: null,
+      lastSelectionType: 'none'
     };
 
     const COLORS = {
@@ -909,10 +1581,23 @@
       circle: '#c03fb5',
       polygon: '#009688',
       text: '#444',
-      function: '#e36209'
+      function: '#e36209',
+      slider: '#10b981',
+      variable: '#f59e0b'
     };
 
     const FUNCTION_COLORS = ['#d83b01', '#1f6feb', '#2da44e', '#8b3dd9', '#e36209'];
+    const SLIDER_SPEEDS = {
+      slow: 0.4,
+      medium: 1,
+      fast: 1.8
+    };
+    const ICONS = {
+      minus: `<svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M6 12h12" /></svg>`,
+      plus: `<svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14" /><path d="M5 12h14" /></svg>`,
+      play: `<svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M8 5v14l11-7z" /></svg>`,
+      pause: `<svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M7 5h4v14H7z" /><path d="M13 5h4v14h-4z" /></svg>`
+    };
 
     function withAlpha(color, alpha) {
       if (!color) {
@@ -946,6 +1631,8 @@
     const HISTORY_LIMIT = 100;
     let suspendHistory = false;
     let restoringState = false;
+    let sliderAnimationFrame = null;
+    const propertiesState = { type: null, id: null };
 
     function toSubscript(number) {
       return String(number)
@@ -966,10 +1653,18 @@
         functionColorIndex: state.functionColorIndex,
         functionCounter: state.functionCounter,
         pointCounter,
+        selectedPointId: state.selectedPointId,
+        selectedSliderId: state.selectedSliderId,
+        selectedVariableId: state.selectedVariableId,
+        lastSelectionType: state.lastSelectionType,
         points: state.points.map(point => ({
           id: point.id,
           name: point.name,
-          position: { x: point.position.x, y: point.position.y }
+          position: { x: point.position.x, y: point.position.y },
+          color: point.color,
+          showLabel: point.showLabel !== false,
+          traceEnabled: Boolean(point.traceEnabled),
+          trace: Array.isArray(point.trace) ? point.trace.map(pos => ({ x: pos.x, y: pos.y })) : []
         })),
         segments: state.segments.map(segment => ({ ...segment })),
         lines: state.lines.map(line => ({ ...line })),
@@ -988,8 +1683,23 @@
           source: fn.source,
           color: fn.color,
           displayName: fn.displayName,
-          evaluationExpression: fn.evaluationExpression
-        }))
+          evaluationExpression: fn.evaluationExpression,
+          thickness: fn.thickness || 2,
+          showLabel: Boolean(fn.showLabel)
+        })),
+        sliders: state.sliders.map(slider => ({
+          id: slider.id,
+          name: slider.name,
+          min: slider.min,
+          max: slider.max,
+          step: slider.step,
+          value: slider.value,
+          speed: slider.speed,
+          animating: Boolean(slider.animating),
+          direction: slider.direction || 1
+        })),
+        numbers: state.numbers.map(entry => ({ id: entry.id, name: entry.name, value: entry.value })),
+        variables: { ...state.variables }
       };
     }
 
@@ -1006,10 +1716,13 @@
 
     function rebuildAlgebraList() {
       if (!algebraList) return;
-      clearHighlightedAlgebra();
+      const previousPoint = state.selectedPointId;
+      const previousFunction = state.highlightedFunctionId;
+      const previousSlider = state.selectedSliderId;
+      const previousVariable = state.selectedVariableId;
       algebraList.innerHTML = '';
       for (const point of state.points) {
-        registerAlgebraEntry(point.id, `${point.name} = (${formatNumber(point.position.x)}, ${formatNumber(point.position.y)})`, 'point');
+        registerAlgebraEntry(point.id, `${point.name} = (${formatNumber(point.position.x)}, ${formatNumber(point.position.y)})`, 'point', point.color || COLORS.point);
       }
       for (const line of state.lines) {
         registerAlgebraEntry(line.id, `l: lijn(${pointName(line.p1)}, ${pointName(line.p2)})`, 'line');
@@ -1029,6 +1742,32 @@
       for (const fn of state.functions) {
         registerAlgebraEntry(fn.id, `${fn.algebraLabel} = ${fn.expression}`, 'function', fn.color);
       }
+      for (const entry of state.numbers) {
+        registerAlgebraEntry(entry.id, `${entry.name} = ${formatNumber(entry.value)}`, 'variable', COLORS.variable);
+      }
+      for (const slider of state.sliders) {
+        registerAlgebraEntry(slider.id, slider.name, 'slider');
+      }
+      const lastSelection = state.lastSelectionType;
+      if (lastSelection === 'function' && previousFunction) {
+        setHighlightedFunction(previousFunction, { scroll: false, force: true });
+      } else if (lastSelection === 'point' && previousPoint) {
+        setSelectedPoint(previousPoint, { scroll: false, force: true });
+      } else if (lastSelection === 'slider' && previousSlider) {
+        setActiveSlider(previousSlider, { scroll: false, force: true, preserveOthers: true });
+      } else if (lastSelection === 'variable' && previousVariable) {
+        setActiveVariable(previousVariable, { scroll: false, force: true, preserveOthers: true });
+      } else {
+        if (previousFunction) {
+          setHighlightedFunction(previousFunction, { scroll: false, force: true });
+        } else if (previousPoint) {
+          setSelectedPoint(previousPoint, { scroll: false, force: true });
+        } else if (previousSlider) {
+          setActiveSlider(previousSlider, { scroll: false, force: true, preserveOthers: true });
+        } else if (previousVariable) {
+          setActiveVariable(previousVariable, { scroll: false, force: true, preserveOthers: true });
+        }
+      }
     }
 
     function restoreState(snapshot) {
@@ -1038,7 +1777,11 @@
       state.points = snapshot.points.map(point => ({
         id: point.id,
         name: point.name,
-        position: { x: point.position.x, y: point.position.y }
+        position: { x: point.position.x, y: point.position.y },
+        color: point.color || COLORS.point,
+        showLabel: point.showLabel !== false,
+        traceEnabled: Boolean(point.traceEnabled),
+        trace: Array.isArray(point.trace) ? point.trace.map(pos => ({ x: pos.x, y: pos.y })) : []
       }));
       state.segments = snapshot.segments.map(segment => ({ ...segment }));
       state.lines = snapshot.lines.map(line => ({ ...line }));
@@ -1066,6 +1809,29 @@
       state.highlightedFunctionId = null;
       state.pendingFunctionHighlight = null;
       state.editingFunctionId = null;
+      state.selectedPointId = snapshot.selectedPointId || null;
+      state.editingPointId = null;
+      state.lastSelectionType = snapshot.lastSelectionType || 'none';
+      state.sliders = (snapshot.sliders || []).map(slider => ({
+        id: slider.id,
+        name: slider.name,
+        min: slider.min,
+        max: slider.max,
+        step: slider.step,
+        value: slider.value,
+        speed: slider.speed || 'medium',
+        animating: Boolean(slider.animating),
+        direction: slider.direction || 1,
+        lastTimestamp: null
+      }));
+      state.numbers = (snapshot.numbers || []).map(entry => ({
+        id: entry.id,
+        name: entry.name,
+        value: entry.value
+      }));
+      state.variables = { ...(snapshot.variables || {}) };
+      state.selectedSliderId = snapshot.selectedSliderId || null;
+      state.selectedVariableId = snapshot.selectedVariableId || null;
       algebraList.innerHTML = '';
       state.functions = [];
       const savedFunctions = snapshot.functions || [];
@@ -1076,12 +1842,36 @@
           source: fn.source,
           graphLabel: fn.label,
           evaluationExpression: fn.evaluationExpression
-        }, { id: fn.id, color: fn.color, displayName: fn.displayName, skipHistory: true, skipDraw: true, skipColorAdvance: true, skipAlgebra: true });
+        }, {
+          id: fn.id,
+          color: fn.color,
+          displayName: fn.displayName,
+          skipHistory: true,
+          skipDraw: true,
+          skipColorAdvance: true,
+          skipAlgebra: true,
+          thickness: fn.thickness,
+          showLabel: fn.showLabel
+        });
+      }
+      for (const slider of state.sliders) {
+        state.variables[slider.name] = slider.value;
+      }
+      for (const entry of state.numbers) {
+        state.variables[entry.name] = entry.value;
+      }
+      if (sliderAnimationFrame) {
+        cancelAnimationFrame(sliderAnimationFrame);
+        sliderAnimationFrame = null;
+      }
+      if (state.sliders.some(entry => entry.animating)) {
+        ensureSliderAnimationLoop();
       }
       rebuildAlgebraList();
       state.functionColorIndex = snapshot.functionColorIndex;
       restoringState = false;
       suspendHistory = false;
+      refreshPropertiesPanel();
       draw();
     }
 
@@ -1346,7 +2136,9 @@
       { label: 'y = x', value: 'y = x' },
       { label: 'y = x²', value: 'y = x²' },
       { label: 'y = sin(x)', value: 'y = sin(x)' },
-      { label: 'y = |x|', value: 'y = |x|' }
+      { label: 'y = |x|', value: 'y = |x|' },
+      { label: 'Slider…', action: 'create-slider' },
+      { label: 'Constante…', action: 'define-number' }
     ];
 
     let keyboardVisible = false;
@@ -1587,9 +2379,41 @@
     function drawPoints() {
       ctx.save();
       ctx.scale(DPR, DPR);
-      ctx.fillStyle = COLORS.point;
+      ctx.font = '12px Inter, sans-serif';
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'top';
       for (const point of state.points) {
         const { x, y } = worldToScreen(point.position);
+        const isSelected = state.selectedPointId === point.id;
+        const color = point.color || COLORS.point;
+        if (point.traceEnabled && Array.isArray(point.trace) && point.trace.length > 1) {
+          ctx.save();
+          ctx.strokeStyle = withAlpha(color, 0.35);
+          ctx.lineWidth = 1.5 / DPR;
+          ctx.beginPath();
+          point.trace.forEach((tracePoint, index) => {
+            const screen = worldToScreen(tracePoint);
+            if (index === 0) {
+              ctx.moveTo(screen.x, screen.y);
+            } else {
+              ctx.lineTo(screen.x, screen.y);
+            }
+          });
+          ctx.stroke();
+          ctx.restore();
+        }
+        if (isSelected) {
+          ctx.fillStyle = withAlpha(color, 0.18);
+          ctx.beginPath();
+          ctx.arc(x, y, 11, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.lineWidth = 2 / DPR;
+          ctx.strokeStyle = color;
+          ctx.beginPath();
+          ctx.arc(x, y, 9, 0, Math.PI * 2);
+          ctx.stroke();
+        }
+        ctx.fillStyle = color;
         ctx.beginPath();
         ctx.arc(x, y, 6, 0, Math.PI * 2);
         ctx.fill();
@@ -1597,11 +2421,10 @@
         ctx.beginPath();
         ctx.arc(x, y, 3, 0, Math.PI * 2);
         ctx.fill();
-        ctx.fillStyle = COLORS.point;
-        ctx.font = '12px Inter, sans-serif';
-        ctx.textAlign = 'left';
-        ctx.textBaseline = 'top';
-        ctx.fillText(point.name, x + 8, y + 6);
+        if (point.showLabel !== false) {
+          ctx.fillStyle = color;
+          ctx.fillText(point.name, x + 8, y + 6);
+        }
       }
       ctx.restore();
     }
@@ -1739,7 +2562,7 @@
 
         if (state.highlightedFunctionId === fn.id) {
           ctx.save();
-          ctx.lineWidth = 5 / DPR;
+          ctx.lineWidth = Math.max((fn.thickness || 2) + 3, 5) / DPR;
           ctx.strokeStyle = withAlpha(fn.color || COLORS.function, 0.35);
           ctx.beginPath();
           for (const point of path) {
@@ -1753,7 +2576,7 @@
           ctx.restore();
         }
 
-        ctx.lineWidth = 2 / DPR;
+        ctx.lineWidth = Math.max(1, fn.thickness || 2) / DPR;
         ctx.strokeStyle = fn.color || COLORS.function;
         ctx.beginPath();
         for (const point of path) {
@@ -1764,6 +2587,19 @@
           }
         }
         ctx.stroke();
+
+        if (fn.showLabel) {
+          const anchor = [...path].reverse().find(segment => !segment.move) || path[path.length - 1];
+          if (anchor) {
+            ctx.save();
+            ctx.fillStyle = withAlpha(fn.color || COLORS.function, 0.9);
+            ctx.font = '12px Inter, sans-serif';
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'bottom';
+            ctx.fillText(fn.algebraLabel, anchor.x + 8, anchor.y - 6);
+            ctx.restore();
+          }
+        }
       }
       ctx.restore();
     }
@@ -1821,29 +2657,109 @@
       drawTexts();
     }
 
-    function clearHighlightedAlgebra() {
+    function clearHighlightedAlgebra(options = {}) {
       if (!algebraList) return;
+      const { keepFunction = false, keepPoint = false, keepSlider = false, keepVariable = false } = options;
       algebraList.querySelectorAll('.algebra-item.selected').forEach(item => {
+        const type = item.dataset.type;
+        if (keepFunction && type === 'function' && item.dataset.id === state.highlightedFunctionId) {
+          return;
+        }
+        if (keepPoint && type === 'point' && item.dataset.id === state.selectedPointId) {
+          return;
+        }
+        if (keepSlider && type === 'slider' && item.dataset.id === state.selectedSliderId) {
+          return;
+        }
+        if (keepVariable && type === 'variable' && item.dataset.id === state.selectedVariableId) {
+          return;
+        }
         item.classList.remove('selected');
-        item.style.removeProperty('--highlight-outline');
-        item.style.removeProperty('--highlight-glow');
+        if (type === 'function') {
+          item.style.removeProperty('--highlight-outline');
+          item.style.removeProperty('--highlight-glow');
+        }
       });
+      if (!keepFunction) {
+        state.highlightedFunctionId = null;
+      }
+      if (!keepPoint) {
+        state.selectedPointId = null;
+      }
+      if (!keepSlider) {
+        state.selectedSliderId = null;
+      }
+      if (!keepVariable) {
+        state.selectedVariableId = null;
+      }
+      if (state.highlightedFunctionId) {
+        state.lastSelectionType = 'function';
+      } else if (state.selectedPointId) {
+        state.lastSelectionType = 'point';
+      } else if (state.selectedSliderId) {
+        state.lastSelectionType = 'slider';
+      } else if (state.selectedVariableId) {
+        state.lastSelectionType = 'variable';
+      } else {
+        state.lastSelectionType = 'none';
+      }
     }
 
-    function setHighlightedFunction(id, options = {}) {
+    function setSelectedPoint(id, options = {}) {
       const { scroll = true, force = false } = options;
-      if (state.highlightedFunctionId === id && !force) {
-        if (scroll && id && algebraList) {
+      if (!id) {
+        clearHighlightedAlgebra();
+        refreshPropertiesPanel();
+        draw();
+        return;
+      }
+      if (state.selectedPointId === id && !force) {
+        if (scroll && algebraList) {
           const current = algebraList.querySelector(`[data-id="${id}"]`);
           if (current) {
             current.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
           }
         }
+        refreshPropertiesPanel({ type: 'point', id });
         return;
       }
       clearHighlightedAlgebra();
+      state.selectedPointId = id;
+      if (algebraList) {
+        const item = algebraList.querySelector(`[data-id="${id}"]`);
+        if (item) {
+          item.classList.add('selected');
+          if (scroll) {
+            item.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+          }
+        }
+      }
+      state.lastSelectionType = 'point';
+      refreshPropertiesPanel({ type: 'point', id });
+      draw();
+    }
+
+    function setHighlightedFunction(id, options = {}) {
+      const { scroll = true, force = false, preservePoint = false } = options;
+      if (!id) {
+        clearHighlightedAlgebra({ keepPoint: preservePoint && Boolean(state.selectedPointId) });
+        refreshPropertiesPanel();
+        draw();
+        return;
+      }
+      if (state.highlightedFunctionId === id && !force) {
+        if (scroll && algebraList) {
+          const current = algebraList.querySelector(`[data-id="${id}"]`);
+          if (current) {
+            current.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+          }
+        }
+        refreshPropertiesPanel({ type: 'function', id });
+        return;
+      }
+      clearHighlightedAlgebra({ keepPoint: preservePoint && Boolean(state.selectedPointId) });
       state.highlightedFunctionId = id;
-      if (id && algebraList) {
+      if (algebraList) {
         const item = algebraList.querySelector(`[data-id="${id}"]`);
         const fn = state.functions.find(entry => entry.id === id);
         if (item && fn) {
@@ -1855,6 +2771,8 @@
           }
         }
       }
+      state.lastSelectionType = 'function';
+      refreshPropertiesPanel({ type: 'function', id });
       draw();
     }
 
@@ -1892,7 +2810,7 @@
       return Math.hypot(a.x - b.x, a.y - b.y);
     }
 
-    function findPointNear(world, threshold = 0.25) {
+    function findPointNear(world, threshold = 0.2) {
       let closest = null;
       let min = Infinity;
       for (const point of state.points) {
@@ -1973,7 +2891,7 @@
       const originalScreen = worldToScreen(position);
       const snappedScreen = worldToScreen(snapped);
       const distancePx = Math.hypot(originalScreen.x - snappedScreen.x, originalScreen.y - snappedScreen.y);
-      const thresholdPx = Math.max(6, Math.min(24, state.scale * 0.35));
+      const thresholdPx = Math.max(5, Math.min(16, state.scale * 0.2));
       if (distancePx <= thresholdPx) {
         return snapped;
       }
@@ -1992,8 +2910,25 @@
       return name;
     }
 
+    function isVariableNameInUse(name, excludeId) {
+      if (!name) return false;
+      return state.sliders.some(slider => slider.name === name && slider.id !== excludeId)
+        || state.numbers.some(entry => entry.name === name && entry.id !== excludeId);
+    }
+
+    function ensureUniqueVariableName(base, excludeId) {
+      if (!base) return base;
+      let name = base;
+      let attempt = 2;
+      while (isVariableNameInUse(name, excludeId)) {
+        name = `${base}${attempt}`;
+        attempt += 1;
+      }
+      return name;
+    }
+
     function createPoint(world, existingName, options = {}) {
-      const { snap = true, skipHistory = false } = options;
+      const { snap = true, skipHistory = false, select = true } = options;
       if (!skipHistory) {
         recordHistory();
       }
@@ -2003,15 +2938,52 @@
       const point = {
         id: crypto.randomUUID(),
         name,
-        position
+        position,
+        color: options.color || COLORS.point,
+        showLabel: options.showLabel !== undefined ? Boolean(options.showLabel) : true,
+        traceEnabled: Boolean(options.traceEnabled),
+        trace: []
       };
       state.points.push(point);
-      registerAlgebraEntry(point.id, `${name} = (${formatNumber(point.position.x)}, ${formatNumber(point.position.y)})`, 'point');
+      registerAlgebraEntry(point.id, `${name} = (${formatNumber(point.position.x)}, ${formatNumber(point.position.y)})`, 'point', point.color);
+      if (select) {
+        setSelectedPoint(point.id);
+      }
       draw();
       return point;
     }
 
+    function normalizeColor(color, fallback = '#000000') {
+      if (!color) return fallback;
+      if (color.startsWith('#')) {
+        if (color.length === 4) {
+          return `#${color[1]}${color[1]}${color[2]}${color[2]}${color[3]}${color[3]}`;
+        }
+        return color;
+      }
+      const rgbMatch = color.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)/i);
+      if (rgbMatch) {
+        return `#${Number(rgbMatch[1]).toString(16).padStart(2, '0')}${Number(rgbMatch[2]).toString(16).padStart(2, '0')}${Number(rgbMatch[3]).toString(16).padStart(2, '0')}`;
+      }
+      return fallback;
+    }
+
+    function parseLocaleNumber(value) {
+      if (typeof value === 'number') {
+        return value;
+      }
+      if (typeof value !== 'string') {
+        return NaN;
+      }
+      const normalized = value.trim().replace(',', '.');
+      return Number(normalized);
+    }
+
     function registerAlgebraEntry(id, text, type, color) {
+      if (type === 'slider') {
+        renderSliderEntry(id);
+        return;
+      }
       const [title, ...rest] = text.split('=');
       const strongText = title.trim();
       const detailText = rest.join('=').trim();
@@ -2022,8 +2994,22 @@
         item.dataset.id = id;
         item.dataset.type = type;
 
-        const icon = document.createElement('span');
-        icon.className = 'algebra-color';
+        let icon;
+        if (type === 'function') {
+          icon = document.createElement('button');
+          icon.type = 'button';
+          icon.className = 'algebra-color';
+          icon.dataset.action = 'color';
+          icon.setAttribute('aria-label', 'Pas grafiekkleur aan');
+          icon.setAttribute('title', 'Pas grafiekkleur aan');
+          const input = document.createElement('input');
+          input.type = 'color';
+          input.className = 'algebra-color-input';
+          item.appendChild(input);
+        } else {
+          icon = document.createElement('span');
+          icon.className = 'algebra-color';
+        }
         item.appendChild(icon);
 
         const label = document.createElement('div');
@@ -2053,7 +3039,13 @@
       item.dataset.type = type;
       const iconEl = item.querySelector('.algebra-color');
       if (iconEl) {
-        iconEl.style.background = color || COLORS[type] || '#888';
+        const value = color || COLORS[type] || '#888';
+        iconEl.style.color = value;
+        iconEl.style.background = 'transparent';
+        const picker = item.querySelector('.algebra-color-input');
+        if (picker) {
+          picker.value = normalizeColor(value, '#e36209');
+        }
       }
       const strongEl = item.querySelector('.algebra-label strong');
       if (strongEl) {
@@ -2066,6 +3058,860 @@
 
       const behavior = restoringState ? 'auto' : 'smooth';
       algebraList.scrollTo({ top: algebraList.scrollHeight, behavior });
+    }
+
+    function renderSliderEntry(id) {
+      if (!algebraList) return;
+      const slider = state.sliders.find(entry => entry.id === id);
+      if (!slider) return;
+      let item = algebraList.querySelector(`[data-id="${id}"]`);
+      const isNew = !item;
+      if (!item) {
+        item = document.createElement('div');
+        item.className = 'algebra-item slider';
+        item.dataset.id = id;
+        item.dataset.type = 'slider';
+
+        const icon = document.createElement('span');
+        icon.className = 'algebra-color';
+        icon.style.color = COLORS.slider;
+        item.appendChild(icon);
+
+        const body = document.createElement('div');
+        body.className = 'slider-body';
+        const header = document.createElement('div');
+        header.className = 'slider-header';
+        const title = document.createElement('span');
+        title.dataset.role = 'slider-title';
+        const valueEl = document.createElement('span');
+        valueEl.dataset.role = 'slider-value';
+        valueEl.className = 'slider-value';
+        header.appendChild(title);
+        header.appendChild(valueEl);
+        body.appendChild(header);
+
+        const controls = document.createElement('div');
+        controls.className = 'slider-controls';
+        const range = document.createElement('input');
+        range.type = 'range';
+        range.className = 'slider-range';
+        range.setAttribute('aria-label', 'Schuifbalkwaarde');
+        controls.appendChild(range);
+
+        const helpers = document.createElement('div');
+        helpers.className = 'slider-helpers';
+
+        const minusBtn = document.createElement('button');
+        minusBtn.type = 'button';
+        minusBtn.dataset.sliderAction = 'step-back';
+        minusBtn.setAttribute('aria-label', 'Stap omlaag');
+        minusBtn.innerHTML = ICONS.minus;
+        helpers.appendChild(minusBtn);
+
+        const playBtn = document.createElement('button');
+        playBtn.type = 'button';
+        playBtn.dataset.sliderAction = 'toggle-animate';
+        playBtn.setAttribute('aria-label', 'Speel animatie');
+        helpers.appendChild(playBtn);
+
+        const plusBtn = document.createElement('button');
+        plusBtn.type = 'button';
+        plusBtn.dataset.sliderAction = 'step-forward';
+        plusBtn.setAttribute('aria-label', 'Stap omhoog');
+        plusBtn.innerHTML = ICONS.plus;
+        helpers.appendChild(plusBtn);
+
+        const speedSelect = document.createElement('select');
+        speedSelect.className = 'slider-speed';
+        speedSelect.setAttribute('aria-label', 'Animatiesnelheid');
+        const speeds = [
+          { value: 'slow', label: 'Langzaam' },
+          { value: 'medium', label: 'Normaal' },
+          { value: 'fast', label: 'Snel' }
+        ];
+        for (const option of speeds) {
+          const opt = document.createElement('option');
+          opt.value = option.value;
+          opt.textContent = option.label;
+          speedSelect.appendChild(opt);
+        }
+        helpers.appendChild(speedSelect);
+
+        controls.appendChild(helpers);
+        body.appendChild(controls);
+        item.appendChild(body);
+
+        const removeButton = document.createElement('button');
+        removeButton.type = 'button';
+        removeButton.className = 'delete-button';
+        removeButton.setAttribute('aria-label', 'Verwijder object');
+        removeButton.innerHTML = `
+          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6 6 18 18" />
+            <path d="M6 18 18 6" />
+          </svg>
+        `;
+        item.appendChild(removeButton);
+
+        algebraList.appendChild(item);
+      }
+
+      item.dataset.type = 'slider';
+      const titleEl = item.querySelector('[data-role="slider-title"]');
+      if (titleEl) {
+        titleEl.textContent = slider.name;
+      }
+      const valueEl = item.querySelector('[data-role="slider-value"]');
+      if (valueEl) {
+        valueEl.textContent = formatNumber(slider.value);
+      }
+      const rangeEl = item.querySelector('.slider-range');
+      if (rangeEl) {
+        rangeEl.min = slider.min;
+        rangeEl.max = slider.max;
+        const step = slider.step || ((slider.max - slider.min) / 100) || 0.1;
+        rangeEl.step = step;
+        rangeEl.value = slider.value;
+      }
+      const playEl = item.querySelector('[data-slider-action="toggle-animate"]');
+      if (playEl) {
+        playEl.innerHTML = slider.animating ? ICONS.pause : ICONS.play;
+        playEl.dataset.state = slider.animating ? 'pause' : 'play';
+        playEl.setAttribute('aria-pressed', String(Boolean(slider.animating)));
+      }
+      const speedEl = item.querySelector('.slider-speed');
+      if (speedEl) {
+        speedEl.value = slider.speed || 'medium';
+      }
+      const iconEl = item.querySelector('.algebra-color');
+      if (iconEl) {
+        iconEl.style.color = COLORS.slider;
+      }
+
+      if (isNew) {
+        const behavior = restoringState ? 'auto' : 'smooth';
+        algebraList.scrollTo({ top: algebraList.scrollHeight, behavior });
+      }
+    }
+
+    function findSliderById(id) {
+      return state.sliders.find(entry => entry.id === id);
+    }
+
+    function findSliderByName(name) {
+      return state.sliders.find(entry => entry.name === name);
+    }
+
+    function clampSliderValue(slider, value) {
+      if (!slider) return value;
+      const min = Math.min(slider.min, slider.max);
+      const max = Math.max(slider.min, slider.max);
+      if (!Number.isFinite(min) || !Number.isFinite(max)) {
+        return value;
+      }
+      let result = Math.min(Math.max(value, min), max);
+      const step = slider.step || ((max - min) / 100) || 0.1;
+      if (Number.isFinite(step) && step > 0) {
+        const offset = slider.min;
+        const steps = Math.round((result - offset) / step);
+        result = offset + steps * step;
+        const precision = Math.max(0, Math.ceil(-Math.log10(step)) + 2);
+        const factor = Math.pow(10, precision);
+        result = Math.round(result * factor) / factor;
+      }
+      return result;
+    }
+
+    function ensureSliderVariables(slider) {
+      if (!slider) return;
+      state.variables[slider.name] = slider.value;
+    }
+
+    function updateSliderValue(slider, nextValue, options = {}) {
+      if (!slider) return;
+      const { record = true, fromAnimation = false } = options;
+      const clamped = clampSliderValue(slider, nextValue);
+      if (!Number.isFinite(clamped)) return;
+      if (slider.value === clamped) {
+        if (fromAnimation) {
+          renderSliderEntry(slider.id);
+        }
+        return;
+      }
+      if (record && !fromAnimation) {
+        recordHistory();
+      }
+      slider.value = clamped;
+      ensureSliderVariables(slider);
+      renderSliderEntry(slider.id);
+      if (propertiesState.type === 'slider' && propertiesState.id === slider.id) {
+        refreshPropertiesPanel({ type: 'slider', id: slider.id });
+      }
+      draw();
+    }
+
+    function stepSlider(slider, direction = 1) {
+      if (!slider) return;
+      const step = slider.step || ((slider.max - slider.min) / 100) || 0.1;
+      const delta = Number.isFinite(step) ? step * direction : direction;
+      updateSliderValue(slider, slider.value + delta, { record: true });
+    }
+
+    function setSliderSpeed(slider, speed) {
+      if (!slider) return;
+      const next = SLIDER_SPEEDS[speed] ? speed : 'medium';
+      if (slider.speed === next) {
+        renderSliderEntry(slider.id);
+        if (propertiesState.type === 'slider' && propertiesState.id === slider.id) {
+          refreshPropertiesPanel({ type: 'slider', id: slider.id });
+        }
+        return;
+      }
+      slider.speed = next;
+      slider.lastTimestamp = null;
+      renderSliderEntry(slider.id);
+      if (propertiesState.type === 'slider' && propertiesState.id === slider.id) {
+        refreshPropertiesPanel({ type: 'slider', id: slider.id });
+      }
+    }
+
+    function setSliderAnimating(slider, animating, options = {}) {
+      if (!slider) return;
+      const { record = true } = options;
+      if (slider.animating === animating) return;
+      if (record) {
+        recordHistory();
+      }
+      slider.animating = animating;
+      slider.lastTimestamp = null;
+      renderSliderEntry(slider.id);
+      if (propertiesState.type === 'slider' && propertiesState.id === slider.id) {
+        refreshPropertiesPanel({ type: 'slider', id: slider.id });
+      }
+      if (animating) {
+        ensureSliderVariables(slider);
+        ensureSliderAnimationLoop();
+      } else if (!state.sliders.some(entry => entry.animating)) {
+        if (sliderAnimationFrame) {
+          cancelAnimationFrame(sliderAnimationFrame);
+          sliderAnimationFrame = null;
+        }
+      }
+    }
+
+    function ensureSliderAnimationLoop() {
+      if (sliderAnimationFrame) return;
+      sliderAnimationFrame = requestAnimationFrame(sliderAnimationTick);
+    }
+
+    function sliderAnimationTick(timestamp) {
+      let hasActive = false;
+      for (const slider of state.sliders) {
+        if (!slider.animating) {
+          continue;
+        }
+        hasActive = true;
+        if (!slider.lastTimestamp) {
+          slider.lastTimestamp = timestamp;
+          continue;
+        }
+        const delta = Math.max(0, timestamp - slider.lastTimestamp);
+        slider.lastTimestamp = timestamp;
+        const speed = SLIDER_SPEEDS[slider.speed] || 1;
+        const step = slider.step || ((slider.max - slider.min) / 80) || 0.05;
+        const increment = step * speed * (delta / 16);
+        let next = slider.value + increment * (slider.direction || 1);
+        if (next > slider.max) {
+          next = slider.max;
+          slider.direction = -1;
+        } else if (next < slider.min) {
+          next = slider.min;
+          slider.direction = 1;
+        }
+        updateSliderValue(slider, next, { record: false, fromAnimation: true });
+      }
+      if (hasActive) {
+        sliderAnimationFrame = requestAnimationFrame(sliderAnimationTick);
+      } else {
+        sliderAnimationFrame = null;
+      }
+    }
+
+    function splitArguments(content) {
+      if (!content) return [];
+      const args = [];
+      let current = '';
+      let depth = 0;
+      let quote = null;
+      for (let i = 0; i < content.length; i++) {
+        const char = content[i];
+        if (quote) {
+          current += char;
+          if (char === quote && content[i - 1] !== '\\') {
+            quote = null;
+          }
+          continue;
+        }
+        if (char === '"' || char === '\'') {
+          quote = char;
+          current += char;
+          continue;
+        }
+        if (char === '(') {
+          depth += 1;
+          current += char;
+          continue;
+        }
+        if (char === ')') {
+          depth = Math.max(0, depth - 1);
+          current += char;
+          continue;
+        }
+        if (char === ',' && depth === 0) {
+          if (current.trim()) {
+            args.push(current.trim());
+          }
+          current = '';
+          continue;
+        }
+        current += char;
+      }
+      if (current.trim()) {
+        args.push(current.trim());
+      }
+      return args;
+    }
+
+    function normalizeSliderSpeed(value) {
+      if (value === undefined || value === null) return null;
+      const lower = String(value).trim().replace(/^['"]|['"]$/g, '').toLowerCase();
+      return SLIDER_SPEEDS[lower] ? lower : null;
+    }
+
+    function parseSliderRangeDefinition(expression, fallbackName) {
+      if (!expression || !expression.includes('..')) {
+        return null;
+      }
+      const rawParts = expression.split('..');
+      const parts = rawParts.map(part => part.trim()).filter(part => part.length);
+      if (parts.length < 2 || parts.length > 3) {
+        return null;
+      }
+      const min = tryEvaluateScalar(parts[0]);
+      const max = tryEvaluateScalar(parts[1]);
+      if (min === null || max === null) {
+        return {
+          name: fallbackName || null,
+          min: min === null ? undefined : min,
+          max: max === null ? undefined : max,
+          step: null,
+          invalid: true
+        };
+      }
+      const step = parts[2] !== undefined ? tryEvaluateScalar(parts[2]) : undefined;
+      return {
+        name: fallbackName || null,
+        min,
+        max,
+        step
+      };
+    }
+
+    function parseSliderCallDefinition(content, fallbackName) {
+      if (!content) return null;
+      const parts = splitArguments(content);
+      if (!parts.length) {
+        return null;
+      }
+      let name = fallbackName ? fallbackName.trim() : '';
+      const remaining = [...parts];
+      if (!name) {
+        const candidate = remaining[0];
+        const quotedName = candidate.match(/^['"](.+)['"]$/);
+        if (quotedName) {
+          name = quotedName[1].trim();
+          remaining.shift();
+        } else if (/^[A-Za-z][A-Za-z0-9_]*$/.test(candidate)) {
+          name = candidate;
+          remaining.shift();
+        }
+      }
+      if (!remaining.length) {
+        return null;
+      }
+      if (!name) {
+        name = `s${state.sliders.length + 1}`;
+      }
+      if (remaining.length < 2) {
+        return null;
+      }
+      const min = tryEvaluateScalar(remaining[0]);
+      const max = tryEvaluateScalar(remaining[1]);
+      if (min === null || max === null) {
+        return { name, invalid: true };
+      }
+      let step;
+      let value;
+      let speed;
+      for (const extra of remaining.slice(2)) {
+        const numeric = tryEvaluateScalar(extra);
+        if (numeric !== null) {
+          if (step === undefined) {
+            step = numeric;
+            continue;
+          }
+          if (value === undefined) {
+            value = numeric;
+            continue;
+          }
+        }
+        const maybeSpeed = normalizeSliderSpeed(extra);
+        if (maybeSpeed) {
+          speed = maybeSpeed;
+          continue;
+        }
+        return { name, min, max, step, value, invalid: true };
+      }
+      return { name, min, max, step, value, speed };
+    }
+
+    function commitSliderDefinition(definition) {
+      if (!definition || (!definition.name && !definition.min && !definition.max)) {
+        return null;
+      }
+      if (definition.invalid) {
+        alert('Kan schuifbalk niet aanmaken: controleer de invoer.');
+        return null;
+      }
+      const name = definition.name ? definition.name.trim() : `s${state.sliders.length + 1}`;
+      const min = Number.isFinite(definition.min) ? definition.min : undefined;
+      const max = Number.isFinite(definition.max) ? definition.max : undefined;
+      if (!Number.isFinite(min) || !Number.isFinite(max)) {
+        alert('Voer geldige minimum- en maximumwaarden in voor de schuifbalk.');
+        return null;
+      }
+      const step = Number.isFinite(definition.step) && definition.step > 0 ? definition.step : undefined;
+      const value = Number.isFinite(definition.value) ? definition.value : undefined;
+      const speed = normalizeSliderSpeed(definition.speed);
+      let slider = findSliderByName(name);
+      if (slider) {
+        const updates = {};
+        if (min !== undefined && min !== slider.min) {
+          updates.min = min;
+        }
+        if (max !== undefined && max !== slider.max) {
+          updates.max = max;
+        }
+        if (step !== undefined && step !== slider.step) {
+          updates.step = step;
+        }
+        const shouldRecordValue = Object.keys(updates).length === 0;
+        if (Object.keys(updates).length) {
+          updateSliderBounds(slider.id, updates, { record: true });
+          slider = findSliderById(slider.id) || slider;
+        }
+        if (value !== undefined) {
+          updateSliderValue(slider, value, { record: shouldRecordValue });
+        } else {
+          ensureSliderVariables(slider);
+          renderSliderEntry(slider.id);
+        }
+        if (speed && slider.speed !== speed) {
+          setSliderSpeed(slider, speed);
+        }
+        setActiveSlider(slider.id, { force: true });
+        refreshPropertiesPanel({ type: 'slider', id: slider.id });
+        state.editingFunctionId = null;
+        state.editingPointId = null;
+        return slider;
+      }
+      const existingConstant = findNumberByName(name);
+      let recorded = false;
+      if (existingConstant) {
+        recordHistory();
+        recorded = true;
+        removeObject(existingConstant.id, 'variable', { silent: true, skipHistory: true });
+      }
+      const created = createSlider(name, min, max, step, {
+        value: value !== undefined ? value : min,
+        speed: speed || 'medium',
+        skipHistory: recorded
+      });
+      setActiveSlider(created.id, { force: true });
+      refreshPropertiesPanel({ type: 'slider', id: created.id });
+      state.editingFunctionId = null;
+      state.editingPointId = null;
+      return created;
+    }
+
+    function handleScalarAssignment(name, expression) {
+      if (!name || !expression) {
+        return false;
+      }
+      const sliderCall = expression.match(/^Slider\s*\((.*)\)$/i);
+      if (sliderCall) {
+        const definition = parseSliderCallDefinition(sliderCall[1], name);
+        if (!definition) {
+          alert('Kan schuifbalk niet aanmaken: controleer de invoer.');
+          return null;
+        }
+        const result = commitSliderDefinition(definition);
+        return result ? true : null;
+      }
+      const rangeDefinition = parseSliderRangeDefinition(expression, name);
+      if (rangeDefinition) {
+        const result = commitSliderDefinition({ ...rangeDefinition, name: rangeDefinition.name || name });
+        return result ? true : null;
+      }
+      const numeric = tryEvaluateScalar(expression);
+      if (numeric !== null) {
+        const entry = assignNumericConstant(name, numeric);
+        return entry ? true : null;
+      }
+      return false;
+    }
+
+    function renameSlider(id, nextName) {
+      const slider = findSliderById(id);
+      if (!slider) return;
+      const cleaned = nextName.trim();
+      if (!cleaned) return;
+      const unique = ensureUniqueVariableName(cleaned, slider.id);
+      if (unique === slider.name) {
+        renderSliderEntry(slider.id);
+        return;
+      }
+      recordHistory();
+      const previousName = slider.name;
+      slider.name = unique;
+      delete state.variables[previousName];
+      ensureSliderVariables(slider);
+      renderSliderEntry(slider.id);
+      registerAlgebraEntry(slider.id, slider.name, 'slider');
+      refreshPropertiesPanel({ type: 'slider', id: slider.id });
+    }
+
+    function updateSliderBounds(id, updates = {}, options = {}) {
+      const slider = findSliderById(id);
+      if (!slider) return;
+      const { record = true } = options;
+      const nextMin = updates.min !== undefined ? updates.min : slider.min;
+      const nextMax = updates.max !== undefined ? updates.max : slider.max;
+      let min = Number.isFinite(nextMin) ? nextMin : slider.min;
+      let max = Number.isFinite(nextMax) ? nextMax : slider.max;
+      if (min === max) {
+        max = min + 1;
+      }
+      if (min > max) {
+        const temp = min;
+        min = max;
+        max = temp;
+      }
+      const nextStep = updates.step !== undefined ? updates.step : slider.step;
+      const step = Number.isFinite(nextStep) && nextStep > 0 ? nextStep : slider.step;
+      if (record) {
+        recordHistory();
+      }
+      slider.min = min;
+      slider.max = max;
+      slider.step = step;
+      slider.value = clampSliderValue(slider, slider.value);
+      ensureSliderVariables(slider);
+      renderSliderEntry(slider.id);
+      if (propertiesState.type === 'slider' && propertiesState.id === slider.id) {
+        refreshPropertiesPanel({ type: 'slider', id: slider.id });
+      }
+      draw();
+    }
+
+    function createSlider(name, min, max, step, options = {}) {
+      const { value, speed = 'medium', skipHistory = false } = options;
+      const baseName = name.trim() || `s${state.sliders.length + 1}`;
+      const sanitizedName = ensureUniqueVariableName(baseName, null);
+      const sliderMin = Number.isFinite(min) ? min : 0;
+      const sliderMax = Number.isFinite(max) ? max : sliderMin + 10;
+      const sliderStep = Number.isFinite(step) && step > 0 ? step : Math.max((sliderMax - sliderMin) / 20, 0.1);
+      const sliderValue = Number.isFinite(value) ? value : sliderMin;
+      if (!skipHistory) {
+        recordHistory();
+      }
+      const slider = {
+        id: crypto.randomUUID(),
+        name: sanitizedName,
+        min: sliderMin,
+        max: sliderMax,
+        step: sliderStep,
+        value: clampSliderValue({ min: sliderMin, max: sliderMax, step: sliderStep }, sliderValue),
+        speed: SLIDER_SPEEDS[speed] ? speed : 'medium',
+        animating: false,
+        direction: 1,
+        lastTimestamp: null
+      };
+      state.sliders.push(slider);
+      ensureSliderVariables(slider);
+      registerAlgebraEntry(slider.id, slider.name, 'slider');
+      draw();
+      return slider;
+    }
+
+    function findNumberById(id) {
+      return state.numbers.find(entry => entry.id === id);
+    }
+
+    function findNumberByName(name) {
+      return state.numbers.find(entry => entry.name === name);
+    }
+
+    function createNumberConstant(name, value, options = {}) {
+      const { skipHistory = false } = options;
+      const baseName = name.trim() || `k${state.numbers.length + 1}`;
+      const sanitizedName = ensureUniqueVariableName(baseName, null);
+      const numeric = Number.isFinite(value) ? value : 0;
+      if (!skipHistory) {
+        recordHistory();
+      }
+      const entry = {
+        id: crypto.randomUUID(),
+        name: sanitizedName,
+        value: numeric
+      };
+      state.numbers.push(entry);
+      state.variables[sanitizedName] = numeric;
+      registerAlgebraEntry(entry.id, `${entry.name} = ${formatNumber(entry.value)}`, 'variable', COLORS.variable);
+      draw();
+      return entry;
+    }
+
+    function updateNumberValue(entry, nextValue, options = {}) {
+      if (!entry) return;
+      const { record = true } = options;
+      const numeric = Number.isFinite(nextValue) ? nextValue : entry.value;
+      if (numeric === entry.value) {
+        registerAlgebraEntry(entry.id, `${entry.name} = ${formatNumber(entry.value)}`, 'variable', COLORS.variable);
+        return;
+      }
+      if (record) {
+        recordHistory();
+      }
+      entry.value = numeric;
+      state.variables[entry.name] = numeric;
+      registerAlgebraEntry(entry.id, `${entry.name} = ${formatNumber(entry.value)}`, 'variable', COLORS.variable);
+      if (propertiesState.type === 'variable' && propertiesState.id === entry.id) {
+        refreshPropertiesPanel({ type: 'variable', id: entry.id });
+      }
+      draw();
+    }
+
+    function assignNumericConstant(name, value) {
+      const cleaned = typeof name === 'string' ? name.trim() : '';
+      if (!cleaned) {
+        alert('Geef een geldige naam op voor de variabele.');
+        return null;
+      }
+      if (!Number.isFinite(value)) {
+        alert('Voer een geldige numerieke waarde in.');
+        return null;
+      }
+      const existingSlider = findSliderByName(cleaned);
+      if (existingSlider) {
+        updateSliderValue(existingSlider, value, { record: true });
+        setActiveSlider(existingSlider.id, { force: true });
+        refreshPropertiesPanel({ type: 'slider', id: existingSlider.id });
+        state.editingFunctionId = null;
+        state.editingPointId = null;
+        return existingSlider;
+      }
+      let entry = findNumberByName(cleaned);
+      if (entry) {
+        updateNumberValue(entry, value, { record: true });
+      } else {
+        entry = createNumberConstant(cleaned, value);
+      }
+      setActiveVariable(entry.id, { force: true });
+      refreshPropertiesPanel({ type: 'variable', id: entry.id });
+      state.editingFunctionId = null;
+      state.editingPointId = null;
+      return entry;
+    }
+
+    function renameNumber(id, nextName) {
+      const entry = findNumberById(id);
+      if (!entry) return;
+      const cleaned = nextName.trim();
+      if (!cleaned) return;
+      const unique = ensureUniqueVariableName(cleaned, entry.id);
+      if (unique === entry.name) {
+        registerAlgebraEntry(entry.id, `${entry.name} = ${formatNumber(entry.value)}`, 'variable', COLORS.variable);
+        return;
+      }
+      recordHistory();
+      const previousName = entry.name;
+      entry.name = unique;
+      delete state.variables[previousName];
+      state.variables[unique] = entry.value;
+      registerAlgebraEntry(entry.id, `${entry.name} = ${formatNumber(entry.value)}`, 'variable', COLORS.variable);
+      refreshPropertiesPanel({ type: 'variable', id: entry.id });
+      draw();
+    }
+
+    function updatePointName(id, nextName) {
+      const point = state.points.find(entry => entry.id === id);
+      if (!point) return;
+      const cleaned = nextName.trim();
+      if (!cleaned || cleaned === point.name) {
+        updatePointAlgebra(point);
+        return;
+      }
+      recordHistory();
+      point.name = cleaned;
+      updatePointAlgebra(point);
+      refreshPropertiesPanel({ type: 'point', id });
+      draw();
+    }
+
+    function updatePointColor(id, color, options = {}) {
+      const point = state.points.find(entry => entry.id === id);
+      if (!point) return;
+      const { record = true } = options;
+      const normalized = normalizeColor(color, point.color || COLORS.point);
+      if (point.color === normalized) {
+        updatePointAlgebra(point);
+        return;
+      }
+      if (record) {
+        recordHistory();
+      }
+      point.color = normalized;
+      registerAlgebraEntry(point.id, `${point.name} = (${formatNumber(point.position.x)}, ${formatNumber(point.position.y)})`, 'point', point.color);
+      if (propertiesState.type === 'point' && propertiesState.id === id) {
+        refreshPropertiesPanel({ type: 'point', id });
+      }
+      draw();
+    }
+
+    function setPointLabelVisibility(id, visible) {
+      const point = state.points.find(entry => entry.id === id);
+      if (!point) return;
+      const next = Boolean(visible);
+      if (point.showLabel === next) return;
+      recordHistory();
+      point.showLabel = next;
+      draw();
+    }
+
+    function togglePointTrace(id, enabled) {
+      const point = state.points.find(entry => entry.id === id);
+      if (!point) return;
+      const next = Boolean(enabled);
+      if (point.traceEnabled === next) return;
+      recordHistory();
+      point.traceEnabled = next;
+      if (next) {
+        point.trace = [{ x: point.position.x, y: point.position.y }];
+      } else {
+        point.trace = [];
+      }
+      draw();
+    }
+
+    function recordPointTrace(point) {
+      if (!point || !point.traceEnabled) return;
+      if (!Array.isArray(point.trace)) {
+        point.trace = [];
+      }
+      const last = point.trace[point.trace.length - 1];
+      const current = point.position;
+      if (last) {
+        const dist = Math.hypot(last.x - current.x, last.y - current.y);
+        if (dist < 0.02) {
+          return;
+        }
+      }
+      point.trace.push({ x: current.x, y: current.y });
+      if (point.trace.length > 400) {
+        point.trace.splice(0, point.trace.length - 400);
+      }
+    }
+
+    function updateFunctionLabel(id, nextLabel) {
+      const fn = state.functions.find(entry => entry.id === id);
+      if (!fn) return;
+      const cleaned = nextLabel.trim();
+      if (!cleaned || cleaned === fn.algebraLabel) {
+        registerAlgebraEntry(fn.id, `${fn.algebraLabel} = ${fn.expression}`, 'function', fn.color);
+        return;
+      }
+      recordHistory();
+      fn.algebraLabel = cleaned;
+      fn.label = cleaned;
+      registerAlgebraEntry(fn.id, `${fn.algebraLabel} = ${fn.expression}`, 'function', fn.color);
+      if (propertiesState.type === 'function' && propertiesState.id === id) {
+        refreshPropertiesPanel({ type: 'function', id });
+      }
+      draw();
+    }
+
+    function updateFunctionThickness(id, thickness, options = {}) {
+      const fn = state.functions.find(entry => entry.id === id);
+      if (!fn) return;
+      const { record = true } = options;
+      const numeric = Number.isFinite(thickness) ? Math.max(1, Math.min(12, thickness)) : fn.thickness || 2;
+      if (fn.thickness === numeric) return;
+      if (record) {
+        recordHistory();
+      }
+      fn.thickness = numeric;
+      draw();
+    }
+
+    function setFunctionLabelVisibility(id, visible) {
+      const fn = state.functions.find(entry => entry.id === id);
+      if (!fn) return;
+      const next = Boolean(visible);
+      if (fn.showLabel === next) return;
+      recordHistory();
+      fn.showLabel = next;
+      draw();
+    }
+
+    function updateFunctionColor(id, nextColor, options = {}) {
+      const { skipHistory = false, preview = false } = options;
+      const fn = state.functions.find(entry => entry.id === id);
+      if (!fn) return;
+      const normalized = normalizeColor(nextColor, fn.color || COLORS.function);
+      if (preview) {
+        if (!Object.prototype.hasOwnProperty.call(fn, '__lastCommittedColor')) {
+          fn.__lastCommittedColor = fn.color;
+        }
+        if (fn.color === normalized) {
+          return;
+        }
+        fn.color = normalized;
+      } else {
+        const baseColor = Object.prototype.hasOwnProperty.call(fn, '__lastCommittedColor')
+          ? fn.__lastCommittedColor
+          : fn.color;
+        if (normalized === baseColor) {
+          if (Object.prototype.hasOwnProperty.call(fn, '__lastCommittedColor')) {
+            delete fn.__lastCommittedColor;
+          }
+          if (fn.color === normalized) {
+            return;
+          }
+        }
+        if (!skipHistory && normalized !== baseColor) {
+          recordHistory();
+        }
+        fn.color = normalized;
+        if (Object.prototype.hasOwnProperty.call(fn, '__lastCommittedColor')) {
+          delete fn.__lastCommittedColor;
+        }
+      }
+      registerAlgebraEntry(fn.id, `${fn.algebraLabel} = ${fn.expression}`, 'function', fn.color);
+      if (state.highlightedFunctionId === id) {
+        setHighlightedFunction(id, { scroll: false, force: true });
+      }
+      draw();
     }
 
     function removeAlgebraEntry(id) {
@@ -2083,20 +3929,104 @@
         button.type = 'button';
         button.className = 'quick-action';
         button.textContent = action.label;
-        button.dataset.value = action.value;
+        button.dataset.action = action.action || 'insert';
+        if (action.value) {
+          button.dataset.value = action.value;
+        } else {
+          button.removeAttribute('data-value');
+        }
         quickActions.appendChild(button);
       }
     }
 
-    function applyQuickAction(value) {
-      if (!value) return;
-      commandInput.value = value;
-      const position = value.length;
-      commandInput.setSelectionRange(position, position);
-      focusCommandInput();
-      if (isCoarsePointer && !keyboardVisible) {
-        setKeyboardVisibility(true);
+    function applyQuickAction(action) {
+      if (!action) return;
+      if (action.type === 'insert') {
+        const value = action.value || '';
+        if (!value) return;
+        commandInput.value = value;
+        const position = value.length;
+        commandInput.setSelectionRange(position, position);
+        focusCommandInput();
+        if (isCoarsePointer && !keyboardVisible) {
+          setKeyboardVisibility(true);
+        }
+        return;
       }
+      if (action.type === 'create-slider') {
+        promptCreateSlider();
+        return;
+      }
+      if (action.type === 'define-number') {
+        promptCreateNumber();
+      }
+    }
+
+    function promptCreateSlider() {
+      let name = prompt('Naam voor de schuifbalk:', 'a');
+      if (name === null) return;
+      name = name.trim();
+      if (!name) {
+        name = `s${state.sliders.length + 1}`;
+      }
+      const minInput = prompt('Minimumwaarde:', '0');
+      if (minInput === null) return;
+      const maxInput = prompt('Maximumwaarde:', '10');
+      if (maxInput === null) return;
+      const stepInput = prompt('Stapgrootte (optioneel):', '1');
+      const min = parseLocaleNumber(minInput);
+      const max = parseLocaleNumber(maxInput);
+      const step = stepInput ? parseLocaleNumber(stepInput) : undefined;
+      if (!Number.isFinite(min) || !Number.isFinite(max)) {
+        alert('Voer geldige numerieke grenzen in.');
+        return;
+      }
+      const existing = findSliderByName(name);
+      if (existing) {
+        updateSliderBounds(existing.id, { min, max, step });
+        setActiveSlider(existing.id, { force: true });
+        refreshPropertiesPanel({ type: 'slider', id: existing.id });
+        ensureMoveTool();
+        return;
+      }
+      const created = createSlider(name, min, max, step ?? undefined, { value: min });
+      setActiveSlider(created.id, { force: true });
+      refreshPropertiesPanel({ type: 'slider', id: created.id });
+      ensureMoveTool();
+    }
+
+    function promptCreateNumber() {
+      let name = prompt('Naam voor de constante:', 'k');
+      if (name === null) return;
+      name = name.trim();
+      if (!name) {
+        name = `k${state.numbers.length + 1}`;
+      }
+      const valueInput = prompt('Waarde:', '1');
+      if (valueInput === null) return;
+      const numeric = parseLocaleNumber(valueInput);
+      if (!Number.isFinite(numeric)) {
+        alert('Voer een geldige numerieke waarde in.');
+        return;
+      }
+      const existingSlider = findSliderByName(name);
+      if (existingSlider) {
+        updateSliderValue(existingSlider, numeric, { record: true });
+        setActiveSlider(existingSlider.id, { force: true });
+        refreshPropertiesPanel({ type: 'slider', id: existingSlider.id });
+        ensureMoveTool();
+        return;
+      }
+      const existing = findNumberByName(name);
+      if (existing) {
+        updateNumberValue(existing, numeric, { record: true });
+        setActiveVariable(existing.id, { force: true });
+      } else {
+        const created = createNumberConstant(name, numeric);
+        setActiveVariable(created.id, { force: true });
+      }
+      refreshPropertiesPanel();
+      ensureMoveTool();
     }
 
     function ensureKeyboardBuilt() {
@@ -2423,6 +4353,42 @@
       return normalized;
     }
 
+    function evaluateScalarExpression(expression) {
+      const prepared = prepareExpression(expression);
+      const evaluator = new Function(
+        'vars',
+        `const ln = Math.log;
+         const log = Math.log10 ? Math.log10 : (v => Math.log(v) / Math.LN10);
+         const log10 = Math.log10 ? Math.log10 : (v => Math.log(v) / Math.LN10);
+         const log2 = Math.log2 ? Math.log2 : (v => Math.log(v) / Math.LN2);
+         const sign = Math.sign;
+         const sgn = Math.sign;
+         const abs = Math.abs;
+         const sec = x => 1 / Math.cos(x);
+         const csc = x => 1 / Math.sin(x);
+         const cot = x => 1 / Math.tan(x);
+         const sech = x => 1 / Math.cosh(x);
+         const csch = x => 1 / Math.sinh(x);
+         const coth = x => 1 / Math.tanh(x);
+         const tau = Math.PI * 2;
+         with (Math) { with (vars || {}) { return ${prepared}; } }`
+      );
+      const result = evaluator(state.variables);
+      if (!Number.isFinite(result)) {
+        throw new Error('Ongeldige waarde');
+      }
+      return result;
+    }
+
+    function tryEvaluateScalar(expression) {
+      try {
+        const result = evaluateScalarExpression(expression);
+        return Number.isFinite(result) ? result : null;
+      } catch (error) {
+        return null;
+      }
+    }
+
     function registerFunction({ algebraLabel, expression, source, graphLabel, evaluationExpression }, options = {}) {
       const {
         id,
@@ -2431,13 +4397,16 @@
         skipHistory = false,
         skipDraw = false,
         skipColorAdvance = false,
-        skipAlgebra = false
+        skipAlgebra = false,
+        thickness,
+        showLabel
       } = options;
       const color = providedColor ?? FUNCTION_COLORS[state.functionColorIndex % FUNCTION_COLORS.length];
       try {
         const prepared = prepareExpression(evaluationExpression || expression);
         const compiled = new Function(
           'x',
+          'vars',
           `const ln = Math.log;
            const log = Math.log10 ? Math.log10 : (v => Math.log(v) / Math.LN10);
            const log10 = Math.log10 ? Math.log10 : (v => Math.log(v) / Math.LN10);
@@ -2452,7 +4421,7 @@
            const csch = x => 1 / Math.sinh(x);
            const coth = x => 1 / Math.tanh(x);
            const tau = Math.PI * 2;
-           with (Math) { return ${prepared}; }`
+           with (Math) { with (vars || {}) { return ${prepared}; } }`
         );
         if (!skipHistory) {
           recordHistory();
@@ -2463,10 +4432,13 @@
           algebraLabel,
           expression,
           source,
-          eval: compiled,
+          eval: x => compiled(x, state.variables),
+          evaluator: compiled,
           color,
           displayName: displayName || `${graphLabel} = ${expression}`,
-          evaluationExpression: evaluationExpression || expression
+          evaluationExpression: evaluationExpression || expression,
+          thickness: Number.isFinite(thickness) ? Math.max(1, thickness) : 2,
+          showLabel: Boolean(showLabel)
         };
         state.functions.push(fn);
         if (!skipColorAdvance) {
@@ -2496,6 +4468,10 @@
         const span = item.querySelector('.algebra-detail');
         if (span) {
           span.textContent = `= (${formatNumber(point.position.x)}, ${formatNumber(point.position.y)})`;
+        }
+        const icon = item.querySelector('.algebra-color');
+        if (icon) {
+          icon.style.color = point.color || COLORS.point;
         }
       }
     }
@@ -2562,6 +4538,12 @@
             recordHistory();
           }
           state.points.splice(index, 1);
+          if (state.selectedPointId === id) {
+            setSelectedPoint(null);
+          }
+          if (state.editingPointId === id) {
+            state.editingPointId = null;
+          }
           const relatedSegments = state.segments.filter(segment => segment.p1 === id || segment.p2 === id);
           relatedSegments.forEach(segment => removeObject(segment.id, 'segment', { silent: true, skipHistory: true }));
           const relatedLines = state.lines.filter(line => line.p1 === id || line.p2 === id);
@@ -2635,10 +4617,65 @@
           }
           state.functions.splice(index, 1);
           if (state.highlightedFunctionId === id) {
-            setHighlightedFunction(null);
+            setHighlightedFunction(null, { preservePoint: Boolean(state.selectedPointId) });
           }
           if (state.editingFunctionId === id) {
             state.editingFunctionId = null;
+          }
+          break;
+        }
+        case 'slider': {
+          const index = state.sliders.findIndex(slider => slider.id === id);
+          if (index === -1) break;
+          const slider = state.sliders[index];
+          if (!skipHistory) {
+            recordHistory();
+          }
+          if (slider.animating && sliderAnimationFrame) {
+            slider.animating = false;
+          }
+          delete state.variables[slider.name];
+          state.sliders.splice(index, 1);
+          if (state.selectedSliderId === id) {
+            state.selectedSliderId = null;
+            refreshPropertiesPanel();
+            if (state.highlightedFunctionId) {
+              state.lastSelectionType = 'function';
+            } else if (state.selectedPointId) {
+              state.lastSelectionType = 'point';
+            } else if (state.selectedVariableId) {
+              state.lastSelectionType = 'variable';
+            } else {
+              state.lastSelectionType = 'none';
+            }
+          }
+          if (!state.sliders.some(entry => entry.animating) && sliderAnimationFrame) {
+            cancelAnimationFrame(sliderAnimationFrame);
+            sliderAnimationFrame = null;
+          }
+          break;
+        }
+        case 'variable': {
+          const index = state.numbers.findIndex(entry => entry.id === id);
+          if (index === -1) break;
+          const entry = state.numbers[index];
+          if (!skipHistory) {
+            recordHistory();
+          }
+          delete state.variables[entry.name];
+          state.numbers.splice(index, 1);
+          if (state.selectedVariableId === id) {
+            state.selectedVariableId = null;
+            refreshPropertiesPanel();
+            if (state.highlightedFunctionId) {
+              state.lastSelectionType = 'function';
+            } else if (state.selectedPointId) {
+              state.lastSelectionType = 'point';
+            } else if (state.selectedSliderId) {
+              state.lastSelectionType = 'slider';
+            } else {
+              state.lastSelectionType = 'none';
+            }
           }
           break;
         }
@@ -2686,11 +4723,15 @@
         if (point) {
           state.pendingFunctionHighlight = null;
           state.panCandidate = null;
+          setSelectedPoint(point.id);
           state.draggingPoint = point;
           const screenPos = worldToScreen(point.position);
           state.dragOffset = { x: screenPos.x - x, y: screenPos.y - y };
           state.dragHistoryArmed = true;
         } else {
+          if (state.selectedPointId) {
+            setSelectedPoint(null);
+          }
           const nearbyFunction = findFunctionNearScreen(x, y);
           if (nearbyFunction) {
             state.pendingFunctionHighlight = { id: nearbyFunction.id };
@@ -2703,7 +4744,7 @@
             state.panCandidate = null;
             state.panStart = { x, y };
             if (state.highlightedFunctionId) {
-              setHighlightedFunction(null);
+              setHighlightedFunction(null, { preservePoint: Boolean(state.selectedPointId) });
             }
           }
         }
@@ -2761,6 +4802,7 @@
         const position = screenToWorld(x + state.dragOffset.x, y + state.dragOffset.y);
         state.draggingPoint.position = snapWorldToGrid(position);
         updatePointAlgebra(state.draggingPoint);
+        recordPointTrace(state.draggingPoint);
         draw();
       } else if (state.panning) {
         const dx = x - state.panStart.x;
@@ -2807,7 +4849,7 @@
       const snappedWorld = snapWorldToGrid(world);
       let point = findPointNear(snappedWorld);
       if (!point) {
-        point = createPoint(snappedWorld);
+        point = createPoint(snappedWorld, undefined, { select: false });
       }
       state.tempPoints.push(point.id);
 
@@ -2848,7 +4890,7 @@
       const snappedWorld = snapWorldToGrid(world);
       let point = findPointNear(snappedWorld);
       if (!point) {
-        point = createPoint(snappedWorld);
+        point = createPoint(snappedWorld, undefined, { select: false });
         if (point && state.tempPolygon) {
           state.tempPolygon.createdPoints.push(point.id);
         }
@@ -2922,6 +4964,17 @@
       const trimmed = command.trim();
       if (!trimmed) return;
 
+      const sliderStandalone = trimmed.match(/^Slider\s*\((.*)\)$/i);
+      if (sliderStandalone) {
+        const definition = parseSliderCallDefinition(sliderStandalone[1], null);
+        if (!definition) {
+          alert('Kan schuifbalk niet aanmaken: controleer de invoer.');
+          return;
+        }
+        commitSliderDefinition(definition);
+        return;
+      }
+
       if (!trimmed.includes('=') && /x/i.test(trimmed)) {
         parseCommand(`y = ${trimmed}`);
         return;
@@ -2930,16 +4983,44 @@
       const editingId = state.editingFunctionId;
       const editingIndex = editingId ? state.functions.findIndex(fn => fn.id === editingId) : -1;
       const editingFn = editingIndex >= 0 ? state.functions[editingIndex] : null;
+      const editingPointId = state.editingPointId;
 
       const pointMatch = trimmed.match(/^([A-Za-z]+)\s*=\s*\(([-+]?\d*\.?\d+),\s*([-+]?\d*\.?\d+)\)$/);
       if (pointMatch) {
-        const [, name, x, y] = pointMatch;
-        const point = createPoint({ x: parseFloat(x), y: parseFloat(y) }, name, { snap: false });
+        const [, rawName, x, y] = pointMatch;
+        const name = rawName.trim();
+        const position = { x: parseFloat(x), y: parseFloat(y) };
+        let target = editingPointId ? state.points.find(point => point.id === editingPointId) : null;
+        if (!target) {
+          target = state.points.find(point => point.name === name);
+        }
+        if (target) {
+          recordHistory();
+          const previousName = target.name;
+          const nameChanged = previousName !== name;
+          target.name = name;
+          target.position = position;
+          if (nameChanged) {
+            rebuildAlgebraList();
+          } else {
+            updatePointAlgebra(target);
+          }
+          setSelectedPoint(target.id, { force: true });
+          state.editingPointId = null;
+          state.editingFunctionId = null;
+          draw();
+          return;
+        }
+        const point = createPoint(position, name, { snap: false });
         updatePointAlgebra(point);
-        draw();
+        setSelectedPoint(point.id, { force: true });
+        state.editingPointId = null;
         state.editingFunctionId = null;
+        draw();
         return;
       }
+
+      state.editingPointId = null;
 
       const equationMatch = trimmed.match(/^([^=]+)=\s*(.+)$/);
       if (equationMatch) {
@@ -2953,6 +5034,17 @@
         let algebraLabel;
         let graphLabel;
         let evaluationExpression = rightRaw;
+
+        if (simpleNameMatch && sanitizedLeft.toLowerCase() !== 'y' && !functionCallMatch) {
+          const scalarResult = handleScalarAssignment(simpleNameMatch[1], rightRaw);
+          if (scalarResult !== false) {
+            if (scalarResult) {
+              state.editingFunctionId = null;
+              state.editingPointId = null;
+            }
+            return;
+          }
+        }
 
         if (sanitizedLeft.toLowerCase() === 'y') {
           if (editingFn) {
@@ -3064,6 +5156,38 @@
     }
 
     algebraList.addEventListener('click', event => {
+      const sliderActionButton = event.target.closest('[data-slider-action]');
+      if (sliderActionButton) {
+        const sliderItem = sliderActionButton.closest('.algebra-item.slider');
+        if (!sliderItem) return;
+        const slider = findSliderById(sliderItem.dataset.id);
+        if (!slider) return;
+        const action = sliderActionButton.dataset.sliderAction;
+        if (action === 'step-back') {
+          stepSlider(slider, -1);
+        } else if (action === 'step-forward') {
+          stepSlider(slider, 1);
+        } else if (action === 'toggle-animate') {
+          setSliderAnimating(slider, !slider.animating);
+        }
+        event.preventDefault();
+        event.stopPropagation();
+        ensureMoveTool();
+        return;
+      }
+
+      const colorButton = event.target.closest('.algebra-color[data-action="color"]');
+      if (colorButton) {
+        const item = colorButton.closest('.algebra-item');
+        if (!item) return;
+        const picker = item.querySelector('.algebra-color-input');
+        if (picker) {
+          picker.click();
+        }
+        event.preventDefault();
+        event.stopPropagation();
+        return;
+      }
       const button = event.target.closest('.delete-button');
       if (button) {
         const item = button.closest('.algebra-item');
@@ -3074,10 +5198,21 @@
       }
       const item = event.target.closest('.algebra-item');
       if (!item) return;
+      if (item.dataset.type === 'slider') {
+        setActiveSlider(item.dataset.id, { force: true });
+        ensureMoveTool();
+        return;
+      }
+      if (item.dataset.type === 'variable') {
+        setActiveVariable(item.dataset.id, { force: true });
+        ensureMoveTool();
+        return;
+      }
       if (item.dataset.type === 'function') {
         const fn = state.functions.find(entry => entry.id === item.dataset.id);
         if (!fn) return;
         state.editingFunctionId = fn.id;
+        state.editingPointId = null;
         const source = fn.source || `${fn.algebraLabel} = ${fn.expression}`;
         commandInput.value = source;
         const position = source.length;
@@ -3087,15 +5222,82 @@
         if (isCoarsePointer && !keyboardVisible) {
           setKeyboardVisibility(true);
         }
+      } else if (item.dataset.type === 'point') {
+        const point = state.points.find(entry => entry.id === item.dataset.id);
+        if (!point) return;
+        state.editingPointId = point.id;
+        state.editingFunctionId = null;
+        const source = `${point.name} = (${formatNumber(point.position.x)}, ${formatNumber(point.position.y)})`;
+        commandInput.value = source;
+        const position = source.length;
+        commandInput.setSelectionRange(position, position);
+        focusCommandInput();
+        setSelectedPoint(point.id, { force: true });
+        if (isCoarsePointer && !keyboardVisible) {
+          setKeyboardVisibility(true);
+        }
       }
       ensureMoveTool();
+    });
+
+    algebraList.addEventListener('input', event => {
+      const range = event.target.closest('.slider-range');
+      if (range) {
+        const sliderItem = range.closest('.algebra-item.slider');
+        if (!sliderItem) return;
+        const slider = findSliderById(sliderItem.dataset.id);
+        if (!slider) return;
+        const numeric = parseFloat(range.value);
+        if (Number.isFinite(numeric)) {
+          updateSliderValue(slider, numeric, { record: false });
+        }
+        return;
+      }
+      const picker = event.target.closest('.algebra-color-input');
+      if (!picker) return;
+      const item = picker.closest('.algebra-item');
+      if (!item) return;
+      updateFunctionColor(item.dataset.id, picker.value, { skipHistory: true, preview: true });
+    });
+
+    algebraList.addEventListener('change', event => {
+      const range = event.target.closest('.slider-range');
+      if (range) {
+        const sliderItem = range.closest('.algebra-item.slider');
+        if (!sliderItem) return;
+        const slider = findSliderById(sliderItem.dataset.id);
+        if (!slider) return;
+        const numeric = parseFloat(range.value);
+        if (Number.isFinite(numeric)) {
+          updateSliderValue(slider, numeric, { record: true });
+        } else {
+          renderSliderEntry(slider.id);
+        }
+        return;
+      }
+      const speedSelect = event.target.closest('.slider-speed');
+      if (speedSelect) {
+        const sliderItem = speedSelect.closest('.algebra-item.slider');
+        if (!sliderItem) return;
+        const slider = findSliderById(sliderItem.dataset.id);
+        if (!slider) return;
+        setSliderSpeed(slider, speedSelect.value);
+        return;
+      }
+      const picker = event.target.closest('.algebra-color-input');
+      if (!picker) return;
+      const item = picker.closest('.algebra-item');
+      if (!item) return;
+      updateFunctionColor(item.dataset.id, picker.value);
     });
 
     if (quickActions) {
       quickActions.addEventListener('click', event => {
         const button = event.target.closest('.quick-action');
         if (!button) return;
-        applyQuickAction(button.dataset.value || '');
+        const type = button.dataset.action || 'insert';
+        const value = button.dataset.value || '';
+        applyQuickAction({ type, value });
         ensureMoveTool();
       });
     }
