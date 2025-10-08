@@ -6,7 +6,6 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="white" />
   <meta name="theme-color" content="#ffffff" />
-  <link rel="icon" type="image/png" href="favicon.png">
   <title>GeoCanvas Classic</title>
   <style>
     :root {
@@ -311,6 +310,10 @@
       color: #444;
       cursor: pointer;
       transition: border 0.2s ease, box-shadow 0.2s ease, color 0.2s ease;
+    }
+
+    .command-button.hidden {
+      display: none;
     }
 
     .command-button svg {
@@ -855,8 +858,23 @@
     const defaultViewportContent = viewportMeta ? viewportMeta.getAttribute('content') : '';
 
     const DPR = window.devicePixelRatio || 1;
-    const coarsePointerMedia = window.matchMedia('(pointer: coarse)');
-    let isCoarsePointer = coarsePointerMedia.matches;
+    const coarsePointerMedia = typeof window.matchMedia === 'function'
+      ? window.matchMedia('(pointer: coarse)')
+      : null;
+
+    function computeCoarsePointerPreference() {
+      const coarseMatch = coarsePointerMedia ? coarsePointerMedia.matches : false;
+      const touchPoints = typeof navigator.maxTouchPoints === 'number'
+        ? navigator.maxTouchPoints
+        : typeof navigator.msMaxTouchPoints === 'number'
+          ? navigator.msMaxTouchPoints
+          : 0;
+      const userAgent = typeof navigator.userAgent === 'string' ? navigator.userAgent : '';
+      const mobileHint = /(Android|iPhone|iPad|iPod|Mobile|Silk|Kindle|BlackBerry|Opera Mini|IEMobile)/i.test(userAgent);
+      return coarseMatch || touchPoints > 1 || mobileHint;
+    }
+
+    let isCoarsePointer = computeCoarsePointerPreference();
 
     const state = {
       tool: 'move',
@@ -1109,11 +1127,21 @@
         commandInput.setAttribute('inputmode', 'text');
       }
       updateKeyboardPresentation();
+      updateKeyboardToggleVisibility();
     }
 
-    function handlePointerPreferenceChange(event) {
-      isCoarsePointer = event.matches;
-      updateInputMode();
+    function refreshPointerMode(forceUpdate = false) {
+      const next = computeCoarsePointerPreference();
+      if (next !== isCoarsePointer) {
+        isCoarsePointer = next;
+        updateInputMode();
+      } else if (forceUpdate) {
+        updateInputMode();
+      }
+    }
+
+    function handlePointerPreferenceChange() {
+      refreshPointerMode(true);
       if (!isCoarsePointer) {
         document.body.classList.remove('keyboard-open');
         document.body.style.setProperty('--keyboard-offset', '0px');
@@ -1124,12 +1152,27 @@
 
     function updateKeyboardPresentation() {
       if (!keyboard) return;
-      const floating = !isCoarsePointer;
-      keyboard.classList.toggle('desktop-floating', floating);
-      if (floating) {
-        positionFloatingKeyboard();
-      } else {
+      keyboard.classList.remove('desktop-floating');
+      if (!isCoarsePointer) {
         resetFloatingKeyboardStyles();
+        if (keyboardVisible) {
+          setKeyboardVisibility(false);
+        }
+      }
+    }
+
+    function updateKeyboardToggleVisibility() {
+      if (!keyboardToggle) return;
+      const showKeyboard = isCoarsePointer;
+      keyboardToggle.classList.toggle('hidden', !showKeyboard);
+      keyboardToggle.setAttribute('aria-hidden', String(!showKeyboard));
+      if (showKeyboard) {
+        keyboardToggle.removeAttribute('tabindex');
+      } else {
+        keyboardToggle.setAttribute('tabindex', '-1');
+        if (keyboardVisible) {
+          setKeyboardVisibility(false);
+        }
       }
     }
 
@@ -1903,14 +1946,34 @@
       if (!Number.isFinite(state.scale) || state.scale <= 0) {
         return position;
       }
+      let step = getTickStep();
+      const subdivisions = getGridSubdivisions(step);
+      if (!Number.isFinite(step) || step <= 0) {
+        step = 1;
+      }
+      if (Number.isFinite(subdivisions) && subdivisions > 0) {
+        const minor = step / subdivisions;
+        if (Number.isFinite(minor) && minor > 0) {
+          step = minor;
+        }
+      }
+      if (!Number.isFinite(step) || step <= 0) {
+        step = 1;
+      }
       const snapped = {
-        x: Math.round(position.x),
-        y: Math.round(position.y)
+        x: Math.round(position.x / step) * step,
+        y: Math.round(position.y / step) * step
       };
+      if (Number.isFinite(step) && step > 0) {
+        const precision = Math.min(6, Math.max(0, Math.ceil(-Math.log10(step)) + 2));
+        const factor = Math.pow(10, precision);
+        snapped.x = Math.round(snapped.x * factor) / factor;
+        snapped.y = Math.round(snapped.y * factor) / factor;
+      }
       const originalScreen = worldToScreen(position);
       const snappedScreen = worldToScreen(snapped);
       const distancePx = Math.hypot(originalScreen.x - snappedScreen.x, originalScreen.y - snappedScreen.y);
-      const thresholdPx = Math.max(6, Math.min(18, state.scale * 0.25));
+      const thresholdPx = Math.max(6, Math.min(24, state.scale * 0.35));
       if (distancePx <= thresholdPx) {
         return snapped;
       }
@@ -2031,12 +2094,13 @@
       const position = value.length;
       commandInput.setSelectionRange(position, position);
       focusCommandInput();
-      if (window.innerWidth < 920 && !keyboardVisible) {
+      if (isCoarsePointer && !keyboardVisible) {
         setKeyboardVisibility(true);
       }
     }
 
     function ensureKeyboardBuilt() {
+      if (!isCoarsePointer) return;
       if (keyboardBuilt) return;
       keyboardBuilt = true;
       keyboardTabs.innerHTML = '';
@@ -2259,27 +2323,28 @@
     }
 
     function setKeyboardVisibility(visible) {
-      if (visible) {
+      if (!keyboard || !keyboardToggle) return;
+      const allowKeyboard = isCoarsePointer;
+      const nextVisible = allowKeyboard && Boolean(visible);
+      if (nextVisible) {
         ensureKeyboardBuilt();
-      }
-      keyboardVisible = visible;
-      if (visible) {
         ensureMoveTool();
       }
-      keyboard.classList.toggle('active', visible);
-      keyboard.setAttribute('aria-hidden', String(!visible));
-      keyboardToggle.classList.toggle('active', visible);
-      keyboardToggle.setAttribute('aria-label', visible ? 'Verberg toetsenbord' : 'Toon toetsenbord');
-      keyboardToggle.setAttribute('aria-pressed', String(visible));
-      if (visible) {
+      keyboardVisible = nextVisible;
+      keyboard.classList.toggle('active', nextVisible);
+      keyboard.setAttribute('aria-hidden', String(!nextVisible));
+      keyboardToggle.classList.toggle('active', nextVisible);
+      keyboardToggle.setAttribute('aria-label', nextVisible ? 'Verberg toetsenbord' : 'Toon toetsenbord');
+      keyboardToggle.setAttribute('aria-pressed', String(nextVisible));
+      if (nextVisible) {
         focusCommandInput();
       }
-      if (!isCoarsePointer && visible) {
-        positionFloatingKeyboard();
-      }
-      if (isCoarsePointer) {
-        document.body.classList.toggle('keyboard-open', visible);
-        if (visible) {
+      if (!allowKeyboard) {
+        document.body.classList.remove('keyboard-open');
+        document.body.style.setProperty('--keyboard-offset', '0px');
+      } else {
+        document.body.classList.toggle('keyboard-open', nextVisible);
+        if (nextVisible) {
           requestAnimationFrame(() => {
             const height = keyboard.offsetHeight || 0;
             document.body.style.setProperty('--keyboard-offset', `${height}px`);
@@ -3056,12 +3121,25 @@
 
     window.addEventListener('resize', () => {
       handleResponsiveSidebar();
-      if (window.innerWidth >= 920 && !keyboardBuilt) {
+      refreshPointerMode();
+      if (isCoarsePointer && !keyboardBuilt) {
         ensureKeyboardBuilt();
       }
       positionFloatingKeyboard();
       resizeCanvas();
     });
+
+    window.addEventListener('orientationchange', () => {
+      refreshPointerMode(true);
+      positionFloatingKeyboard();
+    });
+
+    window.addEventListener('touchstart', () => {
+      if (!isCoarsePointer) {
+        isCoarsePointer = true;
+        updateInputMode();
+      }
+    }, { once: true, passive: true });
 
     document.getElementById('zoom-in').addEventListener('click', () => {
       zoom(1.2);
@@ -3094,6 +3172,10 @@
 
     keyboardToggle.addEventListener('pointerdown', event => {
       event.preventDefault();
+      if (!isCoarsePointer) {
+        setKeyboardVisibility(false);
+        return;
+      }
       keyboardToggle.focus();
       ensureMoveTool();
       setKeyboardVisibility(!keyboardVisible);
@@ -3106,12 +3188,20 @@
         skipNextKeyboardToggleClick = false;
         return;
       }
+      if (!isCoarsePointer) {
+        setKeyboardVisibility(false);
+        return;
+      }
       setKeyboardVisibility(!keyboardVisible);
     });
 
     keyboardToggle.addEventListener('keydown', event => {
       if (event.key === 'Enter' || event.key === ' ') {
         event.preventDefault();
+        if (!isCoarsePointer) {
+          setKeyboardVisibility(false);
+          return;
+        }
         setKeyboardVisibility(!keyboardVisible);
         skipNextKeyboardToggleClick = true;
       }
@@ -3119,7 +3209,7 @@
 
     commandInput.addEventListener('focus', () => {
       ensureMoveTool();
-      if (window.innerWidth < 920 && !keyboardVisible) {
+      if (isCoarsePointer && !keyboardVisible) {
         setKeyboardVisibility(true);
       }
     });
@@ -3165,6 +3255,10 @@
     }
 
     document.addEventListener('pointerdown', event => {
+      if (event.pointerType === 'touch' && !isCoarsePointer) {
+        isCoarsePointer = true;
+        updateInputMode();
+      }
       if (!keyboardVisible) return;
       const target = event.target;
       if (keyboard.contains(target)) return;
@@ -3210,11 +3304,13 @@
       resizeObserver.observe(graphContainer);
     }
 
-    updateInputMode();
-    if (typeof coarsePointerMedia.addEventListener === 'function') {
-      coarsePointerMedia.addEventListener('change', handlePointerPreferenceChange);
-    } else if (typeof coarsePointerMedia.addListener === 'function') {
-      coarsePointerMedia.addListener(handlePointerPreferenceChange);
+    refreshPointerMode(true);
+    if (coarsePointerMedia) {
+      if (typeof coarsePointerMedia.addEventListener === 'function') {
+        coarsePointerMedia.addEventListener('change', handlePointerPreferenceChange);
+      } else if (typeof coarsePointerMedia.addListener === 'function') {
+        coarsePointerMedia.addListener(handlePointerPreferenceChange);
+      }
     }
 
     const standaloneMedia = window.matchMedia('(display-mode: standalone)');
@@ -3241,7 +3337,7 @@
       commandBar.removeAttribute('hidden');
     }
 
-    if (window.innerWidth >= 920) {
+    if (isCoarsePointer) {
       ensureKeyboardBuilt();
     }
 
