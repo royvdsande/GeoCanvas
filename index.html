@@ -84,6 +84,77 @@
       min-width: 240px;
     }
 
+    .calculate-wrapper {
+      position: relative;
+    }
+
+    .calculate-menu {
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 0;
+      display: none;
+      flex-direction: column;
+      gap: 4px;
+      padding: 10px;
+      background: var(--panel-bg);
+      border: 1px solid rgba(15, 23, 42, 0.08);
+      border-radius: 14px;
+      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.12);
+      width: min(260px, 80vw);
+      min-width: 200px;
+      max-height: min(70vh, 320px);
+      overflow-y: auto;
+      z-index: 40;
+    }
+
+    .calculate-menu.open {
+      display: flex;
+    }
+
+    .calculate-menu button {
+      border: none;
+      background: transparent;
+      text-align: left;
+      padding: 10px 12px;
+      border-radius: 10px;
+      font-size: 0.92rem;
+      color: #1f2937;
+      cursor: pointer;
+      transition: background 0.15s ease, color 0.15s ease;
+    }
+
+    .calculate-menu button:hover,
+    .calculate-menu button:focus-visible {
+      background: rgba(51, 103, 214, 0.12);
+      color: var(--accent);
+      outline: none;
+    }
+
+    .calculation-hint {
+      position: absolute;
+      bottom: calc(80px + var(--keyboard-offset));
+      left: 50%;
+      transform: translate(-50%, 12px);
+      background: rgba(17, 24, 39, 0.92);
+      color: #fff;
+      padding: 10px 16px;
+      border-radius: 14px;
+      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.28);
+      font-size: 0.92rem;
+      line-height: 1.4;
+      max-width: min(90vw, 320px);
+      text-align: center;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+      z-index: 35;
+    }
+
+    .calculation-hint.visible {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+
     .tool-button {
       background: transparent;
       border: 1px solid transparent;
@@ -1049,6 +1120,23 @@
       </button>
       <span class="badge">Beta</span>
     </div>
+    <div class="calculate-wrapper">
+      <button class="tool-button" id="calculate-menu-toggle" aria-label="Bereken" title="Bereken" aria-haspopup="menu" aria-expanded="false">
+        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 7h16" />
+          <path d="M4 17h16" />
+          <path d="M8 3v4" />
+          <path d="M16 17v4" />
+          <path d="M9 11h6" />
+          <path d="M11 9v4" />
+        </svg>
+      </button>
+      <div class="calculate-menu" id="calculate-menu" role="menu" aria-hidden="true">
+        <button type="button" data-action="extrema" role="menuitem">Extreme waarden</button>
+        <button type="button" data-action="roots" role="menuitem">Snijpunten met de x-as</button>
+        <button type="button" data-action="line-intersection" role="menuitem">Snijpunt(en) tussen twee lijnen</button>
+      </div>
+    </div>
     <button class="tool-button" id="export-board" aria-label="Exporteer afbeelding" title="Exporteer afbeelding">
       <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
         <path d="M12 3v14" />
@@ -1122,6 +1210,7 @@
       </div>
       <canvas id="board" width="1600" height="1200" aria-label="Coördinaatvlak"></canvas>
       <div class="quick-actions" id="quick-actions" role="group" aria-label="Snelle functievoorbeelden"></div>
+      <div class="calculation-hint" id="calculation-hint" role="status" aria-live="polite" aria-hidden="true"></div>
       <div class="command-bar">
         <span aria-hidden="true">+</span>
         <input type="text" id="command-input" class="command-input" placeholder="Voer een opdracht of functie in, bijv. y=x^2 of A=(2,1)" autocomplete="off" />
@@ -1677,6 +1766,9 @@
       }
       state.lastSelectionType = 'line';
       draw();
+      if (!restoringState) {
+        processLineCalculationSelection(id);
+      }
     }
 
     function setSelectedCircle(id, options = {}) {
@@ -1743,8 +1835,11 @@
     const keyboardRows = keyboard.querySelector('.keyboard-rows');
     const keyboardHandle = keyboard.querySelector('.keyboard-handle');
     const quickActions = document.getElementById('quick-actions');
+    const calculationHint = document.getElementById('calculation-hint');
     const undoButton = document.getElementById('undo');
     const redoButton = document.getElementById('redo');
+    const calculateToggle = document.getElementById('calculate-menu-toggle');
+    const calculateMenu = document.getElementById('calculate-menu');
     const exportButton = document.getElementById('export-board');
     const propertiesPanel = document.getElementById('properties-panel');
     const propertiesContent = document.getElementById('properties-content');
@@ -1833,6 +1928,44 @@
       pause: `<svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M7 5h4v14H7z" /><path d="M13 5h4v14h-4z" /></svg>`,
       dots: `<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.6" /><circle cx="12" cy="12" r="1.6" /><circle cx="12" cy="19" r="1.6" /></svg>`
     };
+
+    const calculateState = {
+      mode: null,
+      firstLineId: null
+    };
+
+    let calculationHintTimeout = null;
+
+    function showCalculationHint(message, options = {}) {
+      const { persist = false, duration = 4000 } = options;
+      if (!calculationHint) {
+        return;
+      }
+      calculationHint.textContent = message;
+      calculationHint.classList.add('visible');
+      calculationHint.setAttribute('aria-hidden', 'false');
+      if (calculationHintTimeout) {
+        clearTimeout(calculationHintTimeout);
+        calculationHintTimeout = null;
+      }
+      if (!persist) {
+        calculationHintTimeout = setTimeout(() => {
+          hideCalculationHint();
+        }, duration);
+      }
+    }
+
+    function hideCalculationHint() {
+      if (!calculationHint) {
+        return;
+      }
+      if (calculationHintTimeout) {
+        clearTimeout(calculationHintTimeout);
+        calculationHintTimeout = null;
+      }
+      calculationHint.classList.remove('visible');
+      calculationHint.setAttribute('aria-hidden', 'true');
+    }
 
     function withAlpha(color, alpha) {
       if (!color) {
@@ -3140,6 +3273,7 @@
       state.lastSelectionType = 'function';
       refreshPropertiesPanel({ type: 'function', id });
       draw();
+      triggerPendingFunctionCalculation(id);
     }
 
     function setTool(tool) {
@@ -3174,6 +3308,418 @@
 
     function distance(a, b) {
       return Math.hypot(a.x - b.x, a.y - b.y);
+    }
+
+    function getPointById(id) {
+      return state.points.find(point => point.id === id) || null;
+    }
+
+    function pointExistsNear(position, tolerance = 1e-3) {
+      if (!position) return false;
+      return state.points.some(point => distance(point.position, position) <= tolerance);
+    }
+
+    function safeEvalFunction(fn, x) {
+      if (!fn) return NaN;
+      try {
+        const value = fn.eval(x);
+        return Number.isFinite(value) ? value : NaN;
+      } catch (error) {
+        return NaN;
+      }
+    }
+
+    function getVisibleXRange() {
+      const width = canvas ? canvas.clientWidth || canvas.width / DPR : 0;
+      if (!Number.isFinite(state.scale) || state.scale === 0 || !Number.isFinite(width)) {
+        return { min: -10, max: 10 };
+      }
+      const left = (0 - state.origin.x) / state.scale;
+      const right = (width - state.origin.x) / state.scale;
+      if (!Number.isFinite(left) || !Number.isFinite(right)) {
+        return { min: -10, max: 10 };
+      }
+      return left <= right ? { min: left, max: right } : { min: right, max: left };
+    }
+
+    function approximateDerivative(fn, x, baseStep = 0.0005) {
+      const adaptive = Math.max(
+        Math.abs(x) * 1e-4,
+        baseStep,
+        getPlotSampleStep() / 5,
+        1e-4
+      );
+      const h = Number.isFinite(adaptive) && adaptive > 0 ? adaptive : 0.0005;
+      const forward = safeEvalFunction(fn, x + h);
+      const backward = safeEvalFunction(fn, x - h);
+      if (!Number.isFinite(forward) || !Number.isFinite(backward)) {
+        return NaN;
+      }
+      return (forward - backward) / (2 * h);
+    }
+
+    function refineStationaryPoint(fn, a, b) {
+      if (!Number.isFinite(a) || !Number.isFinite(b)) {
+        return null;
+      }
+      if (a === b) {
+        const y = safeEvalFunction(fn, a);
+        return Number.isFinite(y) ? { x: a, y } : null;
+      }
+      let left = Math.min(a, b);
+      let right = Math.max(a, b);
+      let fLeft = approximateDerivative(fn, left);
+      let fRight = approximateDerivative(fn, right);
+      if (!Number.isFinite(fLeft) || !Number.isFinite(fRight)) {
+        return null;
+      }
+      const tolerance = 1e-5;
+      if (Math.abs(fLeft) < tolerance) {
+        const y = safeEvalFunction(fn, left);
+        return Number.isFinite(y) ? { x: left, y } : null;
+      }
+      if (Math.abs(fRight) < tolerance) {
+        const y = safeEvalFunction(fn, right);
+        return Number.isFinite(y) ? { x: right, y } : null;
+      }
+      if (fLeft * fRight > 0) {
+        return null;
+      }
+      for (let i = 0; i < 40; i += 1) {
+        const mid = (left + right) / 2;
+        const fMid = approximateDerivative(fn, mid);
+        if (!Number.isFinite(fMid)) {
+          break;
+        }
+        if (Math.abs(fMid) < tolerance) {
+          const y = safeEvalFunction(fn, mid);
+          return Number.isFinite(y) ? { x: mid, y } : null;
+        }
+        if (fLeft * fMid < 0) {
+          right = mid;
+          fRight = fMid;
+        } else {
+          left = mid;
+          fLeft = fMid;
+        }
+      }
+      const x = (left + right) / 2;
+      const y = safeEvalFunction(fn, x);
+      return Number.isFinite(y) ? { x, y } : null;
+    }
+
+    function refineRoot(fn, a, b) {
+      if (!Number.isFinite(a) || !Number.isFinite(b)) {
+        return null;
+      }
+      let left = Math.min(a, b);
+      let right = Math.max(a, b);
+      let fLeft = safeEvalFunction(fn, left);
+      let fRight = safeEvalFunction(fn, right);
+      if (!Number.isFinite(fLeft) || !Number.isFinite(fRight)) {
+        return null;
+      }
+      const tolerance = 1e-6;
+      if (Math.abs(fLeft) < tolerance) {
+        return { x: left, y: 0 };
+      }
+      if (Math.abs(fRight) < tolerance) {
+        return { x: right, y: 0 };
+      }
+      if (fLeft * fRight > 0) {
+        return null;
+      }
+      for (let i = 0; i < 50; i += 1) {
+        const mid = (left + right) / 2;
+        const fMid = safeEvalFunction(fn, mid);
+        if (!Number.isFinite(fMid)) {
+          break;
+        }
+        if (Math.abs(fMid) < tolerance) {
+          return { x: mid, y: 0 };
+        }
+        if (fLeft * fMid < 0) {
+          right = mid;
+          fRight = fMid;
+        } else {
+          left = mid;
+          fLeft = fMid;
+        }
+      }
+      const x = (left + right) / 2;
+      const y = safeEvalFunction(fn, x);
+      if (!Number.isFinite(y)) {
+        return null;
+      }
+      return { x, y: Math.abs(y) < 1e-5 ? 0 : y };
+    }
+
+    function addUniquePoint(list, candidate, tolerance = 1e-3) {
+      if (!candidate) return;
+      if (!Number.isFinite(candidate.x) || !Number.isFinite(candidate.y)) {
+        return;
+      }
+      const exists = list.some(entry => distance(entry, candidate) <= tolerance);
+      if (!exists) {
+        list.push(candidate);
+      }
+    }
+
+    function calculateFunctionExtrema(fn) {
+      const range = getVisibleXRange();
+      const span = range.max - range.min;
+      if (!Number.isFinite(span) || Math.abs(span) < 1e-6) {
+        return [];
+      }
+      const sampleStep = Math.max(Math.abs(span) / 600, getPlotSampleStep() * 0.5, 0.02);
+      const results = [];
+      const derivativeTolerance = 1e-4;
+      let previous = null;
+      let iterations = 0;
+      for (let x = range.min; x <= range.max + 1e-9 && iterations < 1800; x += sampleStep, iterations += 1) {
+        const y = safeEvalFunction(fn, x);
+        if (!Number.isFinite(y)) {
+          previous = null;
+          continue;
+        }
+        const deriv = approximateDerivative(fn, x, sampleStep);
+        if (!Number.isFinite(deriv)) {
+          previous = null;
+          continue;
+        }
+        if (Math.abs(deriv) < derivativeTolerance) {
+          addUniquePoint(results, { x, y });
+        }
+        if (previous && previous.deriv * deriv < 0) {
+          const extremum = refineStationaryPoint(fn, previous.x, x);
+          if (extremum) {
+            addUniquePoint(results, extremum);
+          }
+        }
+        previous = { x, y, deriv };
+      }
+      return results;
+    }
+
+    function calculateFunctionRoots(fn) {
+      const range = getVisibleXRange();
+      const span = range.max - range.min;
+      if (!Number.isFinite(span) || Math.abs(span) < 1e-6) {
+        return [];
+      }
+      const sampleStep = Math.max(Math.abs(span) / 600, getPlotSampleStep() * 0.5, 0.02);
+      const results = [];
+      const tolerance = 1e-5;
+      const extremumTolerance = Math.max(1e-6, tolerance * 5);
+      let previous = null;
+      let iterations = 0;
+      for (let x = range.min; x <= range.max + 1e-9 && iterations < 2000; x += sampleStep, iterations += 1) {
+        const y = safeEvalFunction(fn, x);
+        if (!Number.isFinite(y)) {
+          previous = null;
+          continue;
+        }
+        const derivativeSample = approximateDerivative(fn, x, sampleStep);
+        const deriv = Number.isFinite(derivativeSample) ? derivativeSample : null;
+        if (Math.abs(y) < tolerance) {
+          addUniquePoint(results, { x, y: 0 });
+        }
+        if (previous) {
+          if (Math.abs(previous.y) < tolerance) {
+            addUniquePoint(results, { x: previous.x, y: 0 });
+          }
+          if (previous.y * y < 0) {
+            const root = refineRoot(fn, previous.x, x);
+            if (root) {
+              addUniquePoint(results, root);
+            }
+          } else if (
+            previous.deriv !== null &&
+            deriv !== null &&
+            previous.deriv * deriv < 0
+          ) {
+            const extremum = refineStationaryPoint(fn, previous.x, x);
+            if (
+              extremum &&
+              Number.isFinite(extremum.x) &&
+              Number.isFinite(extremum.y) &&
+              Math.abs(extremum.y) <= extremumTolerance
+            ) {
+              addUniquePoint(results, { x: extremum.x, y: 0 });
+            }
+          }
+        }
+        previous = { x, y, deriv };
+      }
+      return results;
+    }
+
+    function getLineById(id) {
+      return state.lines.find(line => line.id === id) || null;
+    }
+
+    function calculateLineIntersection(lineA, lineB) {
+      if (!lineA || !lineB) {
+        return null;
+      }
+      const p1 = getPointById(lineA.p1);
+      const p2 = getPointById(lineA.p2);
+      const p3 = getPointById(lineB.p1);
+      const p4 = getPointById(lineB.p2);
+      if (!p1 || !p2 || !p3 || !p4) {
+        return null;
+      }
+      const { x: x1, y: y1 } = p1.position;
+      const { x: x2, y: y2 } = p2.position;
+      const { x: x3, y: y3 } = p3.position;
+      const { x: x4, y: y4 } = p4.position;
+      const denom = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4);
+      if (Math.abs(denom) < 1e-9) {
+        return null;
+      }
+      const det1 = x1 * y2 - y1 * x2;
+      const det2 = x3 * y4 - y3 * x4;
+      const x = (det1 * (x3 - x4) - (x1 - x2) * det2) / denom;
+      const y = (det1 * (y3 - y4) - (y1 - y2) * det2) / denom;
+      if (!Number.isFinite(x) || !Number.isFinite(y)) {
+        return null;
+      }
+      return { x, y };
+    }
+
+    function resetCalculationState() {
+      calculateState.mode = null;
+      calculateState.firstLineId = null;
+      hideCalculationHint();
+      ensureMoveTool();
+    }
+
+    function executeFunctionCalculation(mode, functionId) {
+      const fn = state.functions.find(entry => entry.id === functionId);
+      if (!fn) {
+        showCalculationHint('Selecteer een geldige grafiek voor deze berekening.', { duration: 3600 });
+        return false;
+      }
+      let candidates = [];
+      if (mode === 'extrema') {
+        candidates = calculateFunctionExtrema(fn);
+      } else if (mode === 'roots') {
+        candidates = calculateFunctionRoots(fn);
+      }
+      if (!candidates.length) {
+        showCalculationHint('Geen resultaten gevonden binnen het zichtbare gebied.', { duration: 3600 });
+        return false;
+      }
+      const fresh = candidates.filter(point => {
+        if (!point) return false;
+        if (!Number.isFinite(point.x) || !Number.isFinite(point.y)) {
+          return false;
+        }
+        return !pointExistsNear(point, 1e-3);
+      });
+      if (!fresh.length) {
+        showCalculationHint('Er bestaan al punten op deze posities.', { duration: 3600 });
+        return false;
+      }
+      recordHistory();
+      let lastCreated = null;
+      for (const candidate of fresh) {
+        const created = createPoint({ x: candidate.x, y: candidate.y }, undefined, {
+          snap: false,
+          skipHistory: true,
+          select: false
+        });
+        if (created) {
+          lastCreated = created;
+        }
+      }
+      if (lastCreated) {
+        setSelectedPoint(lastCreated.id, { force: true });
+      }
+      draw();
+      return true;
+    }
+
+    function processLineCalculationSelection(lineId) {
+      if (calculateState.mode !== 'line-intersection') {
+        return;
+      }
+      if (!lineId) {
+        return;
+      }
+      if (!calculateState.firstLineId) {
+        calculateState.firstLineId = lineId;
+        showCalculationHint('Selecteer nu de tweede lijn voor het snijpunt.', { persist: true });
+        return;
+      }
+      if (calculateState.firstLineId === lineId) {
+        showCalculationHint('Kies een andere lijn voor het snijpunt.', { persist: true });
+        return;
+      }
+      const first = getLineById(calculateState.firstLineId);
+      const second = getLineById(lineId);
+      if (!first || !second) {
+        resetCalculationState();
+        showCalculationHint('Kon de geselecteerde lijnen niet vinden.', { duration: 3600 });
+        return;
+      }
+      const intersection = calculateLineIntersection(first, second);
+      if (!intersection) {
+        resetCalculationState();
+        showCalculationHint('De geselecteerde lijnen hebben geen snijpunt.', { duration: 3600 });
+        return;
+      }
+      if (pointExistsNear(intersection, 1e-3)) {
+        resetCalculationState();
+        showCalculationHint('Er bestaat al een punt op dit snijpunt.', { duration: 3600 });
+        return;
+      }
+      recordHistory();
+      createPoint(intersection, undefined, { snap: false, skipHistory: true, select: true });
+      resetCalculationState();
+      draw();
+      showCalculationHint('Snijpunt toegevoegd.', { duration: 2800 });
+    }
+
+    function triggerPendingFunctionCalculation(functionId) {
+      if (!functionId) return;
+      if (restoringState) return;
+      if (!calculateState.mode) return;
+      if (calculateState.mode !== 'extrema' && calculateState.mode !== 'roots') {
+        return;
+      }
+      const success = executeFunctionCalculation(calculateState.mode, functionId);
+      if (success) {
+        resetCalculationState();
+      }
+    }
+
+    function setCalculateMenuOpen(open) {
+      if (!calculateMenu) return;
+      calculateMenu.classList.toggle('open', open);
+      calculateMenu.setAttribute('aria-hidden', open ? 'false' : 'true');
+      if (calculateToggle) {
+        calculateToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+      }
+    }
+
+    function beginCalculation(action) {
+      if (!action) return;
+      ensureMoveTool();
+      setCalculateMenuOpen(false);
+      hideCalculationHint();
+      clearHighlightedAlgebra({ clearInput: true });
+      refreshPropertiesPanel();
+      draw();
+      calculateState.mode = action;
+      calculateState.firstLineId = null;
+      if (action === 'line-intersection') {
+        showCalculationHint('Selecteer de eerste lijn voor het snijpunt.', { persist: true });
+        return;
+      }
+      if (action === 'extrema' || action === 'roots') {
+        showCalculationHint('Selecteer een grafiek om deze berekening uit te voeren.', { persist: true });
+      }
     }
 
     function findPointNear(world, threshold = 0.2) {
@@ -5683,6 +6229,43 @@
           draw();
         });
       }
+    }
+
+    if (calculateToggle && calculateMenu) {
+      calculateToggle.addEventListener('click', event => {
+        event.preventDefault();
+        const open = !calculateMenu.classList.contains('open');
+        setCalculateMenuOpen(open);
+      });
+
+      calculateMenu.addEventListener('click', event => {
+        const option = event.target.closest('button[data-action]');
+        if (!option) {
+          return;
+        }
+        event.preventDefault();
+        beginCalculation(option.dataset.action);
+      });
+
+      document.addEventListener('click', event => {
+        if (!calculateMenu.classList.contains('open')) {
+          return;
+        }
+        if (
+          event.target === calculateToggle ||
+          (calculateToggle && calculateToggle.contains(event.target)) ||
+          calculateMenu.contains(event.target)
+        ) {
+          return;
+        }
+        setCalculateMenuOpen(false);
+      });
+
+      document.addEventListener('keydown', event => {
+        if (event.key === 'Escape' && calculateMenu.classList.contains('open')) {
+          setCalculateMenuOpen(false);
+        }
+      });
     }
 
     algebraList.addEventListener('click', event => {
