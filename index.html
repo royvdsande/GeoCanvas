@@ -2119,6 +2119,65 @@
     };
 
     const inlineEditState = { item: null, commit: null, cleanup: null };
+    const inlineEditInputs = new Set();
+
+    function updateInlineInputMode(input) {
+      if (!input) return;
+      if (isCoarsePointer) {
+        input.setAttribute('inputmode', 'none');
+        input.readOnly = true;
+      } else {
+        input.setAttribute('inputmode', 'text');
+        input.readOnly = false;
+      }
+    }
+
+    function refreshInlineInputModes() {
+      for (const input of Array.from(inlineEditInputs)) {
+        if (!document.contains(input)) {
+          inlineEditInputs.delete(input);
+          continue;
+        }
+        updateInlineInputMode(input);
+      }
+    }
+
+    function configureInlineEditInput(input) {
+      if (!input || input.dataset.inlineReady === 'true') {
+        return;
+      }
+      input.dataset.inlineReady = 'true';
+      input.setAttribute('autocomplete', 'off');
+      input.setAttribute('autocorrect', 'off');
+      input.setAttribute('spellcheck', 'false');
+      input.setAttribute('autocapitalize', 'off');
+      inlineEditInputs.add(input);
+      updateInlineInputMode(input);
+
+      const activate = event => {
+        ensureMoveTool();
+        if (shouldAutoShowKeyboard()) {
+          setKeyboardVisibility(true);
+        }
+        if (isCoarsePointer) {
+          event.preventDefault();
+          setActiveInput(input, 'inline');
+          const length = input.value.length;
+          if (typeof input.setSelectionRange === 'function') {
+            input.setSelectionRange(length, length);
+          }
+        } else {
+          setActiveInput(input, 'inline');
+        }
+      };
+
+      input.addEventListener('pointerdown', activate);
+      input.addEventListener('touchstart', activate, { passive: false });
+      input.addEventListener('focus', () => {
+        setActiveInput(input, 'inline', { focus: false });
+        updateKeyboardPreview();
+      });
+    }
 
     function finishInlineEdit(apply) {
       if (!inlineEditState.item) {
@@ -2285,7 +2344,7 @@
         const slider = findSliderById(id);
         if (!slider) return false;
         setActiveSlider(id, { force: true });
-        const source = `${slider.name} = ${formatNumber(slider.value)}`;
+        const source = `${slider.name} = ${formatSliderValue(slider.value)}`;
         state.editingSliderId = slider.id;
         beginInlineEdit(item, source, value => {
           const trimmed = value.trim();
@@ -2761,6 +2820,7 @@
       }
       updateKeyboardPresentation();
       updateKeyboardToggleVisibility();
+      refreshInlineInputModes();
     }
 
     function refreshPointerMode(forceUpdate = false) {
@@ -4961,6 +5021,7 @@
           editor.type = 'text';
           editor.className = 'algebra-inline-edit';
           editor.setAttribute('aria-label', 'Bewerk algebraïsche invoer');
+          configureInlineEditInput(editor);
           label.appendChild(editor);
         }
         item.appendChild(label);
@@ -5017,6 +5078,11 @@
       if (detailEl) {
         detailEl.textContent = detailText ? `= ${detailText}` : '';
       }
+      const inlineEl = item.querySelector('.algebra-inline-edit');
+      if (inlineEl) {
+        configureInlineEditInput(inlineEl);
+      }
+      item.classList.toggle('editing', inlineEditState.item === item);
 
       const behavior = restoringState ? 'auto' : 'smooth';
       algebraList.scrollTo({ top: algebraList.scrollHeight, behavior });
@@ -5055,6 +5121,7 @@
         inlineEdit.type = 'text';
         inlineEdit.className = 'algebra-inline-edit';
         inlineEdit.setAttribute('aria-label', 'Bewerk schuifbalk');
+        configureInlineEditInput(inlineEdit);
         header.appendChild(inlineEdit);
         body.appendChild(header);
 
@@ -5136,7 +5203,14 @@
       }
       const valueEl = item.querySelector('[data-role="slider-value"]');
       if (valueEl) {
-        valueEl.textContent = `= ${formatNumber(slider.value)}`;
+        valueEl.textContent = `= ${formatSliderValue(slider.value)}`;
+      }
+      const inlineInput = item.querySelector('.algebra-inline-edit');
+      if (inlineInput) {
+        configureInlineEditInput(inlineInput);
+        if (inlineEditState.item !== item) {
+          inlineInput.value = `${slider.name} = ${formatSliderValue(slider.value)}`;
+        }
       }
       const rangeEl = item.querySelector('.slider-range');
       if (rangeEl) {
@@ -5178,9 +5252,7 @@
       if (state.selectedSliderId === slider.id) {
         item.classList.add('selected');
       }
-      if (inlineEditState.item === item) {
-        item.classList.add('editing');
-      }
+      item.classList.toggle('editing', inlineEditState.item === item);
 
       if (isNew) {
         const behavior = restoringState ? 'auto' : 'smooth';
@@ -5262,6 +5334,9 @@
 
     function setSliderSpeed(slider, speed) {
       if (!slider) return;
+      if (inlineEditState.item && inlineEditState.item.dataset && inlineEditState.item.dataset.id === slider.id) {
+        cancelInlineEdit();
+      }
       const next = normalizeSliderSpeed(speed) || DEFAULT_SLIDER_SPEED;
       if (slider.speed === next) {
         renderSliderEntry(slider.id);
@@ -6494,6 +6569,10 @@
 
     function formatNumber(value) {
       return Math.round(value * 1000) / 1000;
+    }
+
+    function formatSliderValue(value) {
+      return Math.round(value * 10) / 10;
     }
 
     function startPinch() {
