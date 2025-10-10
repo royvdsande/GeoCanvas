@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="nl">
 <head>
@@ -65,20 +64,36 @@
       -moz-user-select: none;
     }
 
-    .brand-name {
-      font-size: 1.05rem;
-    }
-
     .brand * {
       user-select: none;
       -webkit-user-select: none;
       -moz-user-select: none;
     }
 
-    .brand svg {
-      width: 28px;
-      height: 28px;
+    .brand-logo {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
       color: var(--accent);
+    }
+
+    .brand-logo svg {
+      width: 32px;
+      height: 32px;
+      display: block;
+    }
+
+    .brand-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .brand-name {
+      font-size: 1.05rem;
+      line-height: 1;
     }
 
     .toolbar {
@@ -565,6 +580,7 @@
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
+      font-variant-numeric: tabular-nums;
     }
 
     .slider-track {
@@ -575,15 +591,6 @@
     .slider-track input[type="range"] {
       width: 100%;
       min-width: 0;
-    }
-
-    .slider-value {
-      min-width: 0;
-      font-variant-numeric: tabular-nums;
-      font-weight: 600;
-      color: #1f2937;
-      white-space: nowrap;
-      margin-right: 4px;
     }
 
     .slider-controls {
@@ -614,6 +621,7 @@
       stroke-width: 1.8;
       stroke: currentColor;
       fill: none;
+      pointer-events: none;
     }
 
     .slider-controls button:hover {
@@ -857,6 +865,7 @@
     .brand .badge {
       padding: 4px 8px;
       font-size: 0.72rem;
+      align-self: center;
     }
 
     .math-keyboard {
@@ -1163,21 +1172,25 @@
       </svg>
     </button>
     <div class="brand">
-      <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2">
-        <circle cx="16" cy="16" r="10" opacity="0.3" />
-        <path d="M16 6v4" />
-        <path d="M16 22v4" />
-        <path d="M6 16h4" />
-        <path d="M22 16h4" />
-        <circle cx="16" cy="16" r="4" />
-      </svg>
-      <span class="brand-name">GeoCanvas</span>
-      <span class="badge">Beta</span>
+      <span class="brand-logo">
+        <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="16" cy="16" r="10" opacity="0.3" />
+          <path d="M16 6v4" />
+          <path d="M16 22v4" />
+          <path d="M6 16h4" />
+          <path d="M22 16h4" />
+          <circle cx="16" cy="16" r="4" />
+        </svg>
+      </span>
+      <span class="brand-label">
+        <span class="brand-name">GeoCanvas</span>
+        <span class="badge">Beta</span>
+      </span>
     </div>
     <div class="toolbar" role="toolbar" aria-label="Tekengereedschap">
       <button class="tool-button active" data-tool="move" aria-label="Verplaats gereedschap">
         <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M6 4 18 16l-5 1.5 1.5 5L11 17.5 8.5 20l1.5-5z" />
+          <path d="M4 3 19 12l-6 1.6 1.8 6.4-4.3-4.3L8 21z" fill="currentColor" />
         </svg>
       </button>
       <button class="tool-button" data-tool="point" aria-label="Punt gereedschap">
@@ -1205,7 +1218,7 @@
       </button>
       <button class="tool-button" data-tool="polygon" aria-label="Veelhoek gereedschap">
         <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M6 4 3 9l3 5 6 6 6-3 3-5-3-5-6-3z" />
+          <path d="M12 5 4 19h16z" />
         </svg>
       </button>
       <button class="tool-button" data-tool="text" aria-label="Tekst gereedschap">
@@ -1216,22 +1229,21 @@
       </button>
       <button class="tool-button" id="quick-slider" aria-label="Voeg slider toe">
         <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M5 5h14" />
-          <path d="M5 19h14" />
-          <circle cx="9" cy="12" r="2.5" />
-          <circle cx="15" cy="12" r="2.5" />
+          <path d="M5 12h14" />
+          <rect x="9" y="9" width="6" height="6" rx="3" />
+          <circle cx="12" cy="12" r="5.5" opacity="0.18" fill="currentColor" />
         </svg>
       </button>
     </div>
     <div class="calculate-wrapper">
       <button class="tool-button" id="calculate-menu-toggle" aria-label="Bereken" title="Bereken" aria-haspopup="menu" aria-expanded="false">
         <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M4 7h16" />
-          <path d="M4 17h16" />
-          <path d="M8 3v4" />
-          <path d="M16 17v4" />
-          <path d="M9 11h6" />
-          <path d="M11 9v4" />
+          <rect x="4" y="3" width="16" height="18" rx="2" />
+          <path d="M8 7h8" />
+          <path d="M8 11h2" />
+          <path d="M14 11h2" />
+          <path d="M8 15h2" />
+          <path d="M12 15h4" />
         </svg>
       </button>
       <div class="calculate-menu" id="calculate-menu" role="menu" aria-hidden="true">
@@ -1272,11 +1284,6 @@
               <path d="M7 13h0" />
               <path d="M11 13h0" />
               <path d="M15 13h0" />
-            </svg>
-          </button>
-          <button class="command-button" id="submit-command" type="button" aria-label="Voer opdracht uit">
-            <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
-              <path d="m5 12 5 5 9-9" />
             </svg>
           </button>
         </div>
@@ -1327,8 +1334,8 @@
         </button>
         <button type="button" class="round-button" id="reset-view" aria-label="Reset weergave">
           <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M3 12a9 9 0 1 0 3.1-6.9L3 8" />
-            <path d="M3 3v5h5" />
+            <path d="M3 11.5 12 4l9 7.5" />
+            <path d="M5 12v8h5v-4h4v4h5v-8" />
           </svg>
         </button>
       </div>
@@ -1567,7 +1574,7 @@
       valueLabel.textContent = 'Waarde';
       const valueInput = document.createElement('input');
       valueInput.type = 'number';
-      valueInput.step = slider.step || 0.1;
+      valueInput.step = 'any';
       valueInput.value = slider.value;
       valueInput.addEventListener('change', () => {
         const numeric = parseFloat(valueInput.value);
@@ -1581,18 +1588,14 @@
       valueField.appendChild(valueInput);
       propertiesContent.appendChild(valueField);
 
-      const boundsRow = document.createElement('div');
-      boundsRow.className = 'property-row';
+      const minField = document.createElement('div');
+      minField.className = 'property-field';
+      const minLabel = document.createElement('label');
+      minLabel.textContent = 'Minimum';
       const minInput = document.createElement('input');
       minInput.type = 'number';
+      minInput.step = 'any';
       minInput.value = slider.min;
-      const maxInput = document.createElement('input');
-      maxInput.type = 'number';
-      maxInput.value = slider.max;
-      const stepInput = document.createElement('input');
-      stepInput.type = 'number';
-      stepInput.step = 'any';
-      stepInput.value = slider.step || 0.1;
       minInput.addEventListener('change', () => {
         const numeric = parseFloat(minInput.value);
         if (Number.isFinite(numeric)) {
@@ -1601,6 +1604,18 @@
           minInput.value = slider.min;
         }
       });
+      minField.appendChild(minLabel);
+      minField.appendChild(minInput);
+      propertiesContent.appendChild(minField);
+
+      const maxField = document.createElement('div');
+      maxField.className = 'property-field';
+      const maxLabel = document.createElement('label');
+      maxLabel.textContent = 'Maximum';
+      const maxInput = document.createElement('input');
+      maxInput.type = 'number';
+      maxInput.step = 'any';
+      maxInput.value = slider.max;
       maxInput.addEventListener('change', () => {
         const numeric = parseFloat(maxInput.value);
         if (Number.isFinite(numeric)) {
@@ -1609,27 +1624,9 @@
           maxInput.value = slider.max;
         }
       });
-      stepInput.addEventListener('change', () => {
-        const numeric = parseFloat(stepInput.value);
-        if (Number.isFinite(numeric) && numeric > 0) {
-          updateSliderBounds(slider.id, { step: numeric });
-        } else {
-          stepInput.value = slider.step;
-        }
-      });
-      const minLabel = document.createElement('label');
-      minLabel.textContent = 'Min';
-      minLabel.appendChild(minInput);
-      const maxLabel = document.createElement('label');
-      maxLabel.textContent = 'Max';
-      maxLabel.appendChild(maxInput);
-      const stepLabel = document.createElement('label');
-      stepLabel.textContent = 'Stap';
-      stepLabel.appendChild(stepInput);
-      boundsRow.appendChild(minLabel);
-      boundsRow.appendChild(maxLabel);
-      boundsRow.appendChild(stepLabel);
-      propertiesContent.appendChild(boundsRow);
+      maxField.appendChild(maxLabel);
+      maxField.appendChild(maxInput);
+      propertiesContent.appendChild(maxField);
 
       const animationToggle = document.createElement('label');
       animationToggle.className = 'property-checkbox';
@@ -1646,11 +1643,12 @@
       const speedLabel = document.createElement('label');
       speedLabel.textContent = 'Snelheid';
       const speedSelect = document.createElement('select');
-      for (const [key, label] of [['slow', 'Langzaam'], ['medium', 'Normaal'], ['fast', 'Snel']]) {
+      const normalizedSpeed = normalizeSliderSpeed(slider.speed) || DEFAULT_SLIDER_SPEED;
+      for (const optionKey of SLIDER_SPEED_OPTIONS) {
         const option = document.createElement('option');
-        option.value = key;
-        option.textContent = label;
-        if (slider.speed === key) {
+        option.value = optionKey;
+        option.textContent = optionKey;
+        if (optionKey === normalizedSpeed) {
           option.selected = true;
         }
         speedSelect.appendChild(option);
@@ -2048,11 +2046,18 @@
     };
 
     const FUNCTION_COLORS = ['#d83b01', '#1f6feb', '#2da44e', '#8b3dd9', '#e36209'];
-    const SLIDER_SPEEDS = {
-      slow: 1.4,
-      medium: 2.4,
-      fast: 3.4
-    };
+    const SLIDER_SPEED_OPTIONS = Array.from({ length: 20 }, (_, index) => `${index + 1}x`);
+    const SLIDER_SPEEDS = SLIDER_SPEED_OPTIONS.reduce((acc, label, index) => {
+      acc[label] = index + 1;
+      return acc;
+    }, {});
+    const LEGACY_SLIDER_SPEED_MAP = { slow: '2x', medium: '5x', fast: '10x' };
+    const DEFAULT_SLIDER_SPEED = '5x';
+    for (const [legacy, modern] of Object.entries(LEGACY_SLIDER_SPEED_MAP)) {
+      if (SLIDER_SPEEDS[modern]) {
+        SLIDER_SPEEDS[legacy] = SLIDER_SPEEDS[modern];
+      }
+    }
     const ICONS = {
       minus: `<svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M6 12h12" /></svg>`,
       plus: `<svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14" /><path d="M5 12h14" /></svg>`,
@@ -2371,7 +2376,6 @@
           name: slider.name,
           min: slider.min,
           max: slider.max,
-          step: slider.step,
           value: slider.value,
           speed: slider.speed,
           animating: Boolean(slider.animating),
@@ -2510,19 +2514,27 @@
       state.selectedPointId = snapshot.selectedPointId || null;
       state.editingPointId = null;
       state.lastSelectionType = snapshot.lastSelectionType || 'none';
-      state.sliders = (snapshot.sliders || []).map(slider => ({
-        id: slider.id,
-        name: slider.name,
-        min: slider.min,
-        max: slider.max,
-        step: slider.step,
-        value: slider.value,
-        speed: slider.speed || 'medium',
-        animating: Boolean(slider.animating),
-        direction: slider.direction || 1,
-        lastTimestamp: null,
-        animationValue: Number.isFinite(slider.animationValue) ? slider.animationValue : slider.value
-      }));
+      state.sliders = (snapshot.sliders || []).map(slider => {
+        const min = Number.isFinite(slider.min) ? slider.min : 0;
+        const max = Number.isFinite(slider.max) ? slider.max : min + 10;
+        const normalizedSpeed = normalizeSliderSpeed(slider.speed) || DEFAULT_SLIDER_SPEED;
+        const value = Number.isFinite(slider.value) ? slider.value : min;
+        const animationValue = Number.isFinite(slider.animationValue) ? slider.animationValue : value;
+        const clampedValue = clampSliderValue({ min, max }, value);
+        const clampedAnimation = clampSliderValue({ min, max }, animationValue);
+        return {
+          id: slider.id,
+          name: slider.name,
+          min,
+          max,
+          value: clampedValue,
+          speed: normalizedSpeed,
+          animating: Boolean(slider.animating),
+          direction: slider.direction || 1,
+          lastTimestamp: null,
+          animationValue: clampedAnimation
+        };
+      });
       state.numbers = (snapshot.numbers || []).map(entry => ({
         id: entry.id,
         name: entry.name,
@@ -4932,6 +4944,7 @@
       if (!algebraList) return;
       const slider = state.sliders.find(entry => entry.id === id);
       if (!slider) return;
+      const speedKey = getSliderSpeedKey(slider);
       let item = algebraList.querySelector(`[data-id="${id}"]`);
       const isNew = !item;
       if (!item) {
@@ -4966,11 +4979,6 @@
         const controls = document.createElement('div');
         controls.className = 'slider-controls';
 
-        const valueDisplay = document.createElement('span');
-        valueDisplay.dataset.role = 'slider-value';
-        valueDisplay.className = 'slider-value';
-        controls.appendChild(valueDisplay);
-
         const minusBtn = document.createElement('button');
         minusBtn.type = 'button';
         minusBtn.dataset.sliderAction = 'step-back';
@@ -4996,15 +5004,10 @@
         const speedSelect = document.createElement('select');
         speedSelect.className = 'slider-speed';
         speedSelect.setAttribute('aria-label', 'Animatiesnelheid');
-        const speeds = [
-          { value: 'slow', label: 'Langzaam' },
-          { value: 'medium', label: 'Normaal' },
-          { value: 'fast', label: 'Snel' }
-        ];
-        for (const option of speeds) {
+        for (const optionKey of SLIDER_SPEED_OPTIONS) {
           const opt = document.createElement('option');
-          opt.value = option.value;
-          opt.textContent = option.label;
+          opt.value = optionKey;
+          opt.textContent = optionKey;
           speedSelect.appendChild(opt);
         }
         controls.appendChild(speedSelect);
@@ -5042,18 +5045,18 @@
       item.dataset.type = 'slider';
       const titleEl = item.querySelector('[data-role="slider-title"]');
       if (titleEl) {
-        titleEl.textContent = slider.name;
-      }
-      const valueEl = item.querySelector('[data-role="slider-value"]');
-      if (valueEl) {
-        valueEl.textContent = formatNumber(slider.value);
+        titleEl.textContent = `${slider.name} = ${formatNumber(slider.value)}`;
       }
       const rangeEl = item.querySelector('.slider-range');
       if (rangeEl) {
         rangeEl.min = slider.min;
         rangeEl.max = slider.max;
-        const step = slider.step || ((slider.max - slider.min) / 100) || 0.1;
-        rangeEl.step = step;
+        const step = computeSliderRangeStep(slider);
+        if (step) {
+          rangeEl.step = step;
+        } else {
+          rangeEl.removeAttribute('step');
+        }
         rangeEl.value = slider.value;
       }
       const playEl = item.querySelector('[data-slider-action="toggle-animate"]');
@@ -5065,7 +5068,7 @@
       }
       const speedEl = item.querySelector('.slider-speed');
       if (speedEl) {
-        speedEl.value = slider.speed || 'medium';
+        speedEl.value = speedKey;
       }
       const iconEl = item.querySelector('.algebra-color');
       if (iconEl) {
@@ -5086,24 +5089,39 @@
       return state.sliders.find(entry => entry.name === name);
     }
 
+    function computeSliderRangeStep(slider) {
+      if (!slider) return null;
+      const span = Math.abs(slider.max - slider.min);
+      if (!Number.isFinite(span) || span <= 0) {
+        return null;
+      }
+      const base = span / 400;
+      const fallback = span / 2000;
+      const step = Math.max(base, fallback, 1e-6);
+      return step;
+    }
+
+    function getSliderSpeedKey(slider) {
+      if (!slider) {
+        return DEFAULT_SLIDER_SPEED;
+      }
+      return normalizeSliderSpeed(slider.speed) || DEFAULT_SLIDER_SPEED;
+    }
+
+    function getSliderSpeedMultiplier(slider) {
+      const key = getSliderSpeedKey(slider);
+      return SLIDER_SPEEDS[key] || SLIDER_SPEEDS[DEFAULT_SLIDER_SPEED];
+    }
+
     function clampSliderValue(slider, value) {
       if (!slider) return value;
-      const min = Math.min(slider.min, slider.max);
-      const max = Math.max(slider.min, slider.max);
-      if (!Number.isFinite(min) || !Number.isFinite(max)) {
-        return value;
-      }
-      let result = Math.min(Math.max(value, min), max);
-      const step = slider.step || ((max - min) / 100) || 0.1;
-      if (Number.isFinite(step) && step > 0) {
-        const offset = slider.min;
-        const steps = Math.round((result - offset) / step);
-        result = offset + steps * step;
-        const precision = Math.max(0, Math.ceil(-Math.log10(step)) + 2);
-        const factor = Math.pow(10, precision);
-        result = Math.round(result * factor) / factor;
-      }
-      return result;
+      const min = Number.isFinite(slider.min) ? slider.min : 0;
+      const max = Number.isFinite(slider.max) ? slider.max : min + 10;
+      const lower = Math.min(min, max);
+      const upper = Math.max(min, max);
+      const numeric = Number.isFinite(value) ? value : lower;
+      const clamped = Math.min(Math.max(numeric, lower), upper);
+      return Math.abs(clamped) < 1e-9 ? 0 : clamped;
     }
 
     function ensureSliderVariables(slider) {
@@ -5114,44 +5132,42 @@
     function updateSliderValue(slider, nextValue, options = {}) {
       if (!slider) return;
       const { record = true, fromAnimation = false } = options;
-      const minBound = Math.min(slider.min, slider.max);
-      const maxBound = Math.max(slider.min, slider.max);
-      const bounded = Math.min(Math.max(nextValue, minBound), maxBound);
       const clamped = clampSliderValue(slider, nextValue);
       if (!Number.isFinite(clamped)) return;
-      if (fromAnimation) {
-        slider.animationValue = bounded;
-      } else {
-        slider.animationValue = clamped;
-      }
-      if (slider.value === clamped) {
-        if (fromAnimation) {
-          renderSliderEntry(slider.id);
-        }
-        return;
-      }
-      if (record && !fromAnimation) {
+      const changed = Math.abs(slider.value - clamped) > 1e-9;
+      slider.animationValue = clamped;
+      if (record && !fromAnimation && changed) {
         recordHistory();
       }
       slider.value = clamped;
+      if (!fromAnimation) {
+        slider.lastTimestamp = null;
+      }
       ensureSliderVariables(slider);
-      renderSliderEntry(slider.id);
-      if (propertiesState.type === 'slider' && propertiesState.id === slider.id) {
-        refreshPropertiesPanel({ type: 'slider', id: slider.id });
+      if (changed || fromAnimation) {
+        renderSliderEntry(slider.id);
+        if (propertiesState.type === 'slider' && propertiesState.id === slider.id) {
+          refreshPropertiesPanel({ type: 'slider', id: slider.id });
+        }
       }
       draw();
     }
 
     function stepSlider(slider, direction = 1) {
       if (!slider) return;
-      const step = slider.step || ((slider.max - slider.min) / 100) || 0.1;
-      const delta = Number.isFinite(step) ? step * direction : direction;
+      const span = Math.abs(slider.max - slider.min);
+      let step = span > 0 ? span / 80 : 0.5;
+      if (!Number.isFinite(step) || step === 0) {
+        step = 0.5;
+      }
+      step = Math.max(step, span / 400, 0.01);
+      const delta = step * (direction >= 0 ? 1 : -1);
       updateSliderValue(slider, slider.value + delta, { record: true });
     }
 
     function setSliderSpeed(slider, speed) {
       if (!slider) return;
-      const next = SLIDER_SPEEDS[speed] ? speed : 'medium';
+      const next = normalizeSliderSpeed(speed) || DEFAULT_SLIDER_SPEED;
       if (slider.speed === next) {
         renderSliderEntry(slider.id);
         if (propertiesState.type === 'slider' && propertiesState.id === slider.id) {
@@ -5214,14 +5230,19 @@
         }
         const delta = Math.max(0, timestamp - slider.lastTimestamp);
         slider.lastTimestamp = timestamp;
-        const speed = SLIDER_SPEEDS[slider.speed] || SLIDER_SPEEDS.medium;
+        const speedMultiplier = getSliderSpeedMultiplier(slider);
         const span = Math.abs(slider.max - slider.min);
-        const baseStep = slider.step || (Number.isFinite(span) && span > 0 ? span / 80 : 0.1);
-        if (!Number.isFinite(baseStep) || baseStep <= 0 || !Number.isFinite(speed) || speed <= 0) {
+        if (!Number.isFinite(span) || span <= 0 || !Number.isFinite(speedMultiplier) || speedMultiplier <= 0) {
           continue;
         }
         const deltaSeconds = delta / 1000;
-        const change = baseStep * speed * deltaSeconds;
+        const baseRate = span / 10;
+        if (!Number.isFinite(baseRate) || baseRate <= 0) {
+          continue;
+        }
+        const minChange = Math.max(span / 600, 1e-6);
+        const maxChange = span / 4;
+        const change = Math.max(Math.min(baseRate * speedMultiplier * deltaSeconds, maxChange), minChange);
         if (!Number.isFinite(change) || change <= 0) {
           continue;
         }
@@ -5293,8 +5314,23 @@
 
     function normalizeSliderSpeed(value) {
       if (value === undefined || value === null) return null;
-      const lower = String(value).trim().replace(/^['"]|['"]$/g, '').toLowerCase();
-      return SLIDER_SPEEDS[lower] ? lower : null;
+      const cleaned = String(value).trim().replace(/^['"]|['"]$/g, '');
+      if (!cleaned) return null;
+      const lower = cleaned.toLowerCase();
+      if (SLIDER_SPEED_OPTIONS.includes(lower)) {
+        return lower;
+      }
+      if (LEGACY_SLIDER_SPEED_MAP[lower]) {
+        return LEGACY_SLIDER_SPEED_MAP[lower];
+      }
+      const numericMatch = lower.match(/^([0-9]{1,2})(?:x)?$/);
+      if (numericMatch) {
+        const numeric = parseInt(numericMatch[1], 10);
+        if (numeric >= 1 && numeric <= 20) {
+          return `${numeric}x`;
+        }
+      }
+      return null;
     }
 
     function parseSliderRangeDefinition(expression, fallbackName) {
@@ -5399,7 +5435,6 @@
         alert('Voer geldige minimum- en maximumwaarden in voor de schuifbalk.');
         return null;
       }
-      const step = Number.isFinite(definition.step) && definition.step > 0 ? definition.step : undefined;
       const value = Number.isFinite(definition.value) ? definition.value : undefined;
       const speed = normalizeSliderSpeed(definition.speed);
       let slider = findSliderByName(name);
@@ -5410,9 +5445,6 @@
         }
         if (max !== undefined && max !== slider.max) {
           updates.max = max;
-        }
-        if (step !== undefined && step !== slider.step) {
-          updates.step = step;
         }
         const shouldRecordValue = Object.keys(updates).length === 0;
         if (Object.keys(updates).length) {
@@ -5425,7 +5457,7 @@
           ensureSliderVariables(slider);
           renderSliderEntry(slider.id);
         }
-        if (speed && slider.speed !== speed) {
+        if (speed) {
           setSliderSpeed(slider, speed);
         }
         setActiveSlider(slider.id, { force: true });
@@ -5441,9 +5473,9 @@
         recorded = true;
         removeObject(existingConstant.id, 'variable', { silent: true, skipHistory: true });
       }
-      const created = createSlider(name, min, max, step, {
+      const created = createSlider(name, min, max, {
         value: value !== undefined ? value : min,
-        speed: speed || 'medium',
+        speed: speed || DEFAULT_SLIDER_SPEED,
         skipHistory: recorded
       });
       setActiveSlider(created.id, { force: true });
@@ -5516,14 +5548,11 @@
         min = max;
         max = temp;
       }
-      const nextStep = updates.step !== undefined ? updates.step : slider.step;
-      const step = Number.isFinite(nextStep) && nextStep > 0 ? nextStep : slider.step;
       if (record) {
         recordHistory();
       }
       slider.min = min;
       slider.max = max;
-      slider.step = step;
       slider.value = clampSliderValue(slider, slider.value);
       slider.animationValue = slider.value;
       ensureSliderVariables(slider);
@@ -5534,26 +5563,25 @@
       draw();
     }
 
-    function createSlider(name, min, max, step, options = {}) {
-      const { value, speed = 'medium', skipHistory = false } = options;
+    function createSlider(name, min, max, options = {}) {
+      const { value, speed = DEFAULT_SLIDER_SPEED, skipHistory = false } = options;
       const baseName = name.trim() || nextVariableName();
       const sanitizedName = ensureUniqueVariableName(baseName, null);
       const sliderMin = Number.isFinite(min) ? min : 0;
       const sliderMax = Number.isFinite(max) ? max : sliderMin + 10;
-      const sliderStep = Number.isFinite(step) && step > 0 ? step : Math.max((sliderMax - sliderMin) / 20, 0.1);
       const sliderValue = Number.isFinite(value) ? value : sliderMin;
       if (!skipHistory) {
         recordHistory();
       }
-      const clampedValue = clampSliderValue({ min: sliderMin, max: sliderMax, step: sliderStep }, sliderValue);
+      const clampedValue = clampSliderValue({ min: sliderMin, max: sliderMax }, sliderValue);
+      const normalizedSpeed = normalizeSliderSpeed(speed) || DEFAULT_SLIDER_SPEED;
       const slider = {
         id: crypto.randomUUID(),
         name: sanitizedName,
         min: sliderMin,
         max: sliderMax,
-        step: sliderStep,
         value: clampedValue,
-        speed: SLIDER_SPEEDS[speed] ? speed : 'medium',
+        speed: normalizedSpeed,
         animating: false,
         direction: 1,
         lastTimestamp: null,
@@ -7016,7 +7044,7 @@
       if (quickSliderButton) {
         quickSliderButton.addEventListener('click', () => {
           ensureMoveTool();
-          const created = createSlider('', 0, 10, 1, { value: 0 });
+          const created = createSlider('', 0, 10, { value: 0 });
           if (created) {
             setActiveSlider(created.id, { force: true });
             refreshPropertiesPanel({ type: 'slider', id: created.id, forceOpen: true });
