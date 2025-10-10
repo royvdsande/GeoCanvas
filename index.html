@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="nl">
 <head>
@@ -886,12 +887,6 @@
       overflow: hidden;
     }
 
-    .quick-actions {
-      display: none;
-      margin-top: 8px;
-      gap: 8px;
-    }
-
     .keyboard-header {
       display: flex;
       flex-direction: column;
@@ -1126,14 +1121,6 @@
         z-index: 3;
       }
 
-      .quick-actions {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-        padding: 10px 12px;
-        background: rgba(255,255,255,0.95);
-        border-top: 1px solid var(--border);
-      }
     }
 
     @media (max-width: 600px) {
@@ -1164,25 +1151,6 @@
       }
     }
 
-    .quick-action {
-      border: 1px solid rgba(51,103,214,0.2);
-      background: rgba(51,103,214,0.08);
-      color: var(--accent);
-      padding: 6px 12px;
-      border-radius: 999px;
-      font-size: 0.85rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.2s ease, border 0.2s ease, transform 0.2s ease;
-    }
-
-    .quick-action:hover {
-      background: rgba(51,103,214,0.16);
-    }
-
-    .quick-action:active {
-      transform: scale(0.97);
-    }
   </style>
 </head>
 <body>
@@ -1365,7 +1333,6 @@
         </button>
       </div>
       <canvas id="board" width="1600" height="1200" aria-label="Coördinaatvlak"></canvas>
-      <div class="quick-actions" id="quick-actions" role="group" aria-label="Snelle functievoorbeelden"></div>
       <div class="calculation-hint" id="calculation-hint" role="status" aria-live="polite" aria-hidden="true"></div>
       <div class="text-editor-overlay" id="text-editor" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="text-editor-title">
         <div class="text-editor-panel" role="document">
@@ -1999,7 +1966,6 @@
     const textEditorInput = document.getElementById('text-editor-input');
     const textEditorCancel = document.getElementById('text-editor-cancel');
     const textEditorConfirm = document.getElementById('text-editor-confirm');
-    const quickActions = document.getElementById('quick-actions');
     const calculationHint = document.getElementById('calculation-hint');
     const undoButton = document.getElementById('undo');
     const redoButton = document.getElementById('redo');
@@ -2911,15 +2877,6 @@
       { text: '→', action: 'right', classes: 'command small' },
       { text: '⌫', action: 'backspace', classes: 'command wide' },
       { text: '↵', action: 'enter', classes: 'command wide' }
-    ];
-
-    const QUICK_FUNCTION_ACTIONS = [
-      { label: 'y = x', value: 'y = x' },
-      { label: 'y = x²', value: 'y = x²' },
-      { label: 'y = sin(x)', value: 'y = sin(x)' },
-      { label: 'y = |x|', value: 'y = |x|' },
-      { label: 'Slider…', action: 'create-slider' },
-      { label: 'Constante…', action: 'define-number' }
     ];
 
     let keyboardVisible = false;
@@ -5876,117 +5833,6 @@
       }
     }
 
-    function buildQuickActions() {
-      if (!quickActions) return;
-      quickActions.innerHTML = '';
-      for (const action of QUICK_FUNCTION_ACTIONS) {
-        const button = document.createElement('button');
-        button.type = 'button';
-        button.className = 'quick-action';
-        button.textContent = action.label;
-        button.dataset.action = action.action || 'insert';
-        if (action.value) {
-          button.dataset.value = action.value;
-        } else {
-          button.removeAttribute('data-value');
-        }
-        quickActions.appendChild(button);
-      }
-    }
-
-    function applyQuickAction(action) {
-      if (!action) return;
-      if (action.type === 'insert') {
-        const value = action.value || '';
-        if (!value) return;
-        if (!commandInput) return;
-        commandInput.value = value;
-        const position = value.length;
-        if (typeof commandInput.setSelectionRange === 'function') {
-          commandInput.setSelectionRange(position, position);
-        }
-        setActiveInput(commandInput, 'command');
-        if (!keyboardVisible && shouldAutoShowKeyboard()) {
-          setKeyboardVisibility(true);
-        }
-        return;
-      }
-      if (action.type === 'create-slider') {
-        promptCreateSlider();
-        return;
-      }
-      if (action.type === 'define-number') {
-        promptCreateNumber();
-      }
-    }
-
-    function promptCreateSlider() {
-      let name = prompt('Naam voor de schuifbalk:', 'a');
-      if (name === null) return;
-      name = name.trim();
-      if (!name) {
-        name = `s${state.sliders.length + 1}`;
-      }
-      const minInput = prompt('Minimumwaarde:', '0');
-      if (minInput === null) return;
-      const maxInput = prompt('Maximumwaarde:', '10');
-      if (maxInput === null) return;
-      const stepInput = prompt('Stapgrootte (optioneel):', '1');
-      const min = parseLocaleNumber(minInput);
-      const max = parseLocaleNumber(maxInput);
-      const step = stepInput ? parseLocaleNumber(stepInput) : undefined;
-      if (!Number.isFinite(min) || !Number.isFinite(max)) {
-        alert('Voer geldige numerieke grenzen in.');
-        return;
-      }
-      const existing = findSliderByName(name);
-      if (existing) {
-        updateSliderBounds(existing.id, { min, max, step });
-        setActiveSlider(existing.id, { force: true });
-        refreshPropertiesPanel({ type: 'slider', id: existing.id });
-        ensureMoveTool();
-        return;
-      }
-      const created = createSlider(name, min, max, step ?? undefined, { value: min });
-      setActiveSlider(created.id, { force: true });
-      refreshPropertiesPanel({ type: 'slider', id: created.id });
-      ensureMoveTool();
-    }
-
-    function promptCreateNumber() {
-      let name = prompt('Naam voor de constante:', 'k');
-      if (name === null) return;
-      name = name.trim();
-      if (!name) {
-        name = `k${state.numbers.length + 1}`;
-      }
-      const valueInput = prompt('Waarde:', '1');
-      if (valueInput === null) return;
-      const numeric = parseLocaleNumber(valueInput);
-      if (!Number.isFinite(numeric)) {
-        alert('Voer een geldige numerieke waarde in.');
-        return;
-      }
-      const existingSlider = findSliderByName(name);
-      if (existingSlider) {
-        updateSliderValue(existingSlider, numeric, { record: true });
-        setActiveSlider(existingSlider.id, { force: true });
-        refreshPropertiesPanel({ type: 'slider', id: existingSlider.id });
-        ensureMoveTool();
-        return;
-      }
-      const existing = findNumberByName(name);
-      if (existing) {
-        updateNumberValue(existing, numeric, { record: true });
-        setActiveVariable(existing.id, { force: true });
-      } else {
-        const created = createNumberConstant(name, numeric);
-        setActiveVariable(created.id, { force: true });
-      }
-      refreshPropertiesPanel();
-      ensureMoveTool();
-    }
-
     function ensureKeyboardBuilt() {
       if (keyboardBuilt) return;
       keyboardBuilt = true;
@@ -7419,17 +7265,6 @@
       openInlineEditorForItem(item, type, id);
     });
 
-    if (quickActions) {
-      quickActions.addEventListener('click', event => {
-        const button = event.target.closest('.quick-action');
-        if (!button) return;
-        const type = button.dataset.action || 'insert';
-        const value = button.dataset.value || '';
-        applyQuickAction({ type, value });
-        ensureMoveTool();
-      });
-    }
-
     canvas.addEventListener('pointerdown', handlePointerDown);
     window.addEventListener('pointermove', handlePointerMove);
     window.addEventListener('pointerup', handlePointerUp);
@@ -7778,7 +7613,6 @@
     }
     handleResponsiveSidebar();
     updateUndoRedoButtons();
-    buildQuickActions();
     resizeCanvas();
   </script>
 </body>
