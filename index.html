@@ -390,6 +390,15 @@
       gap: 12px;
     }
 
+    @media (min-width: 920px) {
+      .sidebar-header {
+        display: none;
+      }
+      .algebra-list {
+        padding-top: 12px;
+      }
+    }
+
     .properties-panel {
       border-top: 1px solid rgba(0,0,0,0.06);
       padding: 14px 16px;
@@ -2042,6 +2051,8 @@
       lastSelectionType: 'none'
     };
 
+    let suppressInlineEditClick = false;
+
     const COLORS = {
       point: '#1f6feb',
       line: '#2b4aa0',
@@ -2341,39 +2352,7 @@
         return true;
       }
       if (type === 'slider') {
-        const slider = findSliderById(id);
-        if (!slider) return false;
-        setActiveSlider(id, { force: true });
-        const source = `${slider.name} = ${formatSliderValue(slider.value)}`;
-        state.editingSliderId = slider.id;
-        beginInlineEdit(item, source, value => {
-          const trimmed = value.trim();
-          if (!trimmed) {
-            state.editingSliderId = null;
-            return;
-          }
-          if (trimmed === source.trim()) {
-            state.editingSliderId = null;
-            return;
-          }
-          const expression = trimmed.includes('=') ? trimmed : `${slider.name} = ${trimmed}`;
-          state.editingFunctionId = null;
-          state.editingPointId = null;
-          parseCommand(expression);
-          state.editingSliderId = null;
-          if (commandInput) {
-            commandInput.value = '';
-            updateKeyboardPreview();
-          }
-        });
-        if (inlineEditState.cleanup) {
-          const previousCleanup = inlineEditState.cleanup;
-          inlineEditState.cleanup = () => {
-            previousCleanup();
-            state.editingSliderId = null;
-          };
-        }
-        return true;
+        return false;
       }
       return false;
     }
@@ -5097,7 +5076,7 @@
       const isNew = !item;
       if (!item) {
         item = document.createElement('div');
-        item.className = 'algebra-item slider editable';
+        item.className = 'algebra-item slider';
         item.dataset.id = id;
         item.dataset.type = 'slider';
 
@@ -5117,12 +5096,6 @@
         valueSpan.className = 'algebra-detail';
         valueSpan.dataset.role = 'slider-value';
         header.appendChild(valueSpan);
-        const inlineEdit = document.createElement('input');
-        inlineEdit.type = 'text';
-        inlineEdit.className = 'algebra-inline-edit';
-        inlineEdit.setAttribute('aria-label', 'Bewerk schuifbalk');
-        configureInlineEditInput(inlineEdit);
-        header.appendChild(inlineEdit);
         body.appendChild(header);
 
         const track = document.createElement('div');
@@ -5196,7 +5169,6 @@
       }
 
       item.dataset.type = 'slider';
-      item.classList.add('editable');
       const nameEl = item.querySelector('[data-role="slider-name"]');
       if (nameEl) {
         nameEl.textContent = slider.name;
@@ -5204,13 +5176,6 @@
       const valueEl = item.querySelector('[data-role="slider-value"]');
       if (valueEl) {
         valueEl.textContent = `= ${formatSliderValue(slider.value)}`;
-      }
-      const inlineInput = item.querySelector('.algebra-inline-edit');
-      if (inlineInput) {
-        configureInlineEditInput(inlineInput);
-        if (inlineEditState.item !== item) {
-          inlineInput.value = `${slider.name} = ${formatSliderValue(slider.value)}`;
-        }
       }
       const rangeEl = item.querySelector('.slider-range');
       if (rangeEl) {
@@ -7395,8 +7360,27 @@
       });
     }
 
+    algebraList.addEventListener('pointerdown', event => {
+      if (!(event.target instanceof Element)) {
+        return;
+      }
+      if (
+        event.target.closest('[data-speed-action]') ||
+        event.target.closest('[data-slider-action]') ||
+        event.target.closest('.slider-controls')
+      ) {
+        suppressInlineEditClick = true;
+      }
+    });
+
     algebraList.addEventListener('click', event => {
-      const optionsButton = event.target.closest('.options-button');
+      const suppressed = suppressInlineEditClick;
+      suppressInlineEditClick = false;
+      if (!(event.target instanceof Element)) {
+        return;
+      }
+      const target = event.target;
+      const optionsButton = target.closest('.options-button');
       if (optionsButton) {
         const item = optionsButton.closest('.algebra-item');
         if (!item) return;
@@ -7419,7 +7403,7 @@
         return;
       }
 
-      const speedButton = event.target.closest('[data-speed-action]');
+      const speedButton = target.closest('[data-speed-action]');
       if (speedButton) {
         const sliderItem = speedButton.closest('.algebra-item.slider');
         if (!sliderItem) return;
@@ -7435,7 +7419,7 @@
         return;
       }
 
-      const sliderActionButton = event.target.closest('[data-slider-action]');
+      const sliderActionButton = target.closest('[data-slider-action]');
       if (sliderActionButton) {
         const sliderItem = sliderActionButton.closest('.algebra-item.slider');
         if (!sliderItem) return;
@@ -7453,7 +7437,7 @@
         return;
       }
 
-      const colorButton = event.target.closest('.algebra-color[data-action="color"]');
+      const colorButton = target.closest('.algebra-color[data-action="color"]');
       if (colorButton) {
         const item = colorButton.closest('.algebra-item');
         if (!item) return;
@@ -7465,7 +7449,7 @@
         event.stopPropagation();
         return;
       }
-      const button = event.target.closest('.delete-button');
+      const button = target.closest('.delete-button');
       if (button) {
         const item = button.closest('.algebra-item');
         if (!item) return;
@@ -7473,7 +7457,7 @@
         ensureMoveTool();
         return;
       }
-      const item = event.target.closest('.algebra-item');
+      const item = target.closest('.algebra-item');
       if (!item) return;
       const type = item.dataset.type;
       const id = item.dataset.id;
@@ -7496,9 +7480,9 @@
       }
       ensureMoveTool();
 
-      const label = event.target.closest('.algebra-label');
-      const editingField = event.target.closest('.algebra-inline-edit');
-      if (label && !editingField && !calculateState.mode) {
+      const label = target.closest('.algebra-label');
+      const editingField = target.closest('.algebra-inline-edit');
+      if (label && !editingField && !calculateState.mode && !suppressed) {
         const opened = openInlineEditorForItem(item, type, id);
         if (opened) {
           event.preventDefault();
