@@ -1635,16 +1635,6 @@
       maxField.appendChild(maxInput);
       propertiesContent.appendChild(maxField);
 
-      const animationToggle = document.createElement('label');
-      animationToggle.className = 'property-checkbox';
-      const animationInput = document.createElement('input');
-      animationInput.type = 'checkbox';
-      animationInput.checked = Boolean(slider.animating);
-      animationInput.addEventListener('change', () => setSliderAnimating(slider, animationInput.checked));
-      animationToggle.appendChild(animationInput);
-      animationToggle.appendChild(document.createTextNode('Animatie'));
-      propertiesContent.appendChild(animationToggle);
-
       const speedField = document.createElement('div');
       speedField.className = 'property-field';
       const speedLabel = document.createElement('label');
@@ -5185,6 +5175,13 @@
         iconEl.style.color = COLORS.slider;
       }
 
+      if (state.selectedSliderId === slider.id) {
+        item.classList.add('selected');
+      }
+      if (inlineEditState.item === item) {
+        item.classList.add('editing');
+      }
+
       if (isNew) {
         const behavior = restoringState ? 'auto' : 'smooth';
         algebraList.scrollTo({ top: algebraList.scrollHeight, behavior });
@@ -5347,12 +5344,12 @@
           continue;
         }
         const deltaSeconds = delta / 1000;
-        const baseRate = span / 10;
+        const baseRate = span / 2;
         if (!Number.isFinite(baseRate) || baseRate <= 0) {
           continue;
         }
-        const minChange = Math.max(span / 600, 1e-6);
-        const maxChange = span / 4;
+        const minChange = Math.max(span / 300, 1e-5);
+        const maxChange = Math.max(span, span / 2);
         const change = Math.max(Math.min(baseRate * speedMultiplier * deltaSeconds, maxChange), minChange);
         if (!Number.isFinite(change) || change <= 0) {
           continue;
@@ -7349,6 +7346,7 @@
         if (!sliderItem) return;
         const slider = findSliderById(sliderItem.dataset.id);
         if (!slider) return;
+        cancelInlineEdit();
         setActiveSlider(slider.id, { force: true });
         const direction = speedButton.dataset.speedAction === 'faster' ? 1 : -1;
         shiftSliderSpeed(slider, direction);
@@ -7364,6 +7362,7 @@
         if (!sliderItem) return;
         const slider = findSliderById(sliderItem.dataset.id);
         if (!slider) return;
+        cancelInlineEdit();
         setActiveSlider(slider.id, { force: true });
         const action = sliderActionButton.dataset.sliderAction;
         if (action === 'toggle-animate') {
@@ -7403,11 +7402,7 @@
 
       if (type === 'slider') {
         setActiveSlider(id, { force: true });
-        ensureMoveTool();
-        return;
-      }
-
-      if (type === 'function') {
+      } else if (type === 'function') {
         setHighlightedFunction(id, { scroll: true, force: true });
       } else if (type === 'point') {
         setSelectedPoint(id, { force: true });
