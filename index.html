@@ -7,12 +7,12 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="white" />
   <meta name="theme-color" content="#ffffff" />
   <link rel="icon" type="image/png" href="favicon.png" />
-  <title>GeoCanvas Classic</title>
+  <title>GeoCanvas</title>
   <style>
     :root {
       color-scheme: light;
       --toolbar-height: 56px;
-      --sidebar-width: min(320px, 32vw);
+      --sidebar-width: 320px;
       --accent: #3367d6;
       --border: #d9d9d9;
       --bg: #f8f8fb;
@@ -62,6 +62,10 @@
       user-select: none;
       -webkit-user-select: none;
       -moz-user-select: none;
+    }
+
+    .brand-name {
+      font-size: 1.05rem;
     }
 
     .brand * {
@@ -155,6 +159,128 @@
       transform: translate(-50%, 0);
     }
 
+    .text-editor-overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      background: rgba(15, 23, 42, 0.28);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.18s ease;
+      z-index: 45;
+    }
+
+    .text-editor-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .text-editor-panel {
+      width: min(380px, 96%);
+      background: var(--panel-bg);
+      border-radius: 18px;
+      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.18);
+      border: 1px solid rgba(15, 23, 42, 0.08);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .text-editor-title {
+      margin: 0;
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: #1f2937;
+    }
+
+    .text-editor-field {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .text-editor-field label {
+      font-size: 0.92rem;
+      font-weight: 500;
+      color: #374151;
+    }
+
+    .text-editor-hint {
+      margin: 0;
+      font-size: 0.82rem;
+      color: #6b7280;
+    }
+
+    .text-editor-input {
+      width: 100%;
+      min-height: 80px;
+      resize: vertical;
+      padding: 12px 14px;
+      font-size: 1rem;
+      line-height: 1.4;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: #fff;
+      color: #1f2937;
+      font-family: inherit;
+      transition: border 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .text-editor-input:focus {
+      outline: none;
+      border-color: rgba(51, 103, 214, 0.6);
+      box-shadow: 0 0 0 3px rgba(51, 103, 214, 0.18);
+    }
+
+    .text-editor-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .text-editor-actions button {
+      border: none;
+      border-radius: 12px;
+      padding: 10px 18px;
+      font-size: 0.95rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease, color 0.15s ease;
+    }
+
+    .text-editor-cancel {
+      background: #f3f4f6;
+      color: #374151;
+    }
+
+    .text-editor-cancel:hover,
+    .text-editor-cancel:focus-visible {
+      background: #e5e7eb;
+      outline: none;
+    }
+
+    .text-editor-confirm {
+      background: var(--accent);
+      color: #fff;
+      box-shadow: 0 10px 25px rgba(51, 103, 214, 0.25);
+    }
+
+    .text-editor-confirm:hover,
+    .text-editor-confirm:focus-visible {
+      background: #2457c6;
+      box-shadow: 0 12px 30px rgba(51, 103, 214, 0.28);
+      outline: none;
+    }
+
+    .text-editor-actions button:active {
+      transform: translateY(1px);
+    }
+
     .tool-button {
       background: transparent;
       border: 1px solid transparent;
@@ -197,6 +323,7 @@
 
     .sidebar {
       flex: 0 0 var(--sidebar-width);
+      width: var(--sidebar-width);
       max-width: 400px;
       background: var(--panel-bg);
       border-right: 1px solid var(--border);
@@ -247,6 +374,9 @@
       display: flex;
       flex-direction: column;
       gap: 12px;
+      width: 100%;
+      max-width: 100%;
+      overflow: hidden;
     }
 
     .properties-panel.hidden {
@@ -332,6 +462,7 @@
       display: flex;
       align-items: stretch;
       gap: 12px;
+      flex-wrap: wrap;
     }
 
     .property-row label {
@@ -377,6 +508,15 @@
       gap: 12px;
     }
 
+    .algebra-item.slider {
+      align-items: flex-start;
+    }
+
+    .algebra-item.slider .algebra-actions {
+      align-self: flex-start;
+      margin-top: 6px;
+    }
+
     .algebra-actions {
       display: inline-flex;
       flex-direction: row;
@@ -392,82 +532,60 @@
       }
     }
 
-    .algebra-item.slider {
-      align-items: flex-start;
-    }
-
-    .algebra-item.slider .algebra-actions {
-      align-self: flex-start;
-      margin-top: 4px;
-    }
-
     .slider-body {
       flex: 1;
       min-width: 0;
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 12px;
     }
 
     .slider-header {
       display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      flex-wrap: wrap;
-      font-size: 0.9rem;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 4px;
+      font-size: 0.92rem;
       font-weight: 600;
       color: #1f2933;
     }
 
     .slider-header [data-role="slider-title"] {
-      flex: 1;
+      width: 100%;
       min-width: 0;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
     }
 
-    .slider-controls {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) auto;
-      align-items: center;
-      gap: 12px;
+    .slider-track {
+      width: 100%;
+      min-width: 0;
     }
 
-    .slider-controls input[type="range"] {
+    .slider-track input[type="range"] {
       width: 100%;
       min-width: 0;
     }
 
     .slider-value {
-      min-width: 54px;
-      text-align: right;
+      min-width: 0;
       font-variant-numeric: tabular-nums;
-      color: #374151;
+      font-weight: 600;
+      color: #1f2937;
+      white-space: nowrap;
+      margin-right: 4px;
     }
 
-    .slider-helpers {
-      display: inline-flex;
+    .slider-controls {
+      display: flex;
       align-items: center;
+      flex-wrap: wrap;
       gap: 8px;
-      flex-wrap: nowrap;
-      justify-self: flex-end;
+      width: 100%;
     }
 
-    @media (max-width: 520px) {
-      .slider-controls {
-        grid-template-columns: 1fr;
-        gap: 10px;
-      }
-
-      .slider-helpers {
-        justify-self: flex-start;
-        flex-wrap: wrap;
-      }
-    }
-
-    .slider-helpers button {
+    .slider-controls button {
       border: 1px solid var(--border);
       background: #fff;
       border-radius: 999px;
@@ -481,7 +599,7 @@
       transition: background 0.2s ease, border 0.2s ease;
     }
 
-    .slider-helpers button svg {
+    .slider-controls button svg {
       width: 16px;
       height: 16px;
       stroke-width: 1.8;
@@ -489,18 +607,19 @@
       fill: none;
     }
 
-    .slider-helpers button:hover {
+    .slider-controls button:hover {
       background: rgba(51,103,214,0.1);
       border-color: rgba(51,103,214,0.3);
     }
 
-    .slider-helpers select {
+    .slider-controls select {
       border: 1px solid var(--border);
       background: #fff;
       border-radius: 999px;
       padding: 4px 12px;
       font-size: 0.8rem;
       color: #374151;
+      margin-left: auto;
     }
 
     .algebra-item.selected {
@@ -552,7 +671,8 @@
     .algebra-label {
       flex: 1;
       display: flex;
-      flex-wrap: wrap;
+      flex-direction: column;
+      align-items: flex-start;
       gap: 4px;
       font-size: 0.92rem;
     }
@@ -564,6 +684,31 @@
 
     .algebra-detail {
       color: #555;
+    }
+
+    .algebra-inline-edit {
+      display: none;
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 6px 10px;
+      font-size: 0.9rem;
+      background: #fff;
+    }
+
+    .algebra-inline-edit:focus {
+      outline: none;
+      border-color: rgba(51, 103, 214, 0.6);
+      box-shadow: 0 0 0 3px rgba(51, 103, 214, 0.18);
+    }
+
+    .algebra-item.editing .algebra-label strong,
+    .algebra-item.editing .algebra-detail {
+      display: none;
+    }
+
+    .algebra-item.editing .algebra-inline-edit {
+      display: block;
     }
 
     .options-button,
@@ -699,6 +844,11 @@
       border-radius: 999px;
       font-size: 0.8rem;
       font-weight: 600;
+    }
+
+    .brand .badge {
+      padding: 4px 8px;
+      font-size: 0.72rem;
     }
 
     .math-keyboard {
@@ -917,7 +1067,7 @@
 
     @media (max-width: 920px) {
       :root {
-        --sidebar-width: min(280px, 70vw);
+        --sidebar-width: min(360px, 90vw);
       }
 
       body.sidebar-open::after {
@@ -939,7 +1089,8 @@
         bottom: 0;
         left: 0;
         box-shadow: 12px 0 40px rgba(0,0,0,0.22);
-        max-width: min(360px, 78vw);
+        width: var(--sidebar-width);
+        max-width: var(--sidebar-width);
         transform: translateX(-105%);
         z-index: 5;
       }
@@ -1076,7 +1227,8 @@
         <path d="M22 16h4" />
         <circle cx="16" cy="16" r="4" />
       </svg>
-      GeoCanvas Classic
+      <span class="brand-name">GeoCanvas</span>
+      <span class="badge">Beta</span>
     </div>
     <div class="toolbar" role="toolbar" aria-label="Tekengereedschap">
       <button class="tool-button active" data-tool="move" aria-label="Verplaats gereedschap">
@@ -1118,7 +1270,14 @@
           <path d="M12 6v12" />
         </svg>
       </button>
-      <span class="badge">Beta</span>
+      <button class="tool-button" id="quick-slider" aria-label="Voeg slider toe">
+        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M5 5h14" />
+          <path d="M5 19h14" />
+          <circle cx="9" cy="12" r="2.5" />
+          <circle cx="15" cy="12" r="2.5" />
+        </svg>
+      </button>
     </div>
     <div class="calculate-wrapper">
       <button class="tool-button" id="calculate-menu-toggle" aria-label="Bereken" title="Bereken" aria-haspopup="menu" aria-expanded="false">
@@ -1134,7 +1293,7 @@
       <div class="calculate-menu" id="calculate-menu" role="menu" aria-hidden="true">
         <button type="button" data-action="extrema" role="menuitem">Extreme waarden</button>
         <button type="button" data-action="roots" role="menuitem">Snijpunten met de x-as</button>
-        <button type="button" data-action="line-intersection" role="menuitem">Snijpunt(en) tussen twee lijnen</button>
+        <button type="button" data-action="line-intersection" role="menuitem">Snijpunt(en) tussen objecten</button>
       </div>
     </div>
     <button class="tool-button" id="export-board" aria-label="Exporteer afbeelding" title="Exporteer afbeelding">
@@ -1211,6 +1370,20 @@
       <canvas id="board" width="1600" height="1200" aria-label="Coördinaatvlak"></canvas>
       <div class="quick-actions" id="quick-actions" role="group" aria-label="Snelle functievoorbeelden"></div>
       <div class="calculation-hint" id="calculation-hint" role="status" aria-live="polite" aria-hidden="true"></div>
+      <div class="text-editor-overlay" id="text-editor" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="text-editor-title">
+        <div class="text-editor-panel" role="document">
+          <h2 class="text-editor-title" id="text-editor-title">Tekst toevoegen</h2>
+          <div class="text-editor-field">
+            <label for="text-editor-input">Voer de gewenste tekst in</label>
+            <textarea id="text-editor-input" class="text-editor-input" rows="3" placeholder="Bijv. Titel of toelichting" spellcheck="true"></textarea>
+          </div>
+          <p class="text-editor-hint">Tip: gebruik Ctrl+Enter of ⌘+Enter om snel te plaatsen.</p>
+          <div class="text-editor-actions">
+            <button type="button" class="text-editor-cancel" id="text-editor-cancel">Annuleren</button>
+            <button type="button" class="text-editor-confirm" id="text-editor-confirm">Plaats tekst</button>
+          </div>
+        </div>
+      </div>
       <div class="command-bar">
         <span aria-hidden="true">+</span>
         <input type="text" id="command-input" class="command-input" placeholder="Voer een opdracht of functie in, bijv. y=x^2 of A=(2,1)" autocomplete="off" />
@@ -1301,7 +1474,7 @@
       propertiesContent.innerHTML = '';
       let entity = null;
       if (target.type === 'point') {
-        entity = state.points.find(entry => entry.id === target.id);
+        entity = getPointById(target.id);
         if (!entity) {
           closePropertiesPanel();
           return;
@@ -1718,6 +1891,9 @@
       }
       state.lastSelectionType = 'segment';
       draw();
+      if (!restoringState) {
+        processIntersectionSelection('segment', id);
+      }
     }
 
     function setSelectedLine(id, options = {}) {
@@ -1767,7 +1943,7 @@
       state.lastSelectionType = 'line';
       draw();
       if (!restoringState) {
-        processLineCalculationSelection(id);
+        processIntersectionSelection('line', id);
       }
     }
 
@@ -1817,6 +1993,9 @@
       }
       state.lastSelectionType = 'circle';
       draw();
+      if (!restoringState) {
+        processIntersectionSelection('circle', id);
+      }
     }
 
 
@@ -1834,6 +2013,10 @@
     const keyboardTabs = keyboard.querySelector('.keyboard-tabs');
     const keyboardRows = keyboard.querySelector('.keyboard-rows');
     const keyboardHandle = keyboard.querySelector('.keyboard-handle');
+    const textEditor = document.getElementById('text-editor');
+    const textEditorInput = document.getElementById('text-editor-input');
+    const textEditorCancel = document.getElementById('text-editor-cancel');
+    const textEditorConfirm = document.getElementById('text-editor-confirm');
     const quickActions = document.getElementById('quick-actions');
     const calculationHint = document.getElementById('calculation-hint');
     const undoButton = document.getElementById('undo');
@@ -1883,6 +2066,7 @@
       functionColorIndex: 0,
       functionCounter: 0,
       draggingPoint: null,
+      draggingText: null,
       dragOffset: { x: 0, y: 0 },
       panning: false,
       panStart: { x: 0, y: 0 },
@@ -1917,9 +2101,9 @@
 
     const FUNCTION_COLORS = ['#d83b01', '#1f6feb', '#2da44e', '#8b3dd9', '#e36209'];
     const SLIDER_SPEEDS = {
-      slow: 0.4,
-      medium: 1,
-      fast: 1.8
+      slow: 0.25,
+      medium: 0.6,
+      fast: 0.9
     };
     const ICONS = {
       minus: `<svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M6 12h12" /></svg>`,
@@ -1931,8 +2115,73 @@
 
     const calculateState = {
       mode: null,
-      firstLineId: null
+      firstSelection: null
     };
+
+    const inlineEditState = { item: null, commit: null, cleanup: null };
+
+    function finishInlineEdit(apply) {
+      if (!inlineEditState.item) {
+        return;
+      }
+      const { item, commit, cleanup } = inlineEditState;
+      if (typeof cleanup === 'function') {
+        cleanup();
+      }
+      inlineEditState.item = null;
+      inlineEditState.commit = null;
+      inlineEditState.cleanup = null;
+      const input = item.querySelector('.algebra-inline-edit');
+      item.classList.remove('editing');
+      if (!apply || !commit || !input) {
+        return;
+      }
+      const value = input.value != null ? String(input.value) : '';
+      commit(value);
+    }
+
+    function cancelInlineEdit() {
+      finishInlineEdit(false);
+    }
+
+    function beginInlineEdit(item, initialValue, commit) {
+      if (!item) return;
+      cancelInlineEdit();
+      const input = item.querySelector('.algebra-inline-edit');
+      if (!input) return;
+      inlineEditState.item = item;
+      inlineEditState.commit = commit;
+      item.classList.add('editing');
+      const value = initialValue != null ? String(initialValue) : '';
+      input.value = value;
+      const handleBlur = () => finishInlineEdit(true);
+      const handleKeyDown = event => {
+        if (event.key === 'Enter') {
+          event.preventDefault();
+          finishInlineEdit(true);
+        } else if (event.key === 'Escape') {
+          event.preventDefault();
+          finishInlineEdit(false);
+        }
+      };
+      input.addEventListener('blur', handleBlur);
+      input.addEventListener('keydown', handleKeyDown);
+      inlineEditState.cleanup = () => {
+        input.removeEventListener('blur', handleBlur);
+        input.removeEventListener('keydown', handleKeyDown);
+      };
+      requestAnimationFrame(() => {
+        try {
+          input.focus({ preventScroll: true });
+        } catch (error) {
+          input.focus();
+        }
+        const length = value.length;
+        if (typeof input.setSelectionRange === 'function') {
+          input.setSelectionRange(length, length);
+        }
+      });
+    }
 
     let calculationHintTimeout = null;
 
@@ -2067,7 +2316,8 @@
           value: slider.value,
           speed: slider.speed,
           animating: Boolean(slider.animating),
-          direction: slider.direction || 1
+          direction: slider.direction || 1,
+          animationValue: Number.isFinite(slider.animationValue) ? slider.animationValue : slider.value
         })),
         numbers: state.numbers.map(entry => ({ id: entry.id, name: entry.name, value: entry.value })),
         variables: { ...state.variables }
@@ -2111,7 +2361,7 @@
         registerAlgebraEntry(polygon.id, `p: veelhoek(${polygon.points.map(pointName).join(', ')})`, 'polygon');
       }
       for (const text of state.texts) {
-        registerAlgebraEntry(text.id, `tekst: "${text.content}"`, 'text');
+        registerAlgebraEntry(text.id, `tekst: "${text.content}"`, 'text', COLORS.text);
       }
       for (const fn of state.functions) {
         registerAlgebraEntry(fn.id, `${fn.algebraLabel} = ${fn.expression}`, 'function', fn.color);
@@ -2160,6 +2410,7 @@
       if (!snapshot) return;
       suspendHistory = true;
       restoringState = true;
+      hideTextEditor({ keepTool: true });
       state.points = snapshot.points.map(point => ({
         id: point.id,
         name: point.name,
@@ -2169,6 +2420,7 @@
         traceEnabled: Boolean(point.traceEnabled),
         trace: Array.isArray(point.trace) ? point.trace.map(pos => ({ x: pos.x, y: pos.y })) : []
       }));
+      invalidatePointLookup();
       state.segments = snapshot.segments.map(segment => ({ ...segment }));
       state.lines = snapshot.lines.map(line => ({ ...line }));
       state.circles = snapshot.circles.map(circle => ({ ...circle }));
@@ -2186,6 +2438,7 @@
       state.tempPoints = [];
       state.tempPolygon = null;
       state.draggingPoint = null;
+      state.draggingText = null;
       state.dragOffset = { x: 0, y: 0 };
       state.panStart = { x: 0, y: 0 };
       state.panning = false;
@@ -2208,7 +2461,8 @@
         speed: slider.speed || 'medium',
         animating: Boolean(slider.animating),
         direction: slider.direction || 1,
-        lastTimestamp: null
+        lastTimestamp: null,
+        animationValue: Number.isFinite(slider.animationValue) ? slider.animationValue : slider.value
       }));
       state.numbers = (snapshot.numbers || []).map(entry => ({
         id: entry.id,
@@ -2525,6 +2779,8 @@
     let keyboardBuilt = false;
     const keyboardPosition = { x: null, y: null };
     const keyboardDragState = { active: false, pointerId: null, offsetX: 0, offsetY: 0 };
+    let textEditorVisible = false;
+    let pendingTextPlacement = null;
 
     function resizeCanvas() {
       const { clientWidth, clientHeight } = canvas;
@@ -2550,6 +2806,22 @@
 
     function clampScale(value) {
       return Math.min(240, Math.max(6, value));
+    }
+
+    let pointsRevision = 0;
+    let pointLookupVersion = -1;
+    let pointLookup = new Map();
+
+    function invalidatePointLookup() {
+      pointsRevision += 1;
+    }
+
+    function rebuildPointLookup() {
+      pointLookup = new Map();
+      for (const point of state.points) {
+        pointLookup.set(point.id, point);
+      }
+      pointLookupVersion = pointsRevision;
     }
 
     function getTickStep() {
@@ -2592,8 +2864,8 @@
       if (!Number.isFinite(scale) || scale <= 0) {
         return 1;
       }
-      const target = 80 / scale;
-      return Math.max(0.25, Math.min(4, target));
+      const target = 60 / scale;
+      return Math.max(0.2, Math.min(1.6, target));
     }
 
     function formatAxisValue(value, step) {
@@ -2815,8 +3087,8 @@
         const color = COLORS.line;
         const isSelected = state.selectedLineId === line.id;
         const { p1, p2 } = line;
-        const a = state.points.find(p => p.id === p1);
-        const b = state.points.find(p => p.id === p2);
+        const a = getPointById(p1);
+        const b = getPointById(p2);
         if (!a || !b) continue;
         const A = worldToScreen(a.position);
         const B = worldToScreen(b.position);
@@ -2846,8 +3118,8 @@
         const color = COLORS.segment;
         const isSelected = state.selectedSegmentId === segment.id;
         const { p1, p2 } = segment;
-        const a = state.points.find(p => p.id === p1);
-        const b = state.points.find(p => p.id === p2);
+        const a = getPointById(p1);
+        const b = getPointById(p2);
         if (!a || !b) continue;
         const A = worldToScreen(a.position);
         const B = worldToScreen(b.position);
@@ -2874,12 +3146,12 @@
         ctx.fillStyle = 'rgba(0,150,136,0.15)';
         ctx.strokeStyle = COLORS.polygon;
         ctx.beginPath();
-        const start = state.points.find(p => p.id === polygon.points[0]);
+        const start = getPointById(polygon.points[0]);
         if (!start) continue;
         const first = worldToScreen(start.position);
         ctx.moveTo(first.x, first.y);
         for (let i = 1; i < polygon.points.length; i++) {
-          const pt = state.points.find(p => p.id === polygon.points[i]);
+          const pt = getPointById(polygon.points[i]);
           if (!pt) continue;
           const pos = worldToScreen(pt.position);
           ctx.lineTo(pos.x, pos.y);
@@ -2890,8 +3162,8 @@
       }
 
       for (const circle of state.circles) {
-        const center = state.points.find(p => p.id === circle.center);
-        const edge = state.points.find(p => p.id === circle.edge);
+        const center = getPointById(circle.center);
+        const edge = getPointById(circle.edge);
         if (!center || !edge) continue;
         const C = worldToScreen(center.position);
         const radius = distance(center.position, edge.position) * state.scale;
@@ -2927,6 +3199,7 @@
       const sampleStep = getPlotSampleStep();
       const steps = sampleStep > 0 ? Math.ceil(width / sampleStep) : width;
       const verticalThreshold = height * 4;
+      const maxSegmentLength = Math.max(12, Math.min(28, sampleStep * 9 + 10));
       const scale = state.scale;
       if (!Number.isFinite(scale) || scale <= 0) {
         ctx.restore();
@@ -2939,6 +3212,34 @@
         const path = [];
         let pathStarted = false;
         let previousPoint = null;
+        const appendSegment = (prev, current, depth = 0) => {
+          const dx = current.sx - prev.sx;
+          const dy = current.sy - prev.sy;
+          const distancePx = Math.hypot(dx, dy);
+          if (distancePx > maxSegmentLength && depth < 6) {
+            const midWorldX = (prev.worldX + current.worldX) / 2;
+            let midValue;
+            try {
+              midValue = fn.eval(midWorldX);
+            } catch (error) {
+              midValue = NaN;
+            }
+            if (Number.isFinite(midValue) && Math.abs(midValue) <= 1e6) {
+              const mid = {
+                worldX: midWorldX,
+                worldY: midValue,
+                sx: originX + midWorldX * scale,
+                sy: originY - midValue * scale
+              };
+              if (Number.isFinite(mid.sx) && Number.isFinite(mid.sy)) {
+                appendSegment(prev, mid, depth + 1);
+                appendSegment(mid, current, depth + 1);
+                return;
+              }
+            }
+          }
+          path.push({ move: false, x: current.sx, y: current.sy });
+        };
         for (let index = 0; index <= steps; index++) {
           const sx = index === steps ? width : Math.min(index * sampleStep, width);
           const worldX = (sx - originX) * inverseScale;
@@ -2961,14 +3262,18 @@
             previousPoint = null;
             continue;
           }
+          const sample = { sx, sy, worldX, worldY: value };
           const largeJump = previousPoint && Math.abs(sy - previousPoint.sy) > verticalThreshold;
           if (!pathStarted || largeJump) {
-            path.push({ move: true, x: sx, y: sy });
+            path.push({ move: true, x: sample.sx, y: sample.sy });
             pathStarted = true;
-          } else {
-            path.push({ move: false, x: sx, y: sy });
+            previousPoint = sample;
+            continue;
           }
-          previousPoint = { sx, sy };
+          if (previousPoint) {
+            appendSegment(previousPoint, sample);
+          }
+          previousPoint = sample;
         }
 
         if (!path.length) {
@@ -3041,7 +3346,7 @@
       ctx.strokeStyle = COLORS.polygon;
 
       const vertices = state.tempPolygon.points
-        .map(id => state.points.find(p => p.id === id))
+        .map(id => getPointById(id))
         .filter(Boolean);
       if (vertices.length === 0) {
         ctx.restore();
@@ -3074,6 +3379,7 @@
 
     function clearHighlightedAlgebra(options = {}) {
       if (!algebraList) return;
+      cancelInlineEdit();
       const {
         keepFunction = false,
         keepPoint = false,
@@ -3274,9 +3580,15 @@
       refreshPropertiesPanel({ type: 'function', id });
       draw();
       triggerPendingFunctionCalculation(id);
+      if (!restoringState) {
+        processIntersectionSelection('function', id);
+      }
     }
 
     function setTool(tool) {
+      if (textEditorVisible) {
+        hideTextEditor({ keepTool: true });
+      }
       if (state.tool === 'polygon' && tool !== 'polygon') {
         cancelTempPolygon();
       }
@@ -3311,7 +3623,11 @@
     }
 
     function getPointById(id) {
-      return state.points.find(point => point.id === id) || null;
+      if (!id) return null;
+      if (pointLookupVersion !== pointsRevision) {
+        rebuildPointLookup();
+      }
+      return pointLookup.get(id) || null;
     }
 
     function pointExistsNear(position, tolerance = 1e-3) {
@@ -3554,42 +3870,369 @@
       return results;
     }
 
-    function getLineById(id) {
-      return state.lines.find(line => line.id === id) || null;
+    const INTERSECTION_TOLERANCE = 1e-6;
+
+    function buildIntersectionEntity(selection) {
+      if (!selection) return null;
+      const { type, id } = selection;
+      if (!id) return null;
+      if (type === 'function') {
+        const fn = state.functions.find(entry => entry.id === id);
+        return fn ? { kind: 'function', fn } : null;
+      }
+      if (type === 'line' || type === 'segment') {
+        const source = (type === 'line' ? state.lines : state.segments).find(entry => entry.id === id);
+        if (!source) return null;
+        const p1 = getPointById(source.p1);
+        const p2 = getPointById(source.p2);
+        if (!p1 || !p2) return null;
+        return {
+          kind: 'line',
+          segment: type === 'segment',
+          p1: { x: p1.position.x, y: p1.position.y },
+          p2: { x: p2.position.x, y: p2.position.y }
+        };
+      }
+      if (type === 'circle') {
+        const circle = state.circles.find(entry => entry.id === id);
+        if (!circle) return null;
+        const centerPoint = getPointById(circle.center);
+        const edgePoint = getPointById(circle.edge);
+        if (!centerPoint || !edgePoint) return null;
+        const radius = distance(centerPoint.position, edgePoint.position);
+        if (!Number.isFinite(radius) || radius <= 0) {
+          return null;
+        }
+        return {
+          kind: 'circle',
+          center: { x: centerPoint.position.x, y: centerPoint.position.y },
+          radius
+        };
+      }
+      return null;
     }
 
-    function calculateLineIntersection(lineA, lineB) {
-      if (!lineA || !lineB) {
+    function evaluateFunctionDifference(fnA, fnB, x) {
+      const a = safeEvalFunction(fnA, x);
+      const b = safeEvalFunction(fnB, x);
+      if (!Number.isFinite(a) || !Number.isFinite(b)) {
+        return NaN;
+      }
+      return a - b;
+    }
+
+    function refineFunctionIntersection(fnA, fnB, a, b) {
+      if (!Number.isFinite(a) || !Number.isFinite(b)) {
         return null;
       }
-      const p1 = getPointById(lineA.p1);
-      const p2 = getPointById(lineA.p2);
-      const p3 = getPointById(lineB.p1);
-      const p4 = getPointById(lineB.p2);
-      if (!p1 || !p2 || !p3 || !p4) {
+      let left = Math.min(a, b);
+      let right = Math.max(a, b);
+      let fLeft = evaluateFunctionDifference(fnA, fnB, left);
+      let fRight = evaluateFunctionDifference(fnA, fnB, right);
+      if (!Number.isFinite(fLeft) || !Number.isFinite(fRight)) {
         return null;
       }
-      const { x: x1, y: y1 } = p1.position;
-      const { x: x2, y: y2 } = p2.position;
-      const { x: x3, y: y3 } = p3.position;
-      const { x: x4, y: y4 } = p4.position;
-      const denom = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4);
+      for (let i = 0; i < 60; i += 1) {
+        const mid = (left + right) / 2;
+        const fMid = evaluateFunctionDifference(fnA, fnB, mid);
+        if (!Number.isFinite(fMid)) {
+          break;
+        }
+        if (Math.abs(fMid) < INTERSECTION_TOLERANCE) {
+          const y = safeEvalFunction(fnA, mid);
+          return Number.isFinite(y) ? { x: mid, y } : null;
+        }
+        if (fLeft * fMid < 0) {
+          right = mid;
+          fRight = fMid;
+        } else {
+          left = mid;
+          fLeft = fMid;
+        }
+      }
+      const x = (left + right) / 2;
+      const y = safeEvalFunction(fnA, x);
+      return Number.isFinite(y) ? { x, y } : null;
+    }
+
+    function calculateFunctionIntersectionsBetween(fnA, fnB) {
+      const range = getVisibleXRange();
+      const span = range.max - range.min;
+      if (!Number.isFinite(span) || Math.abs(span) < 1e-6) {
+        return [];
+      }
+      const step = Math.max(Math.abs(span) / 600, getPlotSampleStep() * 0.5, 0.02);
+      const results = [];
+      let previous = null;
+      let iterations = 0;
+      for (let x = range.min; x <= range.max + 1e-9 && iterations < 2200; x += step, iterations += 1) {
+        const diff = evaluateFunctionDifference(fnA, fnB, x);
+        if (!Number.isFinite(diff)) {
+          previous = null;
+          continue;
+        }
+        const y = safeEvalFunction(fnA, x);
+        if (Number.isFinite(y) && Math.abs(diff) < INTERSECTION_TOLERANCE) {
+          addUniquePoint(results, { x, y });
+        }
+        if (previous && Number.isFinite(previous.diff) && previous.diff * diff < 0) {
+          const refined = refineFunctionIntersection(fnA, fnB, previous.x, x);
+          if (refined) {
+            addUniquePoint(results, refined);
+          }
+        }
+        previous = { x, diff };
+      }
+      return results;
+    }
+
+    function calculateFunctionLineIntersections(fn, line) {
+      if (!fn || !line) return [];
+      const dx = line.p2.x - line.p1.x;
+      const dy = line.p2.y - line.p1.y;
+      if (!Number.isFinite(dx) || !Number.isFinite(dy) || (Math.abs(dx) < 1e-9 && Math.abs(dy) < 1e-9)) {
+        return [];
+      }
+      if (Math.abs(dx) < 1e-9) {
+        const x = line.p1.x;
+        const y = safeEvalFunction(fn, x);
+        if (!Number.isFinite(y)) {
+          return [];
+        }
+        const point = { x, y };
+        if (line.segment && !pointOnSegment(point, line)) {
+          return [];
+        }
+        return [point];
+      }
+      const slope = dy / dx;
+      const intercept = line.p1.y - slope * line.p1.x;
+      const lineFn = { eval: x => slope * x + intercept };
+      const points = calculateFunctionIntersectionsBetween(fn, lineFn);
+      if (!line.segment) {
+        return points;
+      }
+      return points.filter(point => pointOnSegment(point, line));
+    }
+
+    function evaluateFunctionCircleDifference(fn, circle, x) {
+      const y = safeEvalFunction(fn, x);
+      if (!Number.isFinite(y)) {
+        return NaN;
+      }
+      const dx = x - circle.center.x;
+      const dy = y - circle.center.y;
+      return dx * dx + dy * dy - circle.radius * circle.radius;
+    }
+
+    function refineFunctionCircleIntersection(fn, circle, a, b) {
+      if (!Number.isFinite(a) || !Number.isFinite(b)) {
+        return null;
+      }
+      let left = Math.min(a, b);
+      let right = Math.max(a, b);
+      let fLeft = evaluateFunctionCircleDifference(fn, circle, left);
+      let fRight = evaluateFunctionCircleDifference(fn, circle, right);
+      if (!Number.isFinite(fLeft) || !Number.isFinite(fRight)) {
+        return null;
+      }
+      for (let i = 0; i < 60; i += 1) {
+        const mid = (left + right) / 2;
+        const fMid = evaluateFunctionCircleDifference(fn, circle, mid);
+        if (!Number.isFinite(fMid)) {
+          break;
+        }
+        if (Math.abs(fMid) < INTERSECTION_TOLERANCE) {
+          const y = safeEvalFunction(fn, mid);
+          return Number.isFinite(y) ? { x: mid, y } : null;
+        }
+        if (fLeft * fMid < 0) {
+          right = mid;
+          fRight = fMid;
+        } else {
+          left = mid;
+          fLeft = fMid;
+        }
+      }
+      const x = (left + right) / 2;
+      const y = safeEvalFunction(fn, x);
+      return Number.isFinite(y) ? { x, y } : null;
+    }
+
+    function calculateFunctionCircleIntersections(fn, circle) {
+      if (!fn || !circle) return [];
+      const visible = getVisibleXRange();
+      const rangeMin = Math.max(visible.min, circle.center.x - circle.radius - 0.5);
+      const rangeMax = Math.min(visible.max, circle.center.x + circle.radius + 0.5);
+      const span = rangeMax - rangeMin;
+      if (!Number.isFinite(span) || Math.abs(span) < 1e-6) {
+        return [];
+      }
+      const step = Math.max(Math.abs(span) / 600, getPlotSampleStep() * 0.5, 0.02);
+      const results = [];
+      let previous = null;
+      let iterations = 0;
+      for (let x = rangeMin; x <= rangeMax + 1e-9 && iterations < 2200; x += step, iterations += 1) {
+        const diff = evaluateFunctionCircleDifference(fn, circle, x);
+        if (!Number.isFinite(diff)) {
+          previous = null;
+          continue;
+        }
+        const y = safeEvalFunction(fn, x);
+        if (Number.isFinite(y) && Math.abs(diff) < INTERSECTION_TOLERANCE) {
+          addUniquePoint(results, { x, y });
+        }
+        if (previous && Number.isFinite(previous.diff) && previous.diff * diff < 0) {
+          const refined = refineFunctionCircleIntersection(fn, circle, previous.x, x);
+          if (refined) {
+            addUniquePoint(results, refined);
+          }
+        }
+        previous = { x, diff };
+      }
+      return results;
+    }
+
+    function pointOnSegment(point, line, tolerance = 1e-5) {
+      if (!line.segment) {
+        return true;
+      }
+      const total = distance(line.p1, line.p2);
+      if (!Number.isFinite(total) || total <= tolerance) {
+        return distance(line.p1, point) <= tolerance;
+      }
+      const sum = distance(line.p1, point) + distance(point, line.p2);
+      return sum <= total + tolerance;
+    }
+
+    function intersectLines(lineA, lineB) {
+      const { p1: a1, p2: a2 } = lineA;
+      const { p1: b1, p2: b2 } = lineB;
+      const denom = (a1.x - a2.x) * (b1.y - b2.y) - (a1.y - a2.y) * (b1.x - b2.x);
       if (Math.abs(denom) < 1e-9) {
-        return null;
+        return [];
       }
-      const det1 = x1 * y2 - y1 * x2;
-      const det2 = x3 * y4 - y3 * x4;
-      const x = (det1 * (x3 - x4) - (x1 - x2) * det2) / denom;
-      const y = (det1 * (y3 - y4) - (y1 - y2) * det2) / denom;
+      const det1 = a1.x * a2.y - a1.y * a2.x;
+      const det2 = b1.x * b2.y - b1.y * b2.x;
+      const x = (det1 * (b1.x - b2.x) - (a1.x - a2.x) * det2) / denom;
+      const y = (det1 * (b1.y - b2.y) - (a1.y - a2.y) * det2) / denom;
       if (!Number.isFinite(x) || !Number.isFinite(y)) {
-        return null;
+        return [];
       }
-      return { x, y };
+      const point = { x, y };
+      if (!pointOnSegment(point, lineA) || !pointOnSegment(point, lineB)) {
+        return [];
+      }
+      return [point];
+    }
+
+    function intersectLineAndCircle(line, circle) {
+      const results = [];
+      const dx = line.p2.x - line.p1.x;
+      const dy = line.p2.y - line.p1.y;
+      const a = dx * dx + dy * dy;
+      if (!Number.isFinite(a) || a <= 0) {
+        return results;
+      }
+      const fx = line.p1.x - circle.center.x;
+      const fy = line.p1.y - circle.center.y;
+      const b = 2 * (fx * dx + fy * dy);
+      const c = fx * fx + fy * fy - circle.radius * circle.radius;
+      let discriminant = b * b - 4 * a * c;
+      if (discriminant < -INTERSECTION_TOLERANCE) {
+        return results;
+      }
+      discriminant = Math.max(0, discriminant);
+      const sqrtDisc = Math.sqrt(discriminant);
+      const tValues = discriminant <= INTERSECTION_TOLERANCE ? [(-b) / (2 * a)] : [(-b + sqrtDisc) / (2 * a), (-b - sqrtDisc) / (2 * a)];
+      for (const t of tValues) {
+        if (line.segment && (t < -INTERSECTION_TOLERANCE || t > 1 + INTERSECTION_TOLERANCE)) {
+          continue;
+        }
+        const clampedT = line.segment ? Math.min(1, Math.max(0, t)) : t;
+        const point = {
+          x: line.p1.x + dx * clampedT,
+          y: line.p1.y + dy * clampedT
+        };
+        if (!Number.isFinite(point.x) || !Number.isFinite(point.y)) {
+          continue;
+        }
+        if (line.segment && !pointOnSegment(point, line)) {
+          continue;
+        }
+        addUniquePoint(results, point, INTERSECTION_TOLERANCE);
+      }
+      return results;
+    }
+
+    function intersectCircles(circleA, circleB) {
+      const results = [];
+      const d = distance(circleA.center, circleB.center);
+      if (!Number.isFinite(d) || d === 0) {
+        return results;
+      }
+      if (d > circleA.radius + circleB.radius + INTERSECTION_TOLERANCE) {
+        return results;
+      }
+      if (d < Math.abs(circleA.radius - circleB.radius) - INTERSECTION_TOLERANCE) {
+        return results;
+      }
+      const a = (circleA.radius * circleA.radius - circleB.radius * circleB.radius + d * d) / (2 * d);
+      const hSquared = circleA.radius * circleA.radius - a * a;
+      if (hSquared < -INTERSECTION_TOLERANCE) {
+        return results;
+      }
+      const h = Math.sqrt(Math.max(0, hSquared));
+      const mid = {
+        x: circleA.center.x + (a / d) * (circleB.center.x - circleA.center.x),
+        y: circleA.center.y + (a / d) * (circleB.center.y - circleA.center.y)
+      };
+      const rx = -(circleB.center.y - circleA.center.y) * (h / d);
+      const ry = (circleB.center.x - circleA.center.x) * (h / d);
+      const first = { x: mid.x + rx, y: mid.y + ry };
+      const second = { x: mid.x - rx, y: mid.y - ry };
+      addUniquePoint(results, first, INTERSECTION_TOLERANCE);
+      addUniquePoint(results, second, INTERSECTION_TOLERANCE);
+      return results;
+    }
+
+    function calculateIntersections(first, second) {
+      if (!first || !second) {
+        return [];
+      }
+      if (first.kind === 'function' && second.kind === 'function') {
+        return calculateFunctionIntersectionsBetween(first.fn, second.fn);
+      }
+      if (first.kind === 'function' && second.kind === 'line') {
+        return calculateFunctionLineIntersections(first.fn, second);
+      }
+      if (first.kind === 'line' && second.kind === 'function') {
+        return calculateFunctionLineIntersections(second.fn, first);
+      }
+      if (first.kind === 'function' && second.kind === 'circle') {
+        return calculateFunctionCircleIntersections(first.fn, second);
+      }
+      if (first.kind === 'circle' && second.kind === 'function') {
+        return calculateFunctionCircleIntersections(second.fn, first);
+      }
+      if (first.kind === 'line' && second.kind === 'line') {
+        return intersectLines(first, second);
+      }
+      if (first.kind === 'line' && second.kind === 'circle') {
+        return intersectLineAndCircle(first, second);
+      }
+      if (first.kind === 'circle' && second.kind === 'line') {
+        return intersectLineAndCircle(second, first);
+      }
+      if (first.kind === 'circle' && second.kind === 'circle') {
+        return intersectCircles(first, second);
+      }
+      return [];
     }
 
     function resetCalculationState() {
       calculateState.mode = null;
-      calculateState.firstLineId = null;
+      calculateState.firstSelection = null;
       hideCalculationHint();
       ensureMoveTool();
     }
@@ -3640,45 +4283,70 @@
       return true;
     }
 
-    function processLineCalculationSelection(lineId) {
+    function processIntersectionSelection(type, id) {
       if (calculateState.mode !== 'line-intersection') {
         return;
       }
-      if (!lineId) {
+      if (!id) {
         return;
       }
-      if (!calculateState.firstLineId) {
-        calculateState.firstLineId = lineId;
-        showCalculationHint('Selecteer nu de tweede lijn voor het snijpunt.', { persist: true });
+      const selection = { type, id };
+      if (!calculateState.firstSelection) {
+        calculateState.firstSelection = selection;
+        showCalculationHint('Selecteer nu het tweede object voor het snijpunt.', { persist: true });
         return;
       }
-      if (calculateState.firstLineId === lineId) {
-        showCalculationHint('Kies een andere lijn voor het snijpunt.', { persist: true });
+      if (
+        calculateState.firstSelection &&
+        calculateState.firstSelection.type === selection.type &&
+        calculateState.firstSelection.id === selection.id
+      ) {
+        showCalculationHint('Kies een ander object voor het snijpunt.', { persist: true });
         return;
       }
-      const first = getLineById(calculateState.firstLineId);
-      const second = getLineById(lineId);
-      if (!first || !second) {
+      const firstEntity = buildIntersectionEntity(calculateState.firstSelection);
+      const secondEntity = buildIntersectionEntity(selection);
+      if (!firstEntity || !secondEntity) {
         resetCalculationState();
-        showCalculationHint('Kon de geselecteerde lijnen niet vinden.', { duration: 3600 });
+        showCalculationHint('Kon de geselecteerde objecten niet gebruiken.', { duration: 3600 });
         return;
       }
-      const intersection = calculateLineIntersection(first, second);
-      if (!intersection) {
+      const intersections = calculateIntersections(firstEntity, secondEntity) || [];
+      if (!intersections.length) {
         resetCalculationState();
-        showCalculationHint('De geselecteerde lijnen hebben geen snijpunt.', { duration: 3600 });
+        showCalculationHint('Geen snijpunten gevonden voor deze selectie.', { duration: 3600 });
         return;
       }
-      if (pointExistsNear(intersection, 1e-3)) {
+      const fresh = intersections.filter(point => {
+        if (!point) return false;
+        if (!Number.isFinite(point.x) || !Number.isFinite(point.y)) {
+          return false;
+        }
+        return !pointExistsNear(point, 1e-3);
+      });
+      if (!fresh.length) {
         resetCalculationState();
-        showCalculationHint('Er bestaat al een punt op dit snijpunt.', { duration: 3600 });
+        showCalculationHint('Er bestaan al punten op deze snijpunten.', { duration: 3600 });
         return;
       }
       recordHistory();
-      createPoint(intersection, undefined, { snap: false, skipHistory: true, select: true });
-      resetCalculationState();
+      let lastCreated = null;
+      for (const candidate of fresh) {
+        const created = createPoint({ x: candidate.x, y: candidate.y }, undefined, {
+          snap: false,
+          skipHistory: true,
+          select: false
+        });
+        if (created) {
+          lastCreated = created;
+        }
+      }
+      if (lastCreated) {
+        setSelectedPoint(lastCreated.id, { force: true });
+      }
       draw();
-      showCalculationHint('Snijpunt toegevoegd.', { duration: 2800 });
+      resetCalculationState();
+      showCalculationHint('Snijpunt(en) toegevoegd.', { duration: 2800 });
     }
 
     function triggerPendingFunctionCalculation(functionId) {
@@ -3712,9 +4380,9 @@
       refreshPropertiesPanel();
       draw();
       calculateState.mode = action;
-      calculateState.firstLineId = null;
+      calculateState.firstSelection = null;
       if (action === 'line-intersection') {
-        showCalculationHint('Selecteer de eerste lijn voor het snijpunt.', { persist: true });
+        showCalculationHint('Selecteer het eerste object voor het snijpunt.', { persist: true });
         return;
       }
       if (action === 'extrema' || action === 'roots') {
@@ -3722,16 +4390,53 @@
       }
     }
 
-    function findPointNear(world, threshold = 0.2) {
+    function findPointNear(world, thresholdPx = 18) {
+      if (!Number.isFinite(state.scale) || state.scale <= 0) {
+        return null;
+      }
+      const target = worldToScreen(world);
       let closest = null;
       let min = Infinity;
       for (const point of state.points) {
-        const dist = distance(point.position, world);
-        if (dist < threshold && dist < min) {
+        const screenPos = worldToScreen(point.position);
+        const dist = Math.hypot(screenPos.x - target.x, screenPos.y - target.y);
+        if (dist <= thresholdPx && dist < min) {
           min = dist;
           closest = point;
         }
       }
+      return closest;
+    }
+
+    function findTextNearScreen(x, y) {
+      if (!state.texts.length) {
+        return null;
+      }
+      const previousFont = ctx.font;
+      ctx.font = '14px Inter, sans-serif';
+      const tolerance = 18;
+      let closest = null;
+      for (let i = state.texts.length - 1; i >= 0; i -= 1) {
+        const label = state.texts[i];
+        const screen = worldToScreen(label.position);
+        const metrics = ctx.measureText(label.content || '');
+        const width = metrics.width;
+        const height = 16;
+        const left = screen.x;
+        const top = screen.y - height;
+        const right = left + width;
+        const bottom = screen.y + 4;
+        if (
+          x >= left - tolerance &&
+          x <= right + tolerance &&
+          y >= top - tolerance &&
+          y <= bottom + tolerance
+        ) {
+          closest = label;
+          break;
+        }
+      }
+      ctx.font = previousFont;
       return closest;
     }
 
@@ -3790,8 +4495,8 @@
       let min = tolerance;
       const pointScreen = { x, y };
       for (const segment of state.segments) {
-        const a = state.points.find(p => p.id === segment.p1);
-        const b = state.points.find(p => p.id === segment.p2);
+        const a = getPointById(segment.p1);
+        const b = getPointById(segment.p2);
         if (!a || !b) continue;
         const A = worldToScreen(a.position);
         const B = worldToScreen(b.position);
@@ -3809,8 +4514,8 @@
       let closest = null;
       let min = tolerance;
       for (const line of state.lines) {
-        const a = state.points.find(p => p.id === line.p1);
-        const b = state.points.find(p => p.id === line.p2);
+        const a = getPointById(line.p1);
+        const b = getPointById(line.p2);
         if (!a || !b) continue;
         const A = worldToScreen(a.position);
         const B = worldToScreen(b.position);
@@ -3832,8 +4537,8 @@
       let closest = null;
       let min = tolerance;
       for (const circle of state.circles) {
-        const center = state.points.find(p => p.id === circle.center);
-        const edge = state.points.find(p => p.id === circle.edge);
+        const center = getPointById(circle.center);
+        const edge = getPointById(circle.edge);
         if (!center || !edge) continue;
         const C = worldToScreen(center.position);
         const E = worldToScreen(edge.position);
@@ -3853,19 +4558,9 @@
       if (!Number.isFinite(state.scale) || state.scale <= 0) {
         return position;
       }
-      let step = getTickStep();
-      const subdivisions = getGridSubdivisions(step);
+      const step = getTickStep();
       if (!Number.isFinite(step) || step <= 0) {
-        step = 1;
-      }
-      if (Number.isFinite(subdivisions) && subdivisions > 0) {
-        const minor = step / subdivisions;
-        if (Number.isFinite(minor) && minor > 0) {
-          step = minor;
-        }
-      }
-      if (!Number.isFinite(step) || step <= 0) {
-        step = 1;
+        return position;
       }
       const snapped = {
         x: Math.round(position.x / step) * step,
@@ -3880,7 +4575,7 @@
       const originalScreen = worldToScreen(position);
       const snappedScreen = worldToScreen(snapped);
       const distancePx = Math.hypot(originalScreen.x - snappedScreen.x, originalScreen.y - snappedScreen.y);
-      const thresholdPx = Math.max(5, Math.min(14, state.scale * 0.16));
+      const thresholdPx = Math.max(4, Math.min(10, state.scale * 0.12));
       if (distancePx <= thresholdPx) {
         return snapped;
       }
@@ -3888,15 +4583,36 @@
     }
 
     let pointCounter = 0;
-    function nextPointName() {
+    function pointNameFromIndex(index) {
       const code = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-      let index = pointCounter++;
+      let value = index;
       let name = '';
       do {
-        name = code[index % code.length] + name;
-        index = Math.floor(index / code.length) - 1;
-      } while (index >= 0);
+        name = code[value % code.length] + name;
+        value = Math.floor(value / code.length) - 1;
+      } while (value >= 0);
       return name;
+    }
+
+    function nextPointName() {
+      const used = new Set(state.points.map(point => point.name));
+      let index = 0;
+      while (index < 1000) {
+        const candidate = pointNameFromIndex(index);
+        if (!used.has(candidate)) {
+          pointCounter = Math.max(pointCounter, index + 1);
+          return candidate;
+        }
+        index += 1;
+      }
+      let fallbackIndex = state.points.length;
+      let fallback;
+      do {
+        fallbackIndex += 1;
+        fallback = `P${fallbackIndex}`;
+      } while (used.has(fallback));
+      pointCounter = Math.max(pointCounter, fallbackIndex + 1);
+      return fallback;
     }
 
     function isVariableNameInUse(name, excludeId) {
@@ -3934,6 +4650,7 @@
         trace: []
       };
       state.points.push(point);
+      invalidatePointLookup();
       registerAlgebraEntry(point.id, `${name} = (${formatNumber(point.position.x)}, ${formatNumber(point.position.y)})`, 'point', point.color);
       if (select) {
         setSelectedPoint(point.id);
@@ -4008,6 +4725,13 @@
         span.className = 'algebra-detail';
         label.appendChild(strong);
         label.appendChild(span);
+        if (['function', 'point', 'variable'].includes(type)) {
+          const editor = document.createElement('input');
+          editor.type = 'text';
+          editor.className = 'algebra-inline-edit';
+          editor.setAttribute('aria-label', 'Bewerk algebraïsche invoer');
+          label.appendChild(editor);
+        }
         item.appendChild(label);
 
         const actions = document.createElement('div');
@@ -4085,43 +4809,45 @@
         header.className = 'slider-header';
         const title = document.createElement('span');
         title.dataset.role = 'slider-title';
-        const valueEl = document.createElement('span');
-        valueEl.dataset.role = 'slider-value';
-        valueEl.className = 'slider-value';
         header.appendChild(title);
-        header.appendChild(valueEl);
         body.appendChild(header);
 
-        const controls = document.createElement('div');
-        controls.className = 'slider-controls';
+        const track = document.createElement('div');
+        track.className = 'slider-track';
         const range = document.createElement('input');
         range.type = 'range';
         range.className = 'slider-range';
         range.setAttribute('aria-label', 'Schuifbalkwaarde');
-        controls.appendChild(range);
+        track.appendChild(range);
+        body.appendChild(track);
 
-        const helpers = document.createElement('div');
-        helpers.className = 'slider-helpers';
+        const controls = document.createElement('div');
+        controls.className = 'slider-controls';
+
+        const valueDisplay = document.createElement('span');
+        valueDisplay.dataset.role = 'slider-value';
+        valueDisplay.className = 'slider-value';
+        controls.appendChild(valueDisplay);
 
         const minusBtn = document.createElement('button');
         minusBtn.type = 'button';
         minusBtn.dataset.sliderAction = 'step-back';
         minusBtn.setAttribute('aria-label', 'Stap omlaag');
         minusBtn.innerHTML = ICONS.minus;
-        helpers.appendChild(minusBtn);
+        controls.appendChild(minusBtn);
 
         const playBtn = document.createElement('button');
         playBtn.type = 'button';
         playBtn.dataset.sliderAction = 'toggle-animate';
         playBtn.setAttribute('aria-label', 'Speel animatie');
-        helpers.appendChild(playBtn);
+        controls.appendChild(playBtn);
 
         const plusBtn = document.createElement('button');
         plusBtn.type = 'button';
         plusBtn.dataset.sliderAction = 'step-forward';
         plusBtn.setAttribute('aria-label', 'Stap omhoog');
         plusBtn.innerHTML = ICONS.plus;
-        helpers.appendChild(plusBtn);
+        controls.appendChild(plusBtn);
 
         const speedSelect = document.createElement('select');
         speedSelect.className = 'slider-speed';
@@ -4137,9 +4863,8 @@
           opt.textContent = option.label;
           speedSelect.appendChild(opt);
         }
-        helpers.appendChild(speedSelect);
+        controls.appendChild(speedSelect);
 
-        controls.appendChild(helpers);
         body.appendChild(controls);
         item.appendChild(body);
 
@@ -4244,8 +4969,16 @@
     function updateSliderValue(slider, nextValue, options = {}) {
       if (!slider) return;
       const { record = true, fromAnimation = false } = options;
+      const minBound = Math.min(slider.min, slider.max);
+      const maxBound = Math.max(slider.min, slider.max);
+      const bounded = Math.min(Math.max(nextValue, minBound), maxBound);
       const clamped = clampSliderValue(slider, nextValue);
       if (!Number.isFinite(clamped)) return;
+      if (fromAnimation) {
+        slider.animationValue = bounded;
+      } else {
+        slider.animationValue = clamped;
+      }
       if (slider.value === clamped) {
         if (fromAnimation) {
           renderSliderEntry(slider.id);
@@ -4298,6 +5031,7 @@
       }
       slider.animating = animating;
       slider.lastTimestamp = null;
+      slider.animationValue = slider.value;
       renderSliderEntry(slider.id);
       if (propertiesState.type === 'slider' && propertiesState.id === slider.id) {
         refreshPropertiesPanel({ type: 'slider', id: slider.id });
@@ -4331,17 +5065,29 @@
         }
         const delta = Math.max(0, timestamp - slider.lastTimestamp);
         slider.lastTimestamp = timestamp;
-        const speed = SLIDER_SPEEDS[slider.speed] || 1;
-        const step = slider.step || ((slider.max - slider.min) / 80) || 0.05;
-        const increment = step * speed * (delta / 16);
-        let next = slider.value + increment * (slider.direction || 1);
-        if (next > slider.max) {
-          next = slider.max;
+        const speed = SLIDER_SPEEDS[slider.speed] || SLIDER_SPEEDS.medium;
+        const span = Math.abs(slider.max - slider.min);
+        const baseStep = slider.step || (Number.isFinite(span) && span > 0 ? span / 80 : 0.1);
+        if (!Number.isFinite(baseStep) || baseStep <= 0 || !Number.isFinite(speed) || speed <= 0) {
+          continue;
+        }
+        const deltaSeconds = delta / 1000;
+        const change = baseStep * speed * deltaSeconds;
+        if (!Number.isFinite(change) || change <= 0) {
+          continue;
+        }
+        const min = Math.min(slider.min, slider.max);
+        const max = Math.max(slider.min, slider.max);
+        let current = Number.isFinite(slider.animationValue) ? slider.animationValue : slider.value;
+        let next = current + change * (slider.direction || 1);
+        if (next > max) {
+          next = max;
           slider.direction = -1;
-        } else if (next < slider.min) {
-          next = slider.min;
+        } else if (next < min) {
+          next = min;
           slider.direction = 1;
         }
+        slider.animationValue = next;
         updateSliderValue(slider, next, { record: false, fromAnimation: true });
       }
       if (hasActive) {
@@ -4630,6 +5376,7 @@
       slider.max = max;
       slider.step = step;
       slider.value = clampSliderValue(slider, slider.value);
+      slider.animationValue = slider.value;
       ensureSliderVariables(slider);
       renderSliderEntry(slider.id);
       if (propertiesState.type === 'slider' && propertiesState.id === slider.id) {
@@ -4649,17 +5396,19 @@
       if (!skipHistory) {
         recordHistory();
       }
+      const clampedValue = clampSliderValue({ min: sliderMin, max: sliderMax, step: sliderStep }, sliderValue);
       const slider = {
         id: crypto.randomUUID(),
         name: sanitizedName,
         min: sliderMin,
         max: sliderMax,
         step: sliderStep,
-        value: clampSliderValue({ min: sliderMin, max: sliderMax, step: sliderStep }, sliderValue),
+        value: clampedValue,
         speed: SLIDER_SPEEDS[speed] ? speed : 'medium',
         animating: false,
         direction: 1,
-        lastTimestamp: null
+        lastTimestamp: null,
+        animationValue: clampedValue
       };
       state.sliders.push(slider);
       ensureSliderVariables(slider);
@@ -4769,7 +5518,7 @@
     }
 
     function updatePointName(id, nextName) {
-      const point = state.points.find(entry => entry.id === id);
+      const point = getPointById(id);
       if (!point) return;
       const cleaned = nextName.trim();
       if (!cleaned || cleaned === point.name) {
@@ -4784,7 +5533,7 @@
     }
 
     function updatePointColor(id, color, options = {}) {
-      const point = state.points.find(entry => entry.id === id);
+      const point = getPointById(id);
       if (!point) return;
       const { record = true } = options;
       const normalized = normalizeColor(color, point.color || COLORS.point);
@@ -4804,7 +5553,7 @@
     }
 
     function setPointLabelVisibility(id, visible) {
-      const point = state.points.find(entry => entry.id === id);
+      const point = getPointById(id);
       if (!point) return;
       const next = Boolean(visible);
       if (point.showLabel === next) return;
@@ -4814,7 +5563,7 @@
     }
 
     function togglePointTrace(id, enabled) {
-      const point = state.points.find(entry => entry.id === id);
+      const point = getPointById(id);
       if (!point) return;
       const next = Boolean(enabled);
       if (point.traceEnabled === next) return;
@@ -5294,6 +6043,78 @@
       requestAnimationFrame(resizeCanvas);
     }
 
+    function openTextEditor(world) {
+      if (!textEditor || !textEditorInput) return;
+      pendingTextPlacement = world ? { x: world.x, y: world.y } : null;
+      textEditorVisible = true;
+      textEditor.classList.add('active');
+      textEditor.setAttribute('aria-hidden', 'false');
+      textEditorInput.value = '';
+      if (keyboardVisible) {
+        setKeyboardVisibility(false);
+      }
+      requestAnimationFrame(() => {
+        try {
+          textEditorInput.focus({ preventScroll: true });
+        } catch (error) {
+          textEditorInput.focus();
+        }
+        textEditorInput.setSelectionRange(textEditorInput.value.length, textEditorInput.value.length);
+      });
+    }
+
+    function hideTextEditor(options = {}) {
+      if (!textEditorVisible || !textEditor) {
+        textEditorVisible = false;
+        pendingTextPlacement = null;
+        return;
+      }
+      const { keepTool = false } = options;
+      textEditorVisible = false;
+      pendingTextPlacement = null;
+      textEditor.classList.remove('active');
+      textEditor.setAttribute('aria-hidden', 'true');
+      if (textEditorInput) {
+        textEditorInput.value = '';
+        textEditorInput.blur();
+      }
+      if (!keepTool) {
+        ensureMoveTool();
+      }
+    }
+
+    function cancelTextEditor() {
+      hideTextEditor();
+    }
+
+    function confirmTextEditor() {
+      if (!textEditorInput) {
+        hideTextEditor();
+        return;
+      }
+      const placement = pendingTextPlacement ? { x: pendingTextPlacement.x, y: pendingTextPlacement.y } : null;
+      const content = textEditorInput.value.trim();
+      hideTextEditor();
+      if (!placement || !content) {
+        return;
+      }
+      recordHistory();
+      const label = {
+        id: crypto.randomUUID(),
+        content,
+        position: placement
+      };
+      state.texts.push(label);
+      registerAlgebraEntry(label.id, `tekst: "${content}"`, 'text', COLORS.text);
+      if (algebraList) {
+        const item = algebraList.querySelector(`[data-id="${label.id}"]`);
+        if (item) {
+          item.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+        }
+      }
+      draw();
+    }
+
     function prepareExpression(expression) {
       if (!expression) return '';
       const superscripts = {
@@ -5537,6 +6358,7 @@
     function removeObject(id, type, options = {}) {
       const { silent = false, skipHistory = false } = options;
       if (!id || !type) return;
+      cancelInlineEdit();
 
       switch (type) {
         case 'point': {
@@ -5546,6 +6368,7 @@
             recordHistory();
           }
           state.points.splice(index, 1);
+          invalidatePointLookup();
           if (state.selectedPointId === id) {
             setSelectedPoint(null);
           }
@@ -5725,6 +6548,10 @@
     }
 
     function handlePointerDown(event) {
+      if (textEditorVisible) {
+        event.preventDefault();
+        return;
+      }
       if (event.pointerType === 'touch') {
         activeTouches.set(event.pointerId, { x: event.clientX, y: event.clientY });
         if (activeTouches.size === 2) {
@@ -5754,7 +6581,7 @@
       }
 
       if (state.tool === 'move') {
-        const point = findPointNear(world, 0.18);
+        const point = findPointNear(world, 18);
         if (point) {
           state.pendingFunctionHighlight = null;
           state.panCandidate = null;
@@ -5764,6 +6591,17 @@
           state.dragOffset = { x: screenPos.x - x, y: screenPos.y - y };
           state.dragHistoryArmed = true;
         } else {
+          const text = findTextNearScreen(x, y);
+          if (text) {
+            state.pendingFunctionHighlight = null;
+            state.panCandidate = null;
+            state.draggingText = text;
+            const screenPos = worldToScreen(text.position);
+            state.dragOffset = { x: screenPos.x - x, y: screenPos.y - y };
+            state.dragHistoryArmed = true;
+            event.preventDefault();
+            return;
+          }
           if (state.selectedPointId) {
             setSelectedPoint(null);
           }
@@ -5830,6 +6668,10 @@
     }
 
     function handlePointerMove(event) {
+      if (textEditorVisible) {
+        event.preventDefault();
+        return;
+      }
       if (event.pointerType === 'touch') {
         if (activeTouches.has(event.pointerId)) {
           activeTouches.set(event.pointerId, { x: event.clientX, y: event.clientY });
@@ -5872,6 +6714,14 @@
         updatePointAlgebra(state.draggingPoint);
         recordPointTrace(state.draggingPoint);
         draw();
+      } else if (state.draggingText) {
+        if (state.dragHistoryArmed) {
+          recordHistory();
+          state.dragHistoryArmed = false;
+        }
+        const position = screenToWorld(x + state.dragOffset.x, y + state.dragOffset.y);
+        state.draggingText.position = position;
+        draw();
       } else if (state.panning) {
         const dx = x - state.panStart.x;
         const dy = y - state.panStart.y;
@@ -5888,6 +6738,12 @@
     }
 
     function handlePointerUp(event) {
+      if (textEditorVisible) {
+        if (event && event.pointerType === 'touch') {
+          activeTouches.delete(event.pointerId);
+        }
+        return;
+      }
       if (event && event.pointerType === 'touch') {
         activeTouches.delete(event.pointerId);
         if (activeTouches.size >= 2) {
@@ -5898,6 +6754,7 @@
       }
       const wasPanning = state.panning;
       state.draggingPoint = null;
+      state.draggingText = null;
       state.panning = false;
       state.dragHistoryArmed = false;
       if (state.tempPolygon) {
@@ -5978,21 +6835,11 @@
     }
 
     function handleTextTool(world) {
-      const content = prompt('Tekstinhoud:');
-      if (!content) return;
-      recordHistory();
-      const label = {
-        id: crypto.randomUUID(),
-        content,
-        position: world
-      };
-      state.texts.push(label);
-      registerAlgebraEntry(label.id, `tekst: "${content}"`, 'text');
-      draw();
+      openTextEditor(world);
     }
 
     function pointName(id) {
-      const point = state.points.find(p => p.id === id);
+      const point = getPointById(id);
       return point ? point.name : '?';
     }
 
@@ -6058,7 +6905,7 @@
         const [, rawName, x, y] = pointMatch;
         const name = rawName.trim();
         const position = { x: parseFloat(x), y: parseFloat(y) };
-        let target = editingPointId ? state.points.find(point => point.id === editingPointId) : null;
+        let target = editingPointId ? getPointById(editingPointId) : null;
         if (!target) {
           target = state.points.find(point => point.name === name);
         }
@@ -6193,6 +7040,17 @@
       document.querySelectorAll('.tool-button[data-tool]').forEach(btn => {
         btn.addEventListener('click', () => setTool(btn.dataset.tool));
       });
+      const quickSliderButton = document.getElementById('quick-slider');
+      if (quickSliderButton) {
+        quickSliderButton.addEventListener('click', () => {
+          ensureMoveTool();
+          const created = createSlider('', 0, 10, 1, { value: 0 });
+          if (created) {
+            setActiveSlider(created.id, { force: true });
+            refreshPropertiesPanel({ type: 'slider', id: created.id, forceOpen: true });
+          }
+        });
+      }
     }
 
     function initSidebar() {
@@ -6346,33 +7204,9 @@
         return;
       }
       if (item.dataset.type === 'function') {
-        const fn = state.functions.find(entry => entry.id === item.dataset.id);
-        if (!fn) return;
-        state.editingFunctionId = fn.id;
-        state.editingPointId = null;
-        const source = fn.source || `${fn.algebraLabel} = ${fn.expression}`;
-        commandInput.value = source;
-        const position = source.length;
-        commandInput.setSelectionRange(position, position);
-        focusCommandInput();
-        setHighlightedFunction(fn.id, { scroll: true, force: true });
-        if (!keyboardVisible) {
-          setKeyboardVisibility(true);
-        }
+        setHighlightedFunction(item.dataset.id, { scroll: true, force: true });
       } else if (item.dataset.type === 'point') {
-        const point = state.points.find(entry => entry.id === item.dataset.id);
-        if (!point) return;
-        state.editingPointId = point.id;
-        state.editingFunctionId = null;
-        const source = `${point.name} = (${formatNumber(point.position.x)}, ${formatNumber(point.position.y)})`;
-        commandInput.value = source;
-        const position = source.length;
-        commandInput.setSelectionRange(position, position);
-        focusCommandInput();
-        setSelectedPoint(point.id, { force: true });
-        if (!keyboardVisible) {
-          setKeyboardVisibility(true);
-        }
+        setSelectedPoint(item.dataset.id, { force: true });
       } else if (item.dataset.type === 'segment') {
         setSelectedSegment(item.dataset.id, { force: true });
       } else if (item.dataset.type === 'line') {
@@ -6435,6 +7269,94 @@
       const item = picker.closest('.algebra-item');
       if (!item) return;
       updateFunctionColor(item.dataset.id, picker.value);
+    });
+
+    algebraList.addEventListener('dblclick', event => {
+      const item = event.target.closest('.algebra-item');
+      if (!item) return;
+      const id = item.dataset.id;
+      const type = item.dataset.type;
+      if (!id || !type) return;
+      ensureMoveTool();
+      if (type === 'function') {
+        const fn = state.functions.find(entry => entry.id === id);
+        if (!fn) return;
+        setHighlightedFunction(id, { scroll: true, force: true });
+        const source = fn.source || `${fn.algebraLabel} = ${fn.expression}`;
+        beginInlineEdit(item, source, value => {
+          const trimmed = value.trim();
+          if (!trimmed) {
+            return;
+          }
+          if (trimmed === source.trim()) {
+            return;
+          }
+          state.editingFunctionId = fn.id;
+          state.editingPointId = null;
+          parseCommand(trimmed);
+          if (commandInput) {
+            commandInput.value = '';
+          }
+        });
+      } else if (type === 'point') {
+        const point = getPointById(id);
+        if (!point) return;
+        setSelectedPoint(id, { force: true });
+        const source = `${point.name} = (${formatNumber(point.position.x)}, ${formatNumber(point.position.y)})`;
+        beginInlineEdit(item, source, value => {
+          const trimmed = value.trim();
+          if (!trimmed) {
+            return;
+          }
+          if (trimmed === source.trim()) {
+            return;
+          }
+          state.editingPointId = point.id;
+          state.editingFunctionId = null;
+          parseCommand(trimmed.includes('=') ? trimmed : `${point.name} = ${trimmed}`);
+          if (commandInput) {
+            commandInput.value = '';
+          }
+        });
+      } else if (type === 'variable') {
+        const entry = findNumberById(id);
+        if (!entry) return;
+        setActiveVariable(id, { force: true });
+        const source = `${entry.name} = ${formatNumber(entry.value)}`;
+        beginInlineEdit(item, source, value => {
+          const trimmed = value.trim();
+          if (!trimmed) {
+            return;
+          }
+          if (trimmed === source.trim()) {
+            return;
+          }
+          const match = trimmed.match(/^([^=]+)=\s*(.+)$/);
+          if (match) {
+            const nextName = match[1].trim();
+            const expression = match[2].trim();
+            const numeric = tryEvaluateScalar(expression);
+            if (numeric !== null) {
+              if (nextName && nextName !== entry.name) {
+                renameNumber(entry.id, nextName);
+              }
+              const target = findNumberById(entry.id) || findNumberByName(nextName) || entry;
+              updateNumberValue(target, numeric, { record: true });
+              setActiveVariable(target.id, { force: true });
+              state.editingFunctionId = null;
+              state.editingPointId = null;
+              return;
+            }
+          }
+          const expression = trimmed.includes('=') ? trimmed : `${entry.name} = ${trimmed}`;
+          state.editingFunctionId = null;
+          state.editingPointId = null;
+          parseCommand(expression);
+          if (commandInput) {
+            commandInput.value = '';
+          }
+        });
+      }
     });
 
     if (quickActions) {
@@ -6541,6 +7463,43 @@
           link.click();
           link.remove();
         });
+      });
+    }
+
+    if (textEditorCancel) {
+      textEditorCancel.addEventListener('click', event => {
+        event.preventDefault();
+        cancelTextEditor();
+      });
+    }
+
+    if (textEditorConfirm) {
+      textEditorConfirm.addEventListener('click', event => {
+        event.preventDefault();
+        confirmTextEditor();
+      });
+    }
+
+    if (textEditorInput) {
+      textEditorInput.addEventListener('keydown', event => {
+        if (event.key === 'Escape') {
+          event.preventDefault();
+          event.stopPropagation();
+          cancelTextEditor();
+        } else if ((event.key === 'Enter' || event.key === 'NumpadEnter') && (event.metaKey || event.ctrlKey)) {
+          event.preventDefault();
+          event.stopPropagation();
+          confirmTextEditor();
+        }
+      });
+    }
+
+    if (textEditor) {
+      textEditor.addEventListener('pointerdown', event => {
+        if (event.target === textEditor) {
+          event.preventDefault();
+          cancelTextEditor();
+        }
       });
     }
 
@@ -6689,6 +7648,18 @@
     });
 
     window.addEventListener('keydown', event => {
+      if (textEditorVisible) {
+        if (event.key === 'Escape') {
+          event.preventDefault();
+          cancelTextEditor();
+          return;
+        }
+        if ((event.key === 'Enter' || event.key === 'NumpadEnter') && (event.metaKey || event.ctrlKey)) {
+          event.preventDefault();
+          confirmTextEditor();
+          return;
+        }
+      }
       if (event.key === 'Escape' && keyboardVisible) {
         setKeyboardVisibility(false);
       }
