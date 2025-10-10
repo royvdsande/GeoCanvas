@@ -1591,7 +1591,8 @@
       const valueInput = document.createElement('input');
       valueInput.type = 'number';
       valueInput.step = 'any';
-      valueInput.value = slider.value;
+      valueInput.dataset.role = 'slider-value-input';
+      valueInput.value = formatSliderValue(slider.value);
       valueInput.addEventListener('change', () => {
         const numeric = parseFloat(valueInput.value);
         if (Number.isFinite(numeric)) {
@@ -5273,6 +5274,22 @@
       state.variables[slider.name] = slider.value;
     }
 
+    function updateSliderPropertiesLiveValue(slider) {
+      if (
+        !slider ||
+        !propertiesContent ||
+        !propertiesState.visible ||
+        propertiesState.type !== 'slider' ||
+        propertiesState.id !== slider.id
+      ) {
+        return;
+      }
+      const valueInput = propertiesContent.querySelector('[data-role="slider-value-input"]');
+      if (valueInput && document.activeElement !== valueInput) {
+        valueInput.value = formatSliderValue(slider.value);
+      }
+    }
+
     function updateSliderValue(slider, nextValue, options = {}) {
       if (!slider) return;
       const { record = true, fromAnimation = false } = options;
@@ -5291,7 +5308,11 @@
       if (changed || fromAnimation) {
         renderSliderEntry(slider.id);
         if (propertiesState.type === 'slider' && propertiesState.id === slider.id) {
-          refreshPropertiesPanel({ type: 'slider', id: slider.id });
+          if (fromAnimation || record === false) {
+            updateSliderPropertiesLiveValue(slider);
+          } else {
+            refreshPropertiesPanel({ type: 'slider', id: slider.id });
+          }
         }
       }
       draw();
