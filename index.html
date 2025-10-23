@@ -14,11 +14,109 @@
       --toolbar-height: 56px;
       --sidebar-width: 320px;
       --accent: #3367d6;
+      --accent-strong: #2457c6;
+      --accent-soft: rgba(51, 103, 214, 0.12);
+      --accent-soft-strong: rgba(51, 103, 214, 0.18);
       --border: #d9d9d9;
+      --border-strong: #c8ceda;
       --bg: #f8f8fb;
       --panel-bg: #ffffff;
+      --panel-elevated: #ffffff;
+      --surface-muted: #f3f4f6;
+      --surface-hover: rgba(0, 0, 0, 0.05);
+      --surface-alt: #e5e7eb;
+      --text-primary: #1f2937;
+      --text-secondary: #374151;
+      --text-muted: #6b7280;
+      --text-inverse: #ffffff;
+      --icon-primary: #404040;
+      --icon-muted: #6b7280;
+      --hint-bg: rgba(17, 24, 39, 0.92);
+      --hint-text: #ffffff;
+      --overlay: rgba(15, 23, 42, 0.28);
+      --shadow-soft: 0 18px 40px rgba(15, 23, 42, 0.18);
+      --shadow-strong: 0 18px 40px rgba(15, 23, 42, 0.28);
+      --shadow-elevated: 0 10px 25px rgba(15, 23, 42, 0.16);
+      --shadow-header: 0 10px 25px rgba(15, 23, 42, 0.25);
+      --shadow-small: 0 4px 14px rgba(15, 23, 42, 0.08);
+      --shadow-lifted: 0 -12px 24px rgba(15, 23, 42, 0.12);
+      --input-bg: #ffffff;
+      --input-border: #d1d5db;
+      --input-placeholder: #9ca3af;
+      --keyboard-bg: #f1f3f9;
+      --keyboard-key-bg: #ffffff;
+      --keyboard-key-border: rgba(15, 23, 42, 0.08);
+      --keyboard-key-hover: rgba(51, 103, 214, 0.12);
+      --keyboard-key-text: #1f2937;
+      --keyboard-command-bg: #1f2937;
+      --keyboard-command-text: #ffffff;
+      --scrollbar-track: rgba(148, 163, 184, 0.18);
+      --scrollbar-thumb: rgba(148, 163, 184, 0.35);
+      --canvas-grid-minor: #eef1fa;
+      --canvas-grid-major: #d5dae5;
+      --canvas-axis: #9aa0a6;
+      --canvas-axis-text: #5f6368;
+      --focus-ring: rgba(51, 103, 214, 0.18);
+      --focus-border: rgba(51, 103, 214, 0.6);
+      --panel-inner-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
+      --algebra-card-bg: rgba(0, 0, 0, 0.03);
+      --algebra-color-outline: rgba(0, 0, 0, 0.05);
+      --keyboard-shadow: 0 -18px 44px rgba(15, 23, 42, 0.18);
       font-family: "Inter", "Segoe UI", sans-serif;
       --keyboard-offset: 0px;
+    }
+
+    :root[data-theme="dark"] {
+      color-scheme: dark;
+      --accent: #5b7bff;
+      --accent-strong: #4a6aec;
+      --accent-soft: rgba(91, 123, 255, 0.2);
+      --accent-soft-strong: rgba(91, 123, 255, 0.28);
+      --border: rgba(148, 163, 184, 0.28);
+      --border-strong: rgba(148, 163, 184, 0.45);
+      --bg: #0b1120;
+      --panel-bg: #111c2f;
+      --panel-elevated: #16243b;
+      --surface-muted: #1b2741;
+      --surface-hover: rgba(148, 163, 184, 0.14);
+      --surface-alt: rgba(148, 163, 184, 0.25);
+      --text-primary: #e2e8f0;
+      --text-secondary: #cbd5f5;
+      --text-muted: #94a3c8;
+      --text-inverse: #0b1120;
+      --icon-primary: #e2e8f0;
+      --icon-muted: #94a3c8;
+      --hint-bg: rgba(15, 23, 42, 0.88);
+      --hint-text: #f8fafc;
+      --overlay: rgba(15, 23, 42, 0.6);
+      --shadow-soft: 0 18px 40px rgba(2, 6, 23, 0.7);
+      --shadow-strong: 0 18px 40px rgba(2, 6, 23, 0.8);
+      --shadow-elevated: 0 12px 30px rgba(2, 6, 23, 0.75);
+      --shadow-header: 0 12px 30px rgba(2, 6, 23, 0.65);
+      --shadow-small: 0 6px 18px rgba(2, 6, 23, 0.6);
+      --shadow-lifted: 0 -12px 24px rgba(2, 6, 23, 0.6);
+      --input-bg: rgba(17, 24, 39, 0.9);
+      --input-border: rgba(148, 163, 184, 0.45);
+      --input-placeholder: rgba(148, 163, 184, 0.7);
+      --keyboard-bg: #121b2e;
+      --keyboard-key-bg: #1a2540;
+      --keyboard-key-border: rgba(148, 163, 184, 0.25);
+      --keyboard-key-hover: rgba(91, 123, 255, 0.18);
+      --keyboard-key-text: #e2e8f0;
+      --keyboard-command-bg: #5b7bff;
+      --keyboard-command-text: #0b1120;
+      --scrollbar-track: rgba(15, 23, 42, 0.6);
+      --scrollbar-thumb: rgba(148, 163, 184, 0.45);
+      --canvas-grid-minor: rgba(148, 163, 184, 0.18);
+      --canvas-grid-major: rgba(148, 163, 184, 0.38);
+      --canvas-axis: rgba(226, 232, 240, 0.75);
+      --canvas-axis-text: #cbd5f5;
+      --focus-ring: rgba(91, 123, 255, 0.35);
+      --focus-border: rgba(91, 123, 255, 0.65);
+      --panel-inner-shadow: inset 0 1px 0 rgba(148, 163, 184, 0.12);
+      --algebra-card-bg: rgba(148, 163, 184, 0.12);
+      --algebra-color-outline: rgba(226, 232, 240, 0.35);
+      --keyboard-shadow: 0 -18px 44px rgba(2, 6, 23, 0.72);
     }
 
     * {
@@ -31,7 +129,7 @@
       height: 100%;
       width: 100%;
       background: var(--bg);
-      color: #222;
+      color: var(--text-primary);
       -webkit-tap-highlight-color: transparent;
     }
 
@@ -58,7 +156,7 @@
       gap: 8px;
       font-weight: 600;
       letter-spacing: 0.01em;
-      color: #3a3a3a;
+      color: var(--text-secondary);
       user-select: none;
       -webkit-user-select: none;
       -moz-user-select: none;
@@ -96,6 +194,56 @@
       line-height: 1;
     }
 
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex: 0 0 auto;
+      flex-wrap: wrap;
+    }
+
+    .theme-switcher {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--panel-bg);
+      box-shadow: var(--shadow-small);
+    }
+
+    .theme-option {
+      border: none;
+      background: transparent;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      color: var(--icon-muted);
+      cursor: pointer;
+      transition: background 0.2s ease, color 0.2s ease;
+    }
+
+    .theme-option svg {
+      width: 18px;
+      height: 18px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 1.8;
+    }
+
+    .theme-option.active {
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+
+    .theme-option:focus-visible {
+      outline: none;
+      box-shadow: 0 0 0 3px var(--focus-ring);
+    }
+
     .toolbar {
       display: flex;
       align-items: center;
@@ -117,9 +265,9 @@
       gap: 4px;
       padding: 10px;
       background: var(--panel-bg);
-      border: 1px solid rgba(15, 23, 42, 0.08);
+      border: 1px solid var(--border);
       border-radius: 14px;
-      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.12);
+      box-shadow: var(--shadow-small);
       width: min(260px, 80vw);
       min-width: 200px;
       max-height: min(70vh, 320px);
@@ -138,14 +286,14 @@
       padding: 10px 12px;
       border-radius: 10px;
       font-size: 0.92rem;
-      color: #1f2937;
+      color: var(--text-primary);
       cursor: pointer;
       transition: background 0.15s ease, color 0.15s ease;
     }
 
     .calculate-menu button:hover,
     .calculate-menu button:focus-visible {
-      background: rgba(51, 103, 214, 0.12);
+      background: var(--accent-soft);
       color: var(--accent);
       outline: none;
     }
@@ -155,11 +303,11 @@
       bottom: calc(80px + var(--keyboard-offset));
       left: 50%;
       transform: translate(-50%, 12px);
-      background: rgba(17, 24, 39, 0.92);
-      color: #fff;
+      background: var(--hint-bg);
+      color: var(--hint-text);
       padding: 10px 16px;
       border-radius: 14px;
-      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.28);
+      box-shadow: var(--shadow-strong);
       font-size: 0.92rem;
       line-height: 1.4;
       max-width: min(90vw, 320px);
@@ -182,7 +330,7 @@
       align-items: center;
       justify-content: center;
       padding: 16px;
-      background: rgba(15, 23, 42, 0.28);
+      background: var(--overlay);
       opacity: 0;
       pointer-events: none;
       transition: opacity 0.18s ease;
@@ -196,10 +344,10 @@
 
     .text-editor-panel {
       width: min(380px, 96%);
-      background: var(--panel-bg);
+      background: var(--panel-elevated);
       border-radius: 18px;
-      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.18);
-      border: 1px solid rgba(15, 23, 42, 0.08);
+      box-shadow: var(--shadow-soft);
+      border: 1px solid var(--border);
       padding: 20px;
       display: flex;
       flex-direction: column;
@@ -210,7 +358,7 @@
       margin: 0;
       font-size: 1.05rem;
       font-weight: 600;
-      color: #1f2937;
+      color: var(--text-primary);
     }
 
     .text-editor-field {
@@ -222,13 +370,13 @@
     .text-editor-field label {
       font-size: 0.92rem;
       font-weight: 500;
-      color: #374151;
+      color: var(--text-secondary);
     }
 
     .text-editor-hint {
       margin: 0;
       font-size: 0.82rem;
-      color: #6b7280;
+      color: var(--text-muted);
     }
 
     .text-editor-input {
@@ -240,16 +388,16 @@
       line-height: 1.4;
       border-radius: 14px;
       border: 1px solid var(--border);
-      background: #fff;
-      color: #1f2937;
+      background: var(--input-bg);
+      color: var(--text-primary);
       font-family: inherit;
       transition: border 0.15s ease, box-shadow 0.15s ease;
     }
 
     .text-editor-input:focus {
       outline: none;
-      border-color: rgba(51, 103, 214, 0.6);
-      box-shadow: 0 0 0 3px rgba(51, 103, 214, 0.18);
+      border-color: var(--focus-border);
+      box-shadow: 0 0 0 3px var(--focus-ring);
     }
 
     .text-editor-actions {
@@ -270,26 +418,26 @@
     }
 
     .text-editor-cancel {
-      background: #f3f4f6;
-      color: #374151;
+      background: var(--surface-muted);
+      color: var(--text-secondary);
     }
 
     .text-editor-cancel:hover,
     .text-editor-cancel:focus-visible {
-      background: #e5e7eb;
+      background: var(--surface-alt);
       outline: none;
     }
 
     .text-editor-confirm {
       background: var(--accent);
-      color: #fff;
-      box-shadow: 0 10px 25px rgba(51, 103, 214, 0.25);
+      color: var(--text-inverse);
+      box-shadow: var(--shadow-elevated);
     }
 
     .text-editor-confirm:hover,
     .text-editor-confirm:focus-visible {
-      background: #2457c6;
-      box-shadow: 0 12px 30px rgba(51, 103, 214, 0.28);
+      background: var(--accent-strong);
+      box-shadow: var(--shadow-strong);
       outline: none;
     }
 
@@ -308,7 +456,7 @@
       align-items: center;
       justify-content: center;
       transition: background 0.15s ease, border 0.15s ease, color 0.15s ease;
-      color: #404040;
+      color: var(--icon-primary);
       cursor: pointer;
     }
 
@@ -322,13 +470,19 @@
     }
 
     .tool-button.active {
-      background: rgba(51, 103, 214, 0.12);
-      border-color: rgba(51, 103, 214, 0.6);
+      background: var(--accent-soft);
+      border-color: var(--focus-border);
       color: var(--accent);
     }
 
     .tool-button:hover {
-      background: rgba(0,0,0,0.05);
+      background: var(--surface-hover);
+    }
+
+    .tool-button:focus-visible {
+      outline: none;
+      border-color: var(--focus-border);
+      box-shadow: 0 0 0 3px var(--focus-ring);
     }
 
     .layout {
@@ -361,7 +515,7 @@
       padding: 14px 16px 10px;
       font-weight: 600;
       font-size: 0.95rem;
-      color: #555;
+      color: var(--text-muted);
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -400,10 +554,10 @@
     }
 
     .properties-panel {
-      border-top: 1px solid rgba(0,0,0,0.06);
+      border-top: 1px solid var(--border);
       padding: 14px 16px;
       background: var(--panel-bg);
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.6);
+      box-shadow: var(--panel-inner-shadow);
       display: flex;
       flex-direction: column;
       gap: 12px;
@@ -423,7 +577,7 @@
       gap: 8px;
       font-weight: 600;
       font-size: 0.92rem;
-      color: #475569;
+      color: var(--text-secondary);
     }
 
     .properties-close {
@@ -435,7 +589,7 @@
       display: grid;
       place-items: center;
       cursor: pointer;
-      color: #94a3b8;
+      color: var(--icon-muted);
       transition: background 0.2s ease, color 0.2s ease;
     }
 
@@ -448,8 +602,8 @@
     }
 
     .properties-close:hover {
-      background: rgba(148,163,184,0.15);
-      color: #475569;
+      background: var(--surface-hover);
+      color: var(--text-secondary);
     }
 
     .properties-group {
@@ -462,7 +616,7 @@
       flex-direction: column;
       gap: 4px;
       font-size: 0.85rem;
-      color: #475569;
+      color: var(--text-secondary);
     }
 
     .property-field label {
@@ -470,7 +624,7 @@
       align-items: center;
       gap: 6px;
       font-weight: 600;
-      color: #334155;
+      color: var(--text-primary);
     }
 
     .property-field input[type="text"],
@@ -480,7 +634,16 @@
       border-radius: 10px;
       padding: 8px 10px;
       font-size: 0.9rem;
-      background: #fff;
+      background: var(--input-bg);
+      color: var(--text-primary);
+    }
+
+    .property-field input[type="text"]:focus,
+    .property-field input[type="number"]:focus,
+    .property-field select:focus {
+      outline: none;
+      border-color: var(--focus-border);
+      box-shadow: 0 0 0 3px var(--focus-ring);
     }
 
     .property-field input[type="color"] {
@@ -489,6 +652,7 @@
       border-radius: 10px;
       border: 1px solid var(--border);
       padding: 0;
+      background: var(--panel-bg);
     }
 
     .property-row {
@@ -503,7 +667,7 @@
       flex-direction: column;
       flex: 1;
       font-weight: 500;
-      color: #475569;
+      color: var(--text-secondary);
     }
 
     .property-row label input,
@@ -522,7 +686,7 @@
       align-items: center;
       gap: 8px;
       font-weight: 500;
-      color: #334155;
+      color: var(--text-primary);
     }
 
     .property-checkbox input[type="checkbox"] {
@@ -532,7 +696,7 @@
     }
 
     .algebra-item {
-      background: rgba(0,0,0,0.03);
+      background: var(--algebra-card-bg);
       border-radius: 12px;
       padding: 10px 12px;
       margin-bottom: 8px;
@@ -575,7 +739,7 @@
       flex-wrap: wrap;
       font-size: 0.92rem;
       font-weight: 600;
-      color: #1f2933;
+      color: var(--text-primary);
     }
 
     .slider-track {
@@ -599,14 +763,14 @@
     .slider-controls button,
     .slider-speed-control button {
       border: 1px solid var(--border);
-      background: #fff;
+      background: var(--panel-bg);
       border-radius: 999px;
       width: 32px;
       height: 32px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      color: #3f4c63;
+      color: var(--icon-primary);
       cursor: pointer;
       transition: background 0.2s ease, border 0.2s ease;
     }
@@ -623,8 +787,8 @@
 
     .slider-controls button:hover,
     .slider-speed-control button:hover {
-      background: rgba(51,103,214,0.1);
-      border-color: rgba(51,103,214,0.3);
+      background: var(--accent-soft);
+      border-color: var(--focus-border);
     }
 
     .slider-speed-control {
@@ -640,7 +804,7 @@
 
     .slider-speed-label {
       font-size: 0.82rem;
-      color: #374151;
+      color: var(--text-secondary);
       font-variant-numeric: tabular-nums;
       min-width: 36px;
       text-align: center;
@@ -651,12 +815,13 @@
     }
 
     .slider-speed-control button[disabled] {
-      opacity: 0.4;
+      opacity: 0.45;
       cursor: not-allowed;
+      color: var(--icon-muted);
     }
 
     .algebra-item.selected {
-      background: rgba(51, 103, 214, 0.12);
+      background: var(--accent-soft);
       box-shadow: inset 0 0 0 1px var(--highlight-outline, rgba(51, 103, 214, 0.3));
     }
 
@@ -677,7 +842,7 @@
       inset: 0;
       border-radius: inherit;
       background: currentColor;
-      box-shadow: inset 0 0 0 1px rgba(0,0,0,0.05);
+      box-shadow: inset 0 0 0 1px var(--algebra-color-outline);
     }
 
     button.algebra-color {
@@ -718,11 +883,11 @@
 
     .algebra-label strong {
       font-weight: 600;
-      color: #1f2937;
+      color: var(--text-primary);
     }
 
     .algebra-detail {
-      color: #4b5563;
+      color: var(--text-muted);
     }
 
     .algebra-inline-edit {
@@ -732,13 +897,14 @@
       border-radius: 10px;
       padding: 6px 10px;
       font-size: 0.9rem;
-      background: #fff;
+      background: var(--input-bg);
+      color: var(--text-primary);
     }
 
     .algebra-inline-edit:focus {
       outline: none;
-      border-color: rgba(51, 103, 214, 0.6);
-      box-shadow: 0 0 0 3px rgba(51, 103, 214, 0.18);
+      border-color: var(--focus-border);
+      box-shadow: 0 0 0 3px var(--focus-ring);
     }
 
     .algebra-item.editing .algebra-label strong,
@@ -761,7 +927,7 @@
       display: grid;
       place-items: center;
       cursor: pointer;
-      color: #8a8a8a;
+      color: var(--icon-muted);
       transition: background 0.2s ease, color 0.2s ease;
     }
 
@@ -778,8 +944,8 @@
     .options-button:focus-visible,
     .delete-button:hover,
     .delete-button:focus-visible {
-      background: rgba(0,0,0,0.08);
-      color: #444;
+      background: var(--surface-hover);
+      color: var(--icon-primary);
       outline: none;
     }
 
@@ -797,14 +963,14 @@
       height: 100%;
       flex: 1;
       touch-action: none;
-      background: #fff;
+      background: var(--panel-bg);
       display: block;
     }
 
     .axis-label {
       position: absolute;
       font-size: 0.75rem;
-      color: #666;
+      color: var(--text-muted);
       pointer-events: none;
     }
 
@@ -817,7 +983,7 @@
       align-items: center;
       gap: 10px;
       flex-wrap: wrap;
-      box-shadow: 0 4px 14px rgba(15, 23, 42, 0.06);
+      box-shadow: var(--shadow-soft);
     }
 
     .command-input {
@@ -827,26 +993,27 @@
       border-radius: 12px;
       padding: 10px 14px;
       font-size: 0.95rem;
-      background: #fff;
-      transition: border 0.2s ease, box-shadow 0.2s ease;
+      background: var(--input-bg);
+      color: var(--text-primary);
+      transition: border 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
     }
 
     .command-input:focus {
       outline: none;
-      border-color: rgba(51, 103, 214, 0.6);
-      box-shadow: 0 0 0 4px rgba(51, 103, 214, 0.15);
+      border-color: var(--focus-border);
+      box-shadow: 0 0 0 4px var(--focus-ring);
     }
 
     .command-button {
       border: 1px solid var(--border);
-      background: #fff;
+      background: var(--panel-bg);
       border-radius: 12px;
       width: 44px;
       height: 44px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      color: #444;
+      color: var(--icon-primary);
       cursor: pointer;
       transition: border 0.2s ease, box-shadow 0.2s ease, color 0.2s ease;
     }
@@ -864,13 +1031,13 @@
     }
 
     .command-button.active {
-      border-color: rgba(51, 103, 214, 0.6);
-      box-shadow: 0 0 0 3px rgba(51, 103, 214, 0.15);
+      border-color: var(--focus-border);
+      box-shadow: 0 0 0 3px var(--focus-ring);
       color: var(--accent);
     }
 
     .badge {
-      background: rgba(51,103,214,0.1);
+      background: var(--accent-soft);
       color: var(--accent);
       padding: 6px 10px;
       border-radius: 999px;
@@ -889,13 +1056,13 @@
       left: 50%;
       bottom: 0;
       transform: translateX(-50%);
-      background: rgba(244, 244, 251, 0.98);
+      background: var(--keyboard-bg);
       border-top: 1px solid var(--border);
       padding: 18px 18px 20px;
       display: none;
       flex-direction: column;
       gap: 12px;
-      box-shadow: 0 -18px 44px rgba(15, 23, 42, 0.18);
+      box-shadow: var(--keyboard-shadow);
       border-radius: 18px 18px 0 0;
       width: min(720px, 100%);
       user-select: none;
@@ -922,12 +1089,12 @@
       width: 100%;
       min-height: 42px;
       border-radius: 12px;
-      background: #fff;
-      border: 1px solid rgba(120, 132, 170, 0.24);
+      background: var(--keyboard-key-bg);
+      border: 1px solid var(--keyboard-key-border);
       box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.05);
       padding: 10px 14px;
       font-size: 0.98rem;
-      color: #1f2937;
+      color: var(--keyboard-key-text);
       display: flex;
       align-items: center;
       justify-content: flex-start;
@@ -937,7 +1104,7 @@
     }
 
     .keyboard-preview.empty {
-      color: #7c8599;
+      color: var(--text-muted);
     }
     .keyboard-tabs {
       display: flex;
@@ -949,8 +1116,8 @@
     .keyboard-tab {
       flex: 0 0 auto;
       border: 1px solid var(--border);
-      background: rgba(255,255,255,0.92);
-      color: #555;
+      background: var(--panel-bg);
+      color: var(--text-secondary);
       padding: 8px 14px;
       border-radius: 999px;
       font-weight: 600;
@@ -961,8 +1128,8 @@
 
     .keyboard-tab.active {
       color: var(--accent);
-      border-color: rgba(51,103,214,0.6);
-      background: rgba(51,103,214,0.08);
+      border-color: var(--focus-border);
+      background: var(--accent-soft);
     }
 
     .keyboard-rows {
@@ -982,14 +1149,14 @@
     .keyboard-key {
       flex: 1 1 0;
       min-width: 0;
-      border: 1px solid rgba(67, 79, 110, 0.18);
-      background: rgba(255,255,255,0.96);
+      border: 1px solid var(--keyboard-key-border);
+      background: var(--keyboard-key-bg);
       border-radius: 12px;
       min-height: 48px;
       min-width: 36px;
       font-size: clamp(0.85rem, 2.6vw, 1rem);
       font-weight: 600;
-      color: #2d2d2d;
+      color: var(--keyboard-key-text);
       display: inline-flex;
       align-items: center;
       justify-content: center;
@@ -1011,22 +1178,22 @@
     }
 
     .keyboard-key.command {
-      background: rgba(51, 103, 214, 0.08);
+      background: var(--accent-soft);
       color: var(--accent);
-      border-color: rgba(51, 103, 214, 0.24);
+      border-color: var(--focus-border);
     }
 
     .keyboard-key.command:hover {
-      background: rgba(51, 103, 214, 0.15);
+      background: var(--accent-soft-strong);
     }
 
     .keyboard-key:hover {
-      background: rgba(51,103,214,0.08);
+      background: var(--keyboard-key-hover);
     }
 
     .keyboard-key:active {
       transform: scale(0.97);
-      box-shadow: inset 0 0 0 2px rgba(51,103,214,0.2);
+      box-shadow: inset 0 0 0 2px var(--accent-soft-strong);
     }
 
     .floating-controls {
@@ -1050,8 +1217,8 @@
       height: 42px;
       border-radius: 21px;
       border: 1px solid var(--border);
-      background: rgba(255,255,255,0.94);
-      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+      background: var(--panel-elevated);
+      box-shadow: var(--shadow-elevated);
       display: grid;
       place-items: center;
       cursor: pointer;
@@ -1066,13 +1233,13 @@
 
     .round-button:hover:not([disabled]) {
       transform: translateY(-1px);
-      box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+      box-shadow: var(--shadow-strong);
     }
 
     .round-button svg {
       width: 20px;
       height: 20px;
-      stroke: #444;
+      stroke: var(--icon-primary);
       fill: none;
       stroke-width: 2;
     }
@@ -1086,7 +1253,7 @@
         content: "";
         position: fixed;
         inset: 0;
-        background: rgba(0,0,0,0.28);
+        background: var(--overlay);
         pointer-events: none;
         z-index: 4;
       }
@@ -1140,9 +1307,9 @@
       .command-bar {
         position: sticky;
         bottom: var(--keyboard-offset, 0px);
-        background: rgba(255,255,255,0.96);
+        background: var(--panel-bg);
         backdrop-filter: blur(12px);
-        box-shadow: 0 -12px 24px rgba(0,0,0,0.12);
+        box-shadow: var(--shadow-lifted);
         z-index: 3;
       }
 
@@ -1163,6 +1330,12 @@
         order: 3;
         width: 100%;
         justify-content: flex-start;
+      }
+
+      .header-actions {
+        order: 4;
+        justify-content: flex-start;
+        gap: 8px;
       }
 
       .tool-button {
@@ -1251,30 +1424,58 @@
         </svg>
       </button>
     </div>
-    <div class="calculate-wrapper">
-      <button class="tool-button" id="calculate-menu-toggle" aria-label="Bereken" title="Bereken" aria-haspopup="menu" aria-expanded="false">
+    <div class="header-actions">
+      <div class="calculate-wrapper">
+        <button class="tool-button" id="calculate-menu-toggle" aria-label="Bereken" title="Bereken" aria-haspopup="menu" aria-expanded="false">
+          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="4" y="3" width="16" height="18" rx="2" />
+            <path d="M8 7h8" />
+            <path d="M8 11h2" />
+            <path d="M14 11h2" />
+            <path d="M8 15h2" />
+            <path d="M12 15h4" />
+          </svg>
+        </button>
+        <div class="calculate-menu" id="calculate-menu" role="menu" aria-hidden="true">
+          <button type="button" data-action="extrema" role="menuitem">Extreme waarden</button>
+          <button type="button" data-action="roots" role="menuitem">Snijpunten met de x-as</button>
+          <button type="button" data-action="line-intersection" role="menuitem">Snijpunt(en) tussen objecten</button>
+        </div>
+      </div>
+      <button class="tool-button" id="export-board" aria-label="Exporteer afbeelding" title="Exporteer afbeelding">
         <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="4" y="3" width="16" height="18" rx="2" />
-          <path d="M8 7h8" />
-          <path d="M8 11h2" />
-          <path d="M14 11h2" />
-          <path d="M8 15h2" />
-          <path d="M12 15h4" />
+          <path d="M12 3v14" />
+          <path d="m7 12 5 5 5-5" />
+          <path d="M5 21h14" />
         </svg>
       </button>
-      <div class="calculate-menu" id="calculate-menu" role="menu" aria-hidden="true">
-        <button type="button" data-action="extrema" role="menuitem">Extreme waarden</button>
-        <button type="button" data-action="roots" role="menuitem">Snijpunten met de x-as</button>
-        <button type="button" data-action="line-intersection" role="menuitem">Snijpunt(en) tussen objecten</button>
+      <div class="theme-switcher" id="theme-switcher" role="radiogroup" aria-label="Thema">
+        <button type="button" class="theme-option active" data-theme-option="system" aria-pressed="true" aria-label="Systeemthema" title="Systeemthema">
+          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="4" width="18" height="14" rx="2" />
+            <path d="M8 20h8" />
+          </svg>
+        </button>
+        <button type="button" class="theme-option" data-theme-option="light" aria-pressed="false" aria-label="Licht thema" title="Licht thema">
+          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="4.5" />
+            <path d="M12 2v2" />
+            <path d="M12 20v2" />
+            <path d="M4 12H2" />
+            <path d="M22 12h-2" />
+            <path d="m5.6 5.6-1.4-1.4" />
+            <path d="m19.8 19.8-1.4-1.4" />
+            <path d="m5.6 18.4-1.4 1.4" />
+            <path d="m19.8 4.2-1.4 1.4" />
+          </svg>
+        </button>
+        <button type="button" class="theme-option" data-theme-option="dark" aria-pressed="false" aria-label="Donker thema" title="Donker thema">
+          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.8A9 9 0 0 1 11.2 3 6.5 6.5 0 1 0 21 12.8Z" fill="none" />
+          </svg>
+        </button>
       </div>
     </div>
-    <button class="tool-button" id="export-board" aria-label="Exporteer afbeelding" title="Exporteer afbeelding">
-      <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M12 3v14" />
-        <path d="m7 12 5 5 5-5" />
-        <path d="M5 21h14" />
-      </svg>
-    </button>
   </header>
   <main class="layout">
     <aside class="sidebar" id="sidebar">
@@ -1978,6 +2179,9 @@
     const keyboardTabs = keyboard ? keyboard.querySelector('.keyboard-tabs') : null;
     const keyboardRows = keyboard ? keyboard.querySelector('.keyboard-rows') : null;
     const keyboardPreview = keyboard ? keyboard.querySelector('.keyboard-preview') : null;
+    const themeSwitcher = document.getElementById('theme-switcher');
+    const themeOptionButtons = themeSwitcher ? Array.from(themeSwitcher.querySelectorAll('[data-theme-option]')) : [];
+    const themeColorMeta = document.querySelector('meta[name="theme-color"]');
     const textEditor = document.getElementById('text-editor');
     const textEditorInput = document.getElementById('text-editor-input');
     const textEditorCancel = document.getElementById('text-editor-cancel');
@@ -1993,6 +2197,58 @@
     const closePropertiesBtn = document.getElementById('close-properties');
     const viewportMeta = document.querySelector('meta[name="viewport"]');
     const defaultViewportContent = viewportMeta ? viewportMeta.getAttribute('content') : '';
+
+    function readCSSVariable(name, fallback) {
+      const value = getComputedStyle(document.documentElement).getPropertyValue(name);
+      const trimmed = value ? value.trim() : '';
+      return trimmed || fallback;
+    }
+
+    function refreshThemeColors() {
+      themeColors.gridMinor = readCSSVariable('--canvas-grid-minor', themeColors.gridMinor);
+      themeColors.gridMajor = readCSSVariable('--canvas-grid-major', themeColors.gridMajor);
+      themeColors.axis = readCSSVariable('--canvas-axis', themeColors.axis);
+      themeColors.axisText = readCSSVariable('--canvas-axis-text', themeColors.axisText);
+      themeColors.boardBackground = readCSSVariable('--panel-bg', themeColors.boardBackground);
+    }
+
+    function updateThemeToggleUI() {
+      if (!themeOptionButtons.length) return;
+      themeOptionButtons.forEach(button => {
+        const value = button.dataset.themeOption || 'system';
+        const active = value === themePreference;
+        button.classList.toggle('active', active);
+        button.setAttribute('aria-pressed', String(active));
+      });
+    }
+
+    function resolveSystemTheme() {
+      return prefersDark.matches ? 'dark' : 'light';
+    }
+
+    function applyTheme(preference, options = {}) {
+      const { skipSave = false } = options;
+      const allowed = ['system', 'light', 'dark'];
+      const next = allowed.includes(preference) ? preference : 'system';
+      themePreference = next;
+      if (!skipSave) {
+        if (next === 'system') {
+          localStorage.removeItem(THEME_STORAGE_KEY);
+        } else {
+          localStorage.setItem(THEME_STORAGE_KEY, next);
+        }
+      }
+      document.documentElement.dataset.themePreference = next;
+      const effective = next === 'system' ? resolveSystemTheme() : next;
+      document.documentElement.setAttribute('data-theme', effective);
+      if (themeColorMeta) {
+        themeColorMeta.setAttribute('content', effective === 'dark' ? '#0b1120' : '#f8f8fb');
+      }
+      refreshThemeColors();
+      COLORS.text = readCSSVariable('--text-primary', COLORS.text);
+      updateThemeToggleUI();
+      draw();
+    }
 
     const DPR = window.devicePixelRatio || 1;
     const coarsePointerMedia = typeof window.matchMedia === 'function'
@@ -2053,6 +2309,20 @@
     };
 
     let suppressInlineEditClick = false;
+    const sliderEntryCache = new Map();
+
+    const THEME_STORAGE_KEY = 'geocanvas-theme';
+    const themeColors = {
+      gridMinor: '#eef1fa',
+      gridMajor: '#d5dae5',
+      axis: '#9aa0a6',
+      axisText: '#5f6368',
+      boardBackground: '#ffffff'
+    };
+    const prefersDark = typeof window.matchMedia === 'function'
+      ? window.matchMedia('(prefers-color-scheme: dark)')
+      : { matches: false };
+    let themePreference = 'system';
 
     const COLORS = {
       point: '#1f6feb',
@@ -2528,6 +2798,7 @@
       const previousSegment = state.selectedSegmentId;
       const previousLine = state.selectedLineId;
       const previousCircle = state.selectedCircleId;
+      sliderEntryCache.clear();
       algebraList.innerHTML = '';
       for (const point of state.points) {
         registerAlgebraEntry(point.id, `${point.name} = (${formatNumber(point.position.x)}, ${formatNumber(point.position.y)})`, 'point', point.color || COLORS.point);
@@ -2667,6 +2938,7 @@
       state.selectedSegmentId = snapshot.selectedSegmentId || null;
       state.selectedLineId = snapshot.selectedLineId || null;
       state.selectedCircleId = snapshot.selectedCircleId || null;
+      sliderEntryCache.clear();
       algebraList.innerHTML = '';
       state.functions = [];
       const savedFunctions = snapshot.functions || [];
@@ -3149,7 +3421,7 @@
 
       if (minorStep > 0 && Number.isFinite(minorStep)) {
         ctx.lineWidth = 1 / DPR;
-        ctx.strokeStyle = '#eef1fa';
+        ctx.strokeStyle = themeColors.gridMinor;
         ctx.beginPath();
         const startMinorX = Math.floor(bounds.left / minorStep) * minorStep;
         const endMinorX = Math.ceil(bounds.right / minorStep) * minorStep;
@@ -3176,7 +3448,7 @@
 
       const majorWidth = Math.max(0.9, Math.min(2.1, state.scale / 120 + 0.9));
       ctx.lineWidth = majorWidth / DPR;
-      ctx.strokeStyle = '#d5dae5';
+      ctx.strokeStyle = themeColors.gridMajor;
       ctx.beginPath();
       const startMajorX = Math.ceil(bounds.left / tickStep) * tickStep;
       for (let value = startMajorX; value <= bounds.right + tickStep * 0.5; value += tickStep) {
@@ -3195,7 +3467,7 @@
       const xAxisY = Math.round(state.origin.y) + 0.5;
       const yAxisX = Math.round(state.origin.x) + 0.5;
 
-      ctx.strokeStyle = '#9aa0a6';
+      ctx.strokeStyle = themeColors.axis;
       ctx.lineWidth = Math.max((majorWidth + 0.3) / DPR, 1.2 / DPR);
       ctx.beginPath();
       ctx.moveTo(0, xAxisY);
@@ -3205,8 +3477,8 @@
       ctx.stroke();
 
       ctx.lineWidth = 1 / DPR;
-      ctx.strokeStyle = '#9aa0a6';
-      ctx.fillStyle = '#5f6368';
+      ctx.strokeStyle = themeColors.axis;
+      ctx.fillStyle = themeColors.axisText;
       ctx.font = '12px Inter, "Segoe UI", sans-serif';
 
       const xAxisVisible = xAxisY >= 0 && xAxisY <= height;
@@ -3307,7 +3579,7 @@
         ctx.beginPath();
         ctx.arc(x, y, 6, 0, Math.PI * 2);
         ctx.fill();
-        ctx.fillStyle = '#fff';
+        ctx.fillStyle = themeColors.boardBackground;
         ctx.beginPath();
         ctx.arc(x, y, 3, 0, Math.PI * 2);
         ctx.fill();
@@ -5073,7 +5345,14 @@
       const slider = state.sliders.find(entry => entry.id === id);
       if (!slider) return;
       const speedKey = getSliderSpeedKey(slider);
-      let item = algebraList.querySelector(`[data-id="${id}"]`);
+      let item = sliderEntryCache.get(id);
+      if (item && !algebraList.contains(item)) {
+        sliderEntryCache.delete(id);
+        item = null;
+      }
+      if (!item) {
+        item = algebraList.querySelector(`[data-id="${id}"]`);
+      }
       const isNew = !item;
       if (!item) {
         item = document.createElement('div');
@@ -5167,6 +5446,9 @@
         item.appendChild(actions);
 
         algebraList.appendChild(item);
+        sliderEntryCache.set(id, item);
+      } else {
+        sliderEntryCache.set(id, item);
       }
 
       item.dataset.type = 'slider';
@@ -5292,7 +5574,7 @@
 
     function updateSliderValue(slider, nextValue, options = {}) {
       if (!slider) return;
-      const { record = true, fromAnimation = false } = options;
+      const { record = true, fromAnimation = false, skipDraw = false } = options;
       const clamped = clampSliderValue(slider, nextValue);
       if (!Number.isFinite(clamped)) return;
       const changed = Math.abs(slider.value - clamped) > 1e-9;
@@ -5315,7 +5597,9 @@
           }
         }
       }
-      draw();
+      if (!skipDraw) {
+        draw();
+      }
     }
 
     function setSliderSpeed(slider, speed) {
@@ -5388,6 +5672,7 @@
 
     function sliderAnimationTick(timestamp) {
       let hasActive = false;
+      let needsDraw = false;
       for (const slider of state.sliders) {
         if (!slider.animating) {
           continue;
@@ -5427,7 +5712,11 @@
           slider.direction = 1;
         }
         slider.animationValue = next;
-        updateSliderValue(slider, next, { record: false, fromAnimation: true });
+        updateSliderValue(slider, next, { record: false, fromAnimation: true, skipDraw: true });
+        needsDraw = true;
+      }
+      if (needsDraw) {
+        draw();
       }
       if (hasActive) {
         sliderAnimationFrame = requestAnimationFrame(sliderAnimationTick);
@@ -6072,10 +6361,16 @@
     }
 
     function removeAlgebraEntry(id) {
-      const item = algebraList.querySelector(`[data-id="${id}"]`);
-      if (item) {
-        item.remove();
+      const cached = sliderEntryCache.get(id);
+      if (cached && cached.parentElement) {
+        cached.remove();
+      } else if (algebraList) {
+        const item = algebraList.querySelector(`[data-id="${id}"]`);
+        if (item) {
+          item.remove();
+        }
       }
+      sliderEntryCache.delete(id);
     }
 
     function ensureKeyboardBuilt() {
@@ -7645,7 +7940,7 @@
           exportCanvas.width = canvas.width;
           exportCanvas.height = canvas.height;
           const exportCtx = exportCanvas.getContext('2d');
-          exportCtx.fillStyle = '#ffffff';
+          exportCtx.fillStyle = readCSSVariable('--panel-bg', '#ffffff');
           exportCtx.fillRect(0, 0, exportCanvas.width, exportCanvas.height);
           exportCtx.drawImage(canvas, 0, 0);
           const dataUrl = exportCanvas.toDataURL('image/png');
@@ -7868,6 +8163,36 @@
     if ('ResizeObserver' in window) {
       const resizeObserver = new ResizeObserver(() => resizeCanvas());
       resizeObserver.observe(graphContainer);
+    }
+
+    if (themeOptionButtons.length) {
+      themeOptionButtons.forEach(button => {
+        button.addEventListener('click', () => {
+          ensureMoveTool();
+          applyTheme(button.dataset.themeOption || 'system');
+        });
+      });
+    }
+
+    if (typeof prefersDark.addEventListener === 'function') {
+      prefersDark.addEventListener('change', () => {
+        if (themePreference === 'system') {
+          applyTheme('system', { skipSave: true });
+        }
+      });
+    } else if (typeof prefersDark.addListener === 'function') {
+      prefersDark.addListener(() => {
+        if (themePreference === 'system') {
+          applyTheme('system', { skipSave: true });
+        }
+      });
+    }
+
+    const storedThemePreference = localStorage.getItem(THEME_STORAGE_KEY);
+    if (storedThemePreference === 'light' || storedThemePreference === 'dark') {
+      applyTheme(storedThemePreference, { skipSave: true });
+    } else {
+      applyTheme('system', { skipSave: true });
     }
 
     refreshPointerMode(true);
