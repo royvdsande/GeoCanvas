@@ -1373,7 +1373,6 @@
       </span>
       <span class="brand-label">
         <span class="brand-name">GeoCanvas</span>
-        <span class="badge">Beta</span>
       </span>
     </div>
     <div class="toolbar" role="toolbar" aria-label="Tekengereedschap">
@@ -3116,7 +3115,7 @@
     }
 
     function shouldAutoShowKeyboard() {
-      return isCoarsePointer || !isLargeScreen();
+      return isCoarsePointer;
     }
 
     function enforceStandaloneViewport() {
