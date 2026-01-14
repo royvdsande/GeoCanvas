@@ -1353,7 +1353,7 @@
 </head>
 <body>
   <header>
-    <button class="tool-button" id="toggle-sidebar" aria-label="Wissel algebra-paneel">
+    <button class="tool-button" id="toggle-sidebar" aria-label="Wissel algebra-paneel" data-i18n-aria-label="toggle_algebra_panel">
       <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M4 4h16" />
         <path d="M4 12h10" />
@@ -1375,47 +1375,47 @@
         <span class="brand-name">GeoCanvas</span>
       </span>
     </div>
-    <div class="toolbar" role="toolbar" aria-label="Tekengereedschap">
-      <button class="tool-button active" data-tool="move" aria-label="Verplaats gereedschap">
+    <div class="toolbar" role="toolbar" aria-label="Tekengereedschap" data-i18n-aria-label="tool_toolbar_label">
+      <button class="tool-button active" data-tool="move" aria-label="Verplaats gereedschap" data-i18n-aria-label="tool_move">
         <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
           <path d="M4 3 19 12l-6 1.6 1.8 6.4-4.3-4.3L8 21z" fill="currentColor" />
         </svg>
       </button>
-      <button class="tool-button" data-tool="point" aria-label="Punt gereedschap">
+      <button class="tool-button" data-tool="point" aria-label="Punt gereedschap" data-i18n-aria-label="tool_point">
         <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="4" />
         </svg>
       </button>
-      <button class="tool-button" data-tool="segment" aria-label="Lijnstuk gereedschap">
+      <button class="tool-button" data-tool="segment" aria-label="Lijnstuk gereedschap" data-i18n-aria-label="tool_segment">
         <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
           <path d="M6 18 18 6" />
           <circle cx="6" cy="18" r="2.5" />
           <circle cx="18" cy="6" r="2.5" />
         </svg>
       </button>
-      <button class="tool-button" data-tool="line" aria-label="Rechte lijn gereedschap">
+      <button class="tool-button" data-tool="line" aria-label="Rechte lijn gereedschap" data-i18n-aria-label="tool_line">
         <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
           <path d="M4 20 20 4" />
         </svg>
       </button>
-      <button class="tool-button" data-tool="circle" aria-label="Cirkel gereedschap">
+      <button class="tool-button" data-tool="circle" aria-label="Cirkel gereedschap" data-i18n-aria-label="tool_circle">
         <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="7" />
           <circle cx="12" cy="12" r="2.2" />
         </svg>
       </button>
-      <button class="tool-button" data-tool="polygon" aria-label="Veelhoek gereedschap">
+      <button class="tool-button" data-tool="polygon" aria-label="Veelhoek gereedschap" data-i18n-aria-label="tool_polygon">
         <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
           <path d="M12 5 4 19h16z" />
         </svg>
       </button>
-      <button class="tool-button" data-tool="text" aria-label="Tekst gereedschap">
+      <button class="tool-button" data-tool="text" aria-label="Tekst gereedschap" data-i18n-aria-label="tool_text">
         <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
           <path d="M5 6h14" />
           <path d="M12 6v12" />
         </svg>
       </button>
-      <button class="tool-button" id="quick-slider" aria-label="Voeg slider toe">
+      <button class="tool-button" id="quick-slider" aria-label="Voeg slider toe" data-i18n-aria-label="tool_slider">
         <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
           <path d="M5 12h14" />
           <rect x="9" y="9" width="6" height="6" rx="3" />
@@ -1425,7 +1425,7 @@
     </div>
     <div class="header-actions">
       <div class="calculate-wrapper">
-        <button class="tool-button" id="calculate-menu-toggle" aria-label="Bereken" title="Bereken" aria-haspopup="menu" aria-expanded="false">
+        <button class="tool-button" id="calculate-menu-toggle" aria-label="Bereken" title="Bereken" aria-haspopup="menu" aria-expanded="false" data-i18n-aria-label="tool_calculate" data-i18n-title="tool_calculate">
           <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
             <rect x="4" y="3" width="16" height="18" rx="2" />
             <path d="M8 7h8" />
@@ -1436,26 +1436,26 @@
           </svg>
         </button>
         <div class="calculate-menu" id="calculate-menu" role="menu" aria-hidden="true">
-          <button type="button" data-action="extrema" role="menuitem">Extreme waarden</button>
-          <button type="button" data-action="roots" role="menuitem">Snijpunten met de x-as</button>
-          <button type="button" data-action="line-intersection" role="menuitem">Snijpunt(en) tussen objecten</button>
+          <button type="button" data-action="extrema" role="menuitem" data-i18n="calc_extrema">Extreme waarden</button>
+          <button type="button" data-action="roots" role="menuitem" data-i18n="calc_roots">Snijpunten met de x-as</button>
+          <button type="button" data-action="line-intersection" role="menuitem" data-i18n="calc_intersection">Snijpunt(en) tussen objecten</button>
         </div>
       </div>
-      <button class="tool-button" id="export-board" aria-label="Exporteer afbeelding" title="Exporteer afbeelding">
+      <button class="tool-button" id="export-board" aria-label="Exporteer afbeelding" title="Exporteer afbeelding" data-i18n-aria-label="tool_export" data-i18n-title="tool_export">
         <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
           <path d="M12 3v14" />
           <path d="m7 12 5 5 5-5" />
           <path d="M5 21h14" />
         </svg>
       </button>
-      <div class="theme-switcher" id="theme-switcher" role="radiogroup" aria-label="Thema">
-        <button type="button" class="theme-option active" data-theme-option="system" aria-pressed="true" aria-label="Systeemthema" title="Systeemthema">
+      <div class="theme-switcher" id="theme-switcher" role="radiogroup" aria-label="Thema" data-i18n-aria-label="theme_label">
+        <button type="button" class="theme-option active" data-theme-option="system" aria-pressed="true" aria-label="Systeemthema" title="Systeemthema" data-i18n-aria-label="theme_system" data-i18n-title="theme_system">
           <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
             <rect x="3" y="4" width="18" height="14" rx="2" />
             <path d="M8 20h8" />
           </svg>
         </button>
-        <button type="button" class="theme-option" data-theme-option="light" aria-pressed="false" aria-label="Licht thema" title="Licht thema">
+        <button type="button" class="theme-option" data-theme-option="light" aria-pressed="false" aria-label="Licht thema" title="Licht thema" data-i18n-aria-label="theme_light" data-i18n-title="theme_light">
           <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="12" r="4.5" />
             <path d="M12 2v2" />
@@ -1468,7 +1468,7 @@
             <path d="m19.8 4.2-1.4 1.4" />
           </svg>
         </button>
-        <button type="button" class="theme-option" data-theme-option="dark" aria-pressed="false" aria-label="Donker thema" title="Donker thema">
+        <button type="button" class="theme-option" data-theme-option="dark" aria-pressed="false" aria-label="Donker thema" title="Donker thema" data-i18n-aria-label="theme_dark" data-i18n-title="theme_dark">
           <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
             <path d="M21 12.8A9 9 0 0 1 11.2 3 6.5 6.5 0 1 0 21 12.8Z" fill="none" />
           </svg>
@@ -1479,8 +1479,8 @@
   <main class="layout">
     <aside class="sidebar" id="sidebar">
       <div class="sidebar-header">
-        Algebra
-        <button class="tool-button" id="close-sidebar" aria-label="Sluit paneel">
+        <span data-i18n="algebra">Algebra</span>
+        <button class="tool-button" id="close-sidebar" aria-label="Sluit paneel" data-i18n-aria-label="close_panel">
           <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
             <path d="m7 7 10 10" />
             <path d="m17 7-10 10" />
@@ -1490,8 +1490,8 @@
       <div class="algebra-list" id="algebra-list" aria-live="polite"></div>
       <div class="sidebar-footer">
         <div class="command-bar">
-          <input type="text" id="command-input" class="command-input" placeholder="Invoer..." autocomplete="off" />
-          <button class="command-button" id="toggle-keyboard" type="button" aria-label="Toon toetsenbord" aria-pressed="false">
+          <input type="text" id="command-input" class="command-input" placeholder="Invoer..." data-i18n-placeholder="input_placeholder" autocomplete="off" />
+          <button class="command-button" id="toggle-keyboard" type="button" aria-label="Toon toetsenbord" data-i18n-aria-label="show_keyboard" aria-pressed="false">
             <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
               <rect x="3" y="5" width="18" height="14" rx="2" ry="2" />
               <path d="M7 9h0" />
@@ -1505,8 +1505,8 @@
         </div>
         <div class="properties-panel hidden" id="properties-panel" aria-live="polite">
           <div class="properties-header">
-            Eigenschappen
-            <button type="button" class="properties-close" id="close-properties" aria-label="Verberg eigenschappen">
+            <span data-i18n="properties">Eigenschappen</span>
+            <button type="button" class="properties-close" id="close-properties" aria-label="Verberg eigenschappen" data-i18n-aria-label="hide_properties">
               <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
                 <path d="m8 8 8 8" />
                 <path d="m16 8-8 8" />
@@ -1520,20 +1520,20 @@
     <section class="graph-container">
       <div class="floating-controls">
         <div class="control-row">
-          <button type="button" class="round-button" id="undo" aria-label="Ongedaan maken" disabled>
+          <button type="button" class="round-button" id="undo" aria-label="Ongedaan maken" data-i18n-aria-label="undo" disabled>
             <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
               <path d="M7 10H3V6" />
               <path d="M3 10c0 6 6 8 10 8 4.97 0 8-2.9 8-7a7 7 0 0 0-7-7c-2.7 0-5.2 1.1-6.8 3" />
             </svg>
           </button>
-          <button type="button" class="round-button" id="redo" aria-label="Opnieuw uitvoeren" disabled>
+          <button type="button" class="round-button" id="redo" aria-label="Opnieuw uitvoeren" data-i18n-aria-label="redo" disabled>
             <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
               <path d="M17 10h4V6" />
               <path d="M21 10c0 6-6 8-10 8-4.97 0-8-2.9-8-7a7 7 0 0 1 7-7c2.7 0 5.2 1.1 6.8 3" />
             </svg>
           </button>
         </div>
-        <button type="button" class="round-button" id="zoom-in" aria-label="Zoom in">
+        <button type="button" class="round-button" id="zoom-in" aria-label="Zoom in" data-i18n-aria-label="zoom_in">
           <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="11" cy="11" r="7" />
             <path d="M11 8v6" />
@@ -1541,46 +1541,421 @@
             <path d="m20 20-3-3" />
           </svg>
         </button>
-        <button type="button" class="round-button" id="zoom-out" aria-label="Zoom uit">
+        <button type="button" class="round-button" id="zoom-out" aria-label="Zoom uit" data-i18n-aria-label="zoom_out">
           <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="11" cy="11" r="7" />
             <path d="M8 11h6" />
             <path d="m20 20-3-3" />
           </svg>
         </button>
-        <button type="button" class="round-button" id="reset-view" aria-label="Reset weergave">
+        <button type="button" class="round-button" id="reset-view" aria-label="Reset weergave" data-i18n-aria-label="reset_view">
           <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
             <path d="M3 11.5 12 4l9 7.5" />
             <path d="M5 12v8h5v-4h4v4h5v-8" />
           </svg>
         </button>
       </div>
-      <canvas id="board" width="1600" height="1200" aria-label="Coördinaatvlak"></canvas>
+      <canvas id="board" width="1600" height="1200" aria-label="Coördinaatvlak" data-i18n-aria-label="board_label"></canvas>
       <div class="calculation-hint" id="calculation-hint" role="status" aria-live="polite" aria-hidden="true"></div>
       <div class="text-editor-overlay" id="text-editor" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="text-editor-title">
         <div class="text-editor-panel" role="document">
-          <h2 class="text-editor-title" id="text-editor-title">Tekst toevoegen</h2>
+          <h2 class="text-editor-title" id="text-editor-title" data-i18n="text_add_title">Tekst toevoegen</h2>
           <div class="text-editor-field">
-            <label for="text-editor-input">Voer de gewenste tekst in</label>
-            <textarea id="text-editor-input" class="text-editor-input" rows="3" placeholder="Bijv. Titel of toelichting" spellcheck="true"></textarea>
+            <label for="text-editor-input" data-i18n="text_add_label">Voer de gewenste tekst in</label>
+            <textarea id="text-editor-input" class="text-editor-input" rows="3" placeholder="Bijv. Titel of toelichting" data-i18n-placeholder="text_add_placeholder" spellcheck="true"></textarea>
           </div>
-          <p class="text-editor-hint">Tip: gebruik Ctrl+Enter of ⌘+Enter om snel te plaatsen.</p>
+          <p class="text-editor-hint" data-i18n="text_add_hint">Tip: gebruik Ctrl+Enter of ⌘+Enter om snel te plaatsen.</p>
           <div class="text-editor-actions">
-            <button type="button" class="text-editor-cancel" id="text-editor-cancel">Annuleren</button>
-            <button type="button" class="text-editor-confirm" id="text-editor-confirm">Plaats tekst</button>
+            <button type="button" class="text-editor-cancel" id="text-editor-cancel" data-i18n="cancel">Annuleren</button>
+            <button type="button" class="text-editor-confirm" id="text-editor-confirm" data-i18n="place_text">Plaats tekst</button>
           </div>
         </div>
       </div>
   <div class="math-keyboard" id="math-keyboard" aria-hidden="true">
         <div class="keyboard-header">
-          <div class="keyboard-preview" id="keyboard-preview" aria-live="polite">Invoer...</div>
-          <div class="keyboard-tabs" role="tablist" aria-label="Toetsenbord categorieën"></div>
+          <div class="keyboard-preview" id="keyboard-preview" aria-live="polite" data-i18n="input_placeholder">Invoer...</div>
+          <div class="keyboard-tabs" role="tablist" aria-label="Toetsenbord categorieën" data-i18n-aria-label="keyboard_categories"></div>
         </div>
         <div class="keyboard-rows" role="group" aria-live="polite"></div>
       </div>
     </section>
   </main>
   <script>
+    const TRANSLATIONS = {
+      nl: {
+        algebra: "Algebra",
+        toggle_algebra_panel: "Wissel algebra-paneel",
+        tool_move: "Verplaats gereedschap",
+        tool_point: "Punt gereedschap",
+        tool_segment: "Lijnstuk gereedschap",
+        tool_line: "Rechte lijn gereedschap",
+        tool_circle: "Cirkel gereedschap",
+        tool_polygon: "Veelhoek gereedschap",
+        tool_text: "Tekst gereedschap",
+        tool_slider: "Voeg slider toe",
+        tool_calculate: "Bereken",
+        tool_export: "Exporteer afbeelding",
+        theme_label: "Thema",
+        theme_system: "Systeemthema",
+        theme_light: "Licht thema",
+        theme_dark: "Donker thema",
+        calc_extrema: "Extreme waarden",
+        calc_roots: "Snijpunten met de x-as",
+        calc_intersection: "Snijpunt(en) tussen objecten",
+        close_panel: "Sluit paneel",
+        input_placeholder: "Invoer...",
+        show_keyboard: "Toon toetsenbord",
+        hide_keyboard: "Verberg toetsenbord",
+        properties: "Eigenschappen",
+        hide_properties: "Verberg eigenschappen",
+        undo: "Ongedaan maken",
+        redo: "Opnieuw uitvoeren",
+        zoom_in: "Zoom in",
+        zoom_out: "Zoom uit",
+        reset_view: "Reset weergave",
+        board_label: "Coördinaatvlak",
+        text_add_title: "Tekst toevoegen",
+        text_add_label: "Voer de gewenste tekst in",
+        text_add_placeholder: "Bijv. Titel of toelichting",
+        text_add_hint: "Tip: gebruik Ctrl+Enter of ⌘+Enter om snel te plaatsen.",
+        cancel: "Annuleren",
+        place_text: "Plaats tekst",
+        keyboard_categories: "Toetsenbord categorieën",
+        name: "Naam",
+        color: "Kleur",
+        show_label: "Toon label",
+        trace_enabled: "Sporen aanzetten",
+        label: "Label",
+        thickness: "Lijndikte",
+        value: "Waarde",
+        min: "Minimum",
+        max: "Maximum",
+        speed: "Snelheid",
+        slower: "Langzamer",
+        faster: "Sneller",
+        edit_color: "Pas grafiekkleur aan",
+        edit_algebra: "Bewerk algebraïsche invoer",
+        show_props: "Toon eigenschappen",
+        delete_object: "Verwijder object",
+        slider_val: "Schuifbalkwaarde",
+        start_anim: "Start animatie",
+        pause_anim: "Pauzeer animatie",
+        hint_valid_graph: "Selecteer een geldige grafiek voor deze berekening.",
+        hint_no_results: "Geen resultaten gevonden binnen het zichtbare gebied.",
+        hint_points_exist: "Er bestaan al punten op deze posities.",
+        hint_select_second: "Selecteer nu het tweede object voor het snijpunt.",
+        hint_select_other: "Kies een ander object voor het snijpunt.",
+        hint_cannot_use: "Kon de geselecteerde objecten niet gebruiken.",
+        hint_no_intersections: "Geen snijpunten gevonden voor deze selectie.",
+        hint_intersections_added: "Snijpunt(en) toegevoegd.",
+        hint_select_first: "Selecteer het eerste object voor het snijpunt.",
+        hint_select_graph: "Selecteer een grafiek om deze berekening uit te voeren.",
+        error_slider_create: "Kan schuifbalk niet aanmaken: controleer de invoer.",
+        error_slider_values: "Voer geldige minimum- en maximumwaarden in voor de schuifbalk.",
+        error_variable_name: "Geef een geldige naam op voor de variabele.",
+        error_numeric_value: "Voer een geldige numerieke waarde in.",
+        error_unbalanced_abs: "Ongebalanceerde absolute waarde.",
+        error_invalid_value: "Ongeldige waarde",
+        error_interpret_func: "Kon functie niet interpreteren. Controleer de invoer.",
+        error_unsupported_cmd: "Deze opdracht wordt nog niet ondersteund.",
+        tool_toolbar_label: "Tekengereedschap"
+      },
+      en: {
+        algebra: "Algebra",
+        toggle_algebra_panel: "Toggle algebra panel",
+        tool_move: "Move tool",
+        tool_point: "Point tool",
+        tool_segment: "Segment tool",
+        tool_line: "Line tool",
+        tool_circle: "Circle tool",
+        tool_polygon: "Polygon tool",
+        tool_text: "Text tool",
+        tool_slider: "Add slider",
+        tool_calculate: "Calculate",
+        tool_export: "Export image",
+        theme_label: "Theme",
+        theme_system: "System theme",
+        theme_light: "Light theme",
+        theme_dark: "Dark theme",
+        calc_extrema: "Extremes",
+        calc_roots: "Roots",
+        calc_intersection: "Intersections",
+        close_panel: "Close panel",
+        input_placeholder: "Input...",
+        show_keyboard: "Show keyboard",
+        hide_keyboard: "Hide keyboard",
+        properties: "Properties",
+        hide_properties: "Hide properties",
+        undo: "Undo",
+        redo: "Redo",
+        zoom_in: "Zoom in",
+        zoom_out: "Zoom out",
+        reset_view: "Reset view",
+        board_label: "Coordinate plane",
+        text_add_title: "Add text",
+        text_add_label: "Enter text",
+        text_add_placeholder: "E.g. Title or note",
+        text_add_hint: "Tip: use Ctrl+Enter or ⌘+Enter to place quickly.",
+        cancel: "Cancel",
+        place_text: "Place text",
+        keyboard_categories: "Keyboard categories",
+        name: "Name",
+        color: "Color",
+        show_label: "Show label",
+        trace_enabled: "Enable trace",
+        label: "Label",
+        thickness: "Thickness",
+        value: "Value",
+        min: "Minimum",
+        max: "Maximum",
+        speed: "Speed",
+        slower: "Slower",
+        faster: "Faster",
+        edit_color: "Adjust graph color",
+        edit_algebra: "Edit algebraic input",
+        show_props: "Show properties",
+        delete_object: "Delete object",
+        slider_val: "Slider value",
+        start_anim: "Start animation",
+        pause_anim: "Pause animation",
+        hint_valid_graph: "Select a valid graph for this calculation.",
+        hint_no_results: "No results found within the visible area.",
+        hint_points_exist: "Points already exist at these positions.",
+        hint_select_second: "Now select the second object for the intersection.",
+        hint_select_other: "Choose another object for the intersection.",
+        hint_cannot_use: "Could not use the selected objects.",
+        hint_no_intersections: "No intersections found for this selection.",
+        hint_intersections_added: "Intersection(s) added.",
+        hint_select_first: "Select the first object for the intersection.",
+        hint_select_graph: "Select a graph to perform this calculation.",
+        error_slider_create: "Cannot create slider: check the input.",
+        error_slider_values: "Enter valid minimum and maximum values for the slider.",
+        error_variable_name: "Please provide a valid name for the variable.",
+        error_numeric_value: "Enter a valid numeric value.",
+        error_unbalanced_abs: "Unbalanced absolute value.",
+        error_invalid_value: "Invalid value",
+        error_interpret_func: "Could not interpret function. Check the input.",
+        error_unsupported_cmd: "This command is not yet supported.",
+        tool_toolbar_label: "Drawing tools"
+      },
+      fr: {
+        algebra: "Algèbre",
+        toggle_algebra_panel: "Basculer le panneau d'algèbre",
+        tool_move: "Outil Déplacer",
+        tool_point: "Outil Point",
+        tool_segment: "Outil Segment",
+        tool_line: "Outil Droite",
+        tool_circle: "Outil Cercle",
+        tool_polygon: "Outil Polygone",
+        tool_text: "Outil Texte",
+        tool_slider: "Ajouter un curseur",
+        tool_calculate: "Calculer",
+        tool_export: "Exporter l'image",
+        theme_label: "Thème",
+        theme_system: "Thème système",
+        theme_light: "Thème clair",
+        theme_dark: "Thème sombre",
+        calc_extrema: "Extremums",
+        calc_roots: "Racines",
+        calc_intersection: "Intersections",
+        close_panel: "Fermer le panneau",
+        input_placeholder: "Saisie...",
+        show_keyboard: "Afficher le clavier",
+        hide_keyboard: "Masquer le clavier",
+        properties: "Propriétés",
+        hide_properties: "Masquer les propriétés",
+        undo: "Annuler",
+        redo: "Rétablir",
+        zoom_in: "Zoom avant",
+        zoom_out: "Zoom arrière",
+        reset_view: "Réinitialiser la vue",
+        board_label: "Plan de coordonnées",
+        text_add_title: "Ajouter du texte",
+        text_add_label: "Saisissez le texte souhaité",
+        text_add_placeholder: "Ex. Titre ou note",
+        text_add_hint: "Astuce : utilisez Ctrl+Entrée ou ⌘+Entrée pour placer rapidement.",
+        cancel: "Annuler",
+        place_text: "Placer le texte",
+        keyboard_categories: "Catégories de clavier",
+        name: "Nom",
+        color: "Couleur",
+        show_label: "Afficher l'étiquette",
+        trace_enabled: "Activer la trace",
+        label: "Étiquette",
+        thickness: "Épaisseur",
+        value: "Valeur",
+        min: "Minimum",
+        max: "Maximum",
+        speed: "Vitesse",
+        slower: "Plus lent",
+        faster: "Plus rapide",
+        edit_color: "Ajuster la couleur du graphique",
+        edit_algebra: "Modifier la saisie algébrique",
+        show_props: "Afficher les propriétés",
+        delete_object: "Supprimer l'objet",
+        slider_val: "Valeur du curseur",
+        start_anim: "Démarrer l'animation",
+        pause_anim: "Mettre l'animation en pause",
+        hint_valid_graph: "Sélectionnez un graphique valide pour ce calcul.",
+        hint_no_results: "Aucun résultat trouvé dans la zone visible.",
+        hint_points_exist: "Des points existent déjà à ces positions.",
+        hint_select_second: "Sélectionnez maintenant le deuxième objet pour l'intersection.",
+        hint_select_other: "Choisissez un autre objet pour l'intersection.",
+        hint_cannot_use: "Impossible d'utiliser les objets sélectionnés.",
+        hint_no_intersections: "Aucune intersection trouvée pour cette sélection.",
+        hint_intersections_added: "Intersection(s) ajoutée(s).",
+        hint_select_first: "Sélectionnez le premier objet pour l'intersection.",
+        hint_select_graph: "Sélectionnez un graphique pour effectuer ce calcul.",
+        error_slider_create: "Impossible de créer le curseur : vérifiez la saisie.",
+        error_slider_values: "Entrez des valeurs minimales et maximales valides pour le curseur.",
+        error_variable_name: "Veuillez fournir un nom valide pour la variable.",
+        error_numeric_value: "Entrez une valeur numérique valide.",
+        error_unbalanced_abs: "Valeur absolue non équilibrée.",
+        error_invalid_value: "Valeur invalide",
+        error_interpret_func: "Impossible d'interpréter la fonction. Vérifiez la saisie.",
+        error_unsupported_cmd: "Cette commande n'est pas encore prise en charge.",
+        tool_toolbar_label: "Outils de dessin"
+      },
+      es: {
+        algebra: "Álgebra",
+        toggle_algebra_panel: "Alternar panel de álgebra",
+        tool_move: "Herramienta Mover",
+        tool_point: "Herramienta Punto",
+        tool_segment: "Herramienta Segmento",
+        tool_line: "Herramienta Recta",
+        tool_circle: "Herramienta Circunferencia",
+        tool_polygon: "Herramienta Polígono",
+        tool_text: "Herramienta Texto",
+        tool_slider: "Añadir deslizador",
+        tool_calculate: "Calcular",
+        tool_export: "Exportar imagen",
+        theme_label: "Tema",
+        theme_system: "Tema del sistema",
+        theme_light: "Tema claro",
+        theme_dark: "Tema oscuro",
+        calc_extrema: "Extremos",
+        calc_roots: "Raíces",
+        calc_intersection: "Intersecciones",
+        close_panel: "Cerrar panel",
+        input_placeholder: "Entrada...",
+        show_keyboard: "Mostrar teclado",
+        hide_keyboard: "Ocultar teclado",
+        properties: "Propiedades",
+        hide_properties: "Ocultar propiedades",
+        undo: "Deshacer",
+        redo: "Rehacer",
+        zoom_in: "Acercar",
+        zoom_out: "Alejar",
+        reset_view: "Restablecer vista",
+        board_label: "Plano de coordenadas",
+        text_add_title: "Añadir texto",
+        text_add_label: "Introduzca el texto deseado",
+        text_add_placeholder: "Ej. Título o nota",
+        text_add_hint: "Consejo: use Ctrl+Enter o ⌘+Enter para colocar rápidamente.",
+        cancel: "Cancelar",
+        place_text: "Colocar texto",
+        keyboard_categories: "Categorías de teclado",
+        name: "Nombre",
+        color: "Color",
+        show_label: "Mostrar etiqueta",
+        trace_enabled: "Activar rastro",
+        label: "Etiqueta",
+        thickness: "Grosor",
+        value: "Valor",
+        min: "Mínimo",
+        max: "Máximo",
+        speed: "Velocidad",
+        slower: "Más lento",
+        faster: "Más rápido",
+        edit_color: "Ajustar color del gráfico",
+        edit_algebra: "Editar entrada algebraica",
+        show_props: "Mostrar propiedades",
+        delete_object: "Eliminar objeto",
+        slider_val: "Valor del deslizador",
+        start_anim: "Iniciar animación",
+        pause_anim: "Pausar animación",
+        hint_valid_graph: "Seleccione un gráfico válido para este cálculo.",
+        hint_no_results: "No se encontraron resultados en el área visible.",
+        hint_points_exist: "Ya existen puntos en estas posiciones.",
+        hint_select_second: "Seleccione ahora el segundo objeto para la intersección.",
+        hint_select_other: "Elija otro objeto para la intersección.",
+        hint_cannot_use: "No se pudieron usar los objetos seleccionados.",
+        hint_no_intersections: "No se encontraron intersecciones para esta selección.",
+        hint_intersections_added: "Intersección(es) añadida(s).",
+        hint_select_first: "Seleccione el primer objeto para la intersección.",
+        hint_select_graph: "Seleccione un gráfico para realizar este cálculo.",
+        error_slider_create: "No se puede crear el deslizador: verifique la entrada.",
+        error_slider_values: "Introduzca valores mínimos y máximos válidos para el deslizador.",
+        error_variable_name: "Por favor, proporcione un nombre válido para la variable.",
+        error_numeric_value: "Introduzca un valor numérico válido.",
+        error_unbalanced_abs: "Valor absoluto no equilibrado.",
+        error_invalid_value: "Valor no válido",
+        error_interpret_func: "No se pudo interpretar la función. Verifique la entrada.",
+        error_unsupported_cmd: "Este comando aún no es compatible.",
+        tool_toolbar_label: "Herramientas de dibujo"
+      }
+    };
+
+    let currentLang = 'nl';
+
+    function t(key) {
+      if (TRANSLATIONS[currentLang] && TRANSLATIONS[currentLang][key]) {
+        return TRANSLATIONS[currentLang][key];
+      }
+      if (TRANSLATIONS['nl'][key]) {
+        return TRANSLATIONS['nl'][key];
+      }
+      return key;
+    }
+
+    function setLanguage(lang) {
+      const normalized = lang.split('-')[0].toLowerCase();
+      if (TRANSLATIONS[normalized]) {
+        currentLang = normalized;
+      } else {
+        currentLang = 'nl'; // Default fallback
+      }
+      document.documentElement.lang = currentLang;
+
+      // Update static elements
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        el.textContent = t(el.dataset.i18n);
+      });
+      document.querySelectorAll('[data-i18n-aria-label]').forEach(el => {
+        const key = el.dataset.i18nAriaLabel;
+        el.setAttribute('aria-label', t(key));
+        if (el.hasAttribute('title') || el.dataset.i18nTitle) {
+             el.setAttribute('title', t(el.dataset.i18nTitle || key));
+        }
+      });
+      document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+        el.setAttribute('placeholder', t(el.dataset.i18nPlaceholder));
+      });
+      document.querySelectorAll('[data-i18n-title]').forEach(el => {
+        el.setAttribute('title', t(el.dataset.i18nTitle));
+      });
+
+      // Update JS generated elements
+      if (keyboardPreview && keyboardPreview.classList.contains('empty')) {
+         keyboardPreview.textContent = t('input_placeholder');
+      }
+
+      if (propertiesState.visible) {
+         refreshPropertiesPanel();
+      }
+
+      rebuildAlgebraList();
+
+      if(keyboardToggle) {
+          const isVisible = keyboardVisible;
+           keyboardToggle.setAttribute('aria-label', isVisible ? t('hide_keyboard') : t('show_keyboard'));
+      }
+    }
+
+    function autoDetectLanguage() {
+      const browserLang = navigator.language || navigator.userLanguage;
+      setLanguage(browserLang);
+    }
 
     function refreshPropertiesPanel(preferred) {
       if (!propertiesPanel || !propertiesContent) return;
@@ -1684,7 +2059,7 @@
       const nameField = document.createElement('div');
       nameField.className = 'property-field';
       const nameLabel = document.createElement('label');
-      nameLabel.textContent = 'Naam';
+      nameLabel.textContent = t('name');
       const nameInput = document.createElement('input');
       nameInput.type = 'text';
       nameInput.value = point.name;
@@ -1696,7 +2071,7 @@
       const colorField = document.createElement('div');
       colorField.className = 'property-field';
       const colorLabel = document.createElement('label');
-      colorLabel.textContent = 'Kleur';
+      colorLabel.textContent = t('color');
       const colorInput = document.createElement('input');
       colorInput.type = 'color';
       colorInput.value = normalizeColor(point.color || COLORS.point, COLORS.point);
@@ -1713,7 +2088,7 @@
       labelInput.checked = point.showLabel !== false;
       labelInput.addEventListener('change', () => setPointLabelVisibility(point.id, labelInput.checked));
       labelToggle.appendChild(labelInput);
-      labelToggle.appendChild(document.createTextNode('Toon label'));
+      labelToggle.appendChild(document.createTextNode(t('show_label')));
       propertiesContent.appendChild(labelToggle);
 
       const traceToggle = document.createElement('label');
@@ -1723,7 +2098,7 @@
       traceInput.checked = Boolean(point.traceEnabled);
       traceInput.addEventListener('change', () => togglePointTrace(point.id, traceInput.checked));
       traceToggle.appendChild(traceInput);
-      traceToggle.appendChild(document.createTextNode('Sporen aanzetten'));
+      traceToggle.appendChild(document.createTextNode(t('trace_enabled')));
       propertiesContent.appendChild(traceToggle);
     }
 
@@ -1731,7 +2106,7 @@
       const nameField = document.createElement('div');
       nameField.className = 'property-field';
       const nameLabel = document.createElement('label');
-      nameLabel.textContent = 'Label';
+      nameLabel.textContent = t('label');
       const nameInput = document.createElement('input');
       nameInput.type = 'text';
       nameInput.value = fn.algebraLabel;
@@ -1743,7 +2118,7 @@
       const colorField = document.createElement('div');
       colorField.className = 'property-field';
       const colorLabel = document.createElement('label');
-      colorLabel.textContent = 'Kleur';
+      colorLabel.textContent = t('color');
       const colorInput = document.createElement('input');
       colorInput.type = 'color';
       colorInput.value = normalizeColor(fn.color || COLORS.function, COLORS.function);
@@ -1756,7 +2131,7 @@
       const thicknessField = document.createElement('div');
       thicknessField.className = 'property-field';
       const thicknessLabel = document.createElement('label');
-      thicknessLabel.textContent = 'Lijndikte';
+      thicknessLabel.textContent = t('thickness');
       const thicknessInput = document.createElement('input');
       thicknessInput.type = 'range';
       thicknessInput.min = '1';
@@ -1775,7 +2150,7 @@
       const nameField = document.createElement('div');
       nameField.className = 'property-field';
       const nameLabel = document.createElement('label');
-      nameLabel.textContent = 'Naam';
+      nameLabel.textContent = t('name');
       const nameInput = document.createElement('input');
       nameInput.type = 'text';
       nameInput.value = slider.name;
@@ -1787,7 +2162,7 @@
       const valueField = document.createElement('div');
       valueField.className = 'property-field';
       const valueLabel = document.createElement('label');
-      valueLabel.textContent = 'Waarde';
+      valueLabel.textContent = t('value');
       const valueInput = document.createElement('input');
       valueInput.type = 'number';
       valueInput.step = 'any';
@@ -1808,7 +2183,7 @@
       const minField = document.createElement('div');
       minField.className = 'property-field';
       const minLabel = document.createElement('label');
-      minLabel.textContent = 'Minimum';
+      minLabel.textContent = t('min');
       const minInput = document.createElement('input');
       minInput.type = 'number';
       minInput.step = 'any';
@@ -1828,7 +2203,7 @@
       const maxField = document.createElement('div');
       maxField.className = 'property-field';
       const maxLabel = document.createElement('label');
-      maxLabel.textContent = 'Maximum';
+      maxLabel.textContent = t('max');
       const maxInput = document.createElement('input');
       maxInput.type = 'number';
       maxInput.step = 'any';
@@ -1848,7 +2223,7 @@
       const speedField = document.createElement('div');
       speedField.className = 'property-field';
       const speedLabel = document.createElement('label');
-      speedLabel.textContent = 'Snelheid';
+      speedLabel.textContent = t('speed');
       speedField.appendChild(speedLabel);
       const normalizedSpeed = normalizeSliderSpeed(slider.speed) || DEFAULT_SLIDER_SPEED;
       const speedControls = document.createElement('div');
@@ -1856,7 +2231,7 @@
       const slowerBtn = document.createElement('button');
       slowerBtn.type = 'button';
       slowerBtn.dataset.speedAction = 'slower';
-      slowerBtn.setAttribute('aria-label', 'Langzamer');
+      slowerBtn.setAttribute('aria-label', t('slower'));
       slowerBtn.textContent = '<<';
       slowerBtn.disabled = findSliderSpeedIndex(normalizedSpeed) <= 0;
       slowerBtn.addEventListener('click', () => shiftSliderSpeed(slider, -1));
@@ -1868,7 +2243,7 @@
       const fasterBtn = document.createElement('button');
       fasterBtn.type = 'button';
       fasterBtn.dataset.speedAction = 'faster';
-      fasterBtn.setAttribute('aria-label', 'Sneller');
+      fasterBtn.setAttribute('aria-label', t('faster'));
       fasterBtn.textContent = '>>';
       fasterBtn.disabled = findSliderSpeedIndex(normalizedSpeed) >= SLIDER_SPEED_KEYS.length - 1;
       fasterBtn.addEventListener('click', () => shiftSliderSpeed(slider, 1));
@@ -1881,7 +2256,7 @@
       const nameField = document.createElement('div');
       nameField.className = 'property-field';
       const nameLabel = document.createElement('label');
-      nameLabel.textContent = 'Naam';
+      nameLabel.textContent = t('name');
       const nameInput = document.createElement('input');
       nameInput.type = 'text';
       nameInput.value = entry.name;
@@ -1893,7 +2268,7 @@
       const valueField = document.createElement('div');
       valueField.className = 'property-field';
       const valueLabel = document.createElement('label');
-      valueLabel.textContent = 'Waarde';
+      valueLabel.textContent = t('value');
       const valueInput = document.createElement('input');
       valueInput.type = 'number';
       valueInput.value = entry.value;
@@ -3034,7 +3409,7 @@
       const target = getActiveInput();
       const value = target && typeof target.value === 'string' ? target.value : '';
       if (!value) {
-        keyboardPreview.textContent = 'Invoer...';
+        keyboardPreview.textContent = t('input_placeholder');
         keyboardPreview.classList.add('empty');
       } else {
         keyboardPreview.textContent = value;
@@ -4752,7 +5127,7 @@
     function executeFunctionCalculation(mode, functionId) {
       const fn = state.functions.find(entry => entry.id === functionId);
       if (!fn) {
-        showCalculationHint('Selecteer een geldige grafiek voor deze berekening.', { duration: 3600 });
+        showCalculationHint(t('hint_valid_graph'), { duration: 3600 });
         return false;
       }
       let candidates = [];
@@ -4762,7 +5137,7 @@
         candidates = calculateFunctionRoots(fn);
       }
       if (!candidates.length) {
-        showCalculationHint('Geen resultaten gevonden binnen het zichtbare gebied.', { duration: 3600 });
+        showCalculationHint(t('hint_no_results'), { duration: 3600 });
         return false;
       }
       const fresh = candidates.filter(point => {
@@ -4773,7 +5148,7 @@
         return !pointExistsNear(point, 1e-3);
       });
       if (!fresh.length) {
-        showCalculationHint('Er bestaan al punten op deze posities.', { duration: 3600 });
+        showCalculationHint(t('hint_points_exist'), { duration: 3600 });
         return false;
       }
       recordHistory();
@@ -4805,7 +5180,7 @@
       const selection = { type, id };
       if (!calculateState.firstSelection) {
         calculateState.firstSelection = selection;
-        showCalculationHint('Selecteer nu het tweede object voor het snijpunt.', { persist: true });
+        showCalculationHint(t('hint_select_second'), { persist: true });
         return;
       }
       if (
@@ -4813,20 +5188,20 @@
         calculateState.firstSelection.type === selection.type &&
         calculateState.firstSelection.id === selection.id
       ) {
-        showCalculationHint('Kies een ander object voor het snijpunt.', { persist: true });
+        showCalculationHint(t('hint_select_other'), { persist: true });
         return;
       }
       const firstEntity = buildIntersectionEntity(calculateState.firstSelection);
       const secondEntity = buildIntersectionEntity(selection);
       if (!firstEntity || !secondEntity) {
         resetCalculationState();
-        showCalculationHint('Kon de geselecteerde objecten niet gebruiken.', { duration: 3600 });
+        showCalculationHint(t('hint_cannot_use'), { duration: 3600 });
         return;
       }
       const intersections = calculateIntersections(firstEntity, secondEntity) || [];
       if (!intersections.length) {
         resetCalculationState();
-        showCalculationHint('Geen snijpunten gevonden voor deze selectie.', { duration: 3600 });
+        showCalculationHint(t('hint_no_intersections'), { duration: 3600 });
         return;
       }
       const fresh = intersections.filter(point => {
@@ -4838,7 +5213,7 @@
       });
       if (!fresh.length) {
         resetCalculationState();
-        showCalculationHint('Er bestaan al punten op deze snijpunten.', { duration: 3600 });
+        showCalculationHint(t('hint_points_exist'), { duration: 3600 });
         return;
       }
       recordHistory();
@@ -4858,7 +5233,7 @@
       }
       draw();
       resetCalculationState();
-      showCalculationHint('Snijpunt(en) toegevoegd.', { duration: 2800 });
+      showCalculationHint(t('hint_intersections_added'), { duration: 2800 });
     }
 
     function triggerPendingFunctionCalculation(functionId) {
@@ -4894,11 +5269,11 @@
       calculateState.mode = action;
       calculateState.firstSelection = null;
       if (action === 'line-intersection') {
-        showCalculationHint('Selecteer het eerste object voor het snijpunt.', { persist: true });
+        showCalculationHint(t('hint_select_first'), { persist: true });
         return;
       }
       if (action === 'extrema' || action === 'roots') {
-        showCalculationHint('Selecteer een grafiek om deze berekening uit te voeren.', { persist: true });
+        showCalculationHint(t('hint_select_graph'), { persist: true });
       }
     }
 
@@ -5248,8 +5623,8 @@
           icon.type = 'button';
           icon.className = 'algebra-color';
           icon.dataset.action = 'color';
-          icon.setAttribute('aria-label', 'Pas grafiekkleur aan');
-          icon.setAttribute('title', 'Pas grafiekkleur aan');
+          icon.setAttribute('aria-label', t('edit_color'));
+          icon.setAttribute('title', t('edit_color'));
           const input = document.createElement('input');
           input.type = 'color';
           input.className = 'algebra-color-input';
@@ -5271,7 +5646,7 @@
           const editor = document.createElement('input');
           editor.type = 'text';
           editor.className = 'algebra-inline-edit';
-          editor.setAttribute('aria-label', 'Bewerk algebraïsche invoer');
+          editor.setAttribute('aria-label', t('edit_algebra'));
           configureInlineEditInput(editor);
           label.appendChild(editor);
         }
@@ -5284,7 +5659,7 @@
           optionsButton.type = 'button';
           optionsButton.className = 'options-button';
           optionsButton.dataset.action = 'properties';
-          optionsButton.setAttribute('aria-label', 'Toon eigenschappen');
+          optionsButton.setAttribute('aria-label', t('show_props'));
           optionsButton.innerHTML = ICONS.dots;
           actions.appendChild(optionsButton);
         }
@@ -5292,7 +5667,7 @@
         const removeButton = document.createElement('button');
         removeButton.type = 'button';
         removeButton.className = 'delete-button';
-        removeButton.setAttribute('aria-label', 'Verwijder object');
+        removeButton.setAttribute('aria-label', t('delete_object'));
         removeButton.innerHTML = `
           <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
             <path d="M6 6 18 18" />
@@ -5382,7 +5757,7 @@
         const range = document.createElement('input');
         range.type = 'range';
         range.className = 'slider-range';
-        range.setAttribute('aria-label', 'Schuifbalkwaarde');
+        range.setAttribute('aria-label', t('slider_val'));
         track.appendChild(range);
         body.appendChild(track);
 
@@ -5392,7 +5767,7 @@
         const playBtn = document.createElement('button');
         playBtn.type = 'button';
         playBtn.dataset.sliderAction = 'toggle-animate';
-        playBtn.setAttribute('aria-label', 'Start animatie');
+        playBtn.setAttribute('aria-label', t('start_anim'));
         playBtn.dataset.state = 'play';
         playBtn.innerHTML = ICONS.play;
         controls.appendChild(playBtn);
@@ -5402,7 +5777,7 @@
         const slowerBtn = document.createElement('button');
         slowerBtn.type = 'button';
         slowerBtn.dataset.speedAction = 'slower';
-        slowerBtn.setAttribute('aria-label', 'Langzamer');
+        slowerBtn.setAttribute('aria-label', t('slower'));
         slowerBtn.textContent = '<<';
         speedControl.appendChild(slowerBtn);
         const speedLabel = document.createElement('span');
@@ -5412,7 +5787,7 @@
         const fasterBtn = document.createElement('button');
         fasterBtn.type = 'button';
         fasterBtn.dataset.speedAction = 'faster';
-        fasterBtn.setAttribute('aria-label', 'Sneller');
+        fasterBtn.setAttribute('aria-label', t('faster'));
         fasterBtn.textContent = '>>';
         speedControl.appendChild(fasterBtn);
         controls.appendChild(speedControl);
@@ -5427,14 +5802,14 @@
         optionsButton.type = 'button';
         optionsButton.className = 'options-button';
         optionsButton.dataset.action = 'properties';
-        optionsButton.setAttribute('aria-label', 'Toon eigenschappen');
+        optionsButton.setAttribute('aria-label', t('show_props'));
         optionsButton.innerHTML = ICONS.dots;
         actions.appendChild(optionsButton);
 
         const removeButton = document.createElement('button');
         removeButton.type = 'button';
         removeButton.className = 'delete-button';
-        removeButton.setAttribute('aria-label', 'Verwijder object');
+        removeButton.setAttribute('aria-label', t('delete_object'));
         removeButton.innerHTML = `
           <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
             <path d="M6 6 18 18" />
@@ -5476,7 +5851,7 @@
         playEl.innerHTML = slider.animating ? ICONS.pause : ICONS.play;
         playEl.dataset.state = slider.animating ? 'pause' : 'play';
         playEl.setAttribute('aria-pressed', String(Boolean(slider.animating)));
-        playEl.setAttribute('aria-label', slider.animating ? 'Pauzeer animatie' : 'Start animatie');
+        playEl.setAttribute('aria-label', slider.animating ? t('pause_anim') : t('start_anim'));
       }
       const speedLabelEl = item.querySelector('[data-role="slider-speed-label"]');
       if (speedLabelEl) {
@@ -5906,14 +6281,14 @@
         return null;
       }
       if (definition.invalid) {
-        alert('Kan schuifbalk niet aanmaken: controleer de invoer.');
+        alert(t('error_slider_create'));
         return null;
       }
       const name = definition.name ? definition.name.trim() : nextVariableName();
       const min = Number.isFinite(definition.min) ? definition.min : undefined;
       const max = Number.isFinite(definition.max) ? definition.max : undefined;
       if (!Number.isFinite(min) || !Number.isFinite(max)) {
-        alert('Voer geldige minimum- en maximumwaarden in voor de schuifbalk.');
+        alert(t('error_slider_values'));
         return null;
       }
       const value = Number.isFinite(definition.value) ? definition.value : undefined;
@@ -6136,11 +6511,11 @@
     function assignNumericConstant(name, value) {
       const cleaned = typeof name === 'string' ? name.trim() : '';
       if (!cleaned) {
-        alert('Geef een geldige naam op voor de variabele.');
+        alert(t('error_variable_name'));
         return null;
       }
       if (!Number.isFinite(value)) {
-        alert('Voer een geldige numerieke waarde in.');
+        alert(t('error_numeric_value'));
         return null;
       }
       const editingSlider = state.editingSliderId ? findSliderById(state.editingSliderId) : null;
@@ -6719,7 +7094,7 @@
         .replace(/([0-9A-Za-z)])E(?![+-]?\d)/gi, '$1*E')
         .replace(/E([A-Za-z(])/gi, 'E*$1');
       if (normalized.includes('|')) {
-        throw new Error('Ongebalanceerde absolute waarde.');
+        throw new Error(t('error_unbalanced_abs'));
       }
       return normalized;
     }
@@ -6746,7 +7121,7 @@
       );
       const result = evaluator(state.variables);
       if (!Number.isFinite(result)) {
-        throw new Error('Ongeldige waarde');
+        throw new Error(t('error_invalid_value'));
       }
       return result;
     }
@@ -6824,7 +7199,7 @@
         return fn;
       } catch (error) {
         console.error(error);
-        alert('Kon functie niet interpreteren. Controleer de invoer.');
+        alert(t('error_interpret_func'));
         return null;
       }
     }
@@ -7432,7 +7807,7 @@
       if (sliderStandalone) {
         const definition = parseSliderCallDefinition(sliderStandalone[1], null);
         if (!definition) {
-          alert('Kan schuifbalk niet aanmaken: controleer de invoer.');
+          alert(t('error_slider_create'));
           return;
         }
         commitSliderDefinition(definition);
@@ -7582,7 +7957,7 @@
         return;
       }
 
-      alert('Deze opdracht wordt nog niet ondersteund.');
+      alert(t('error_unsupported_cmd'));
     }
 
     function initTools() {
@@ -8239,6 +8614,7 @@
     handleResponsiveSidebar();
     updateUndoRedoButtons();
     resizeCanvas();
+    autoDetectLanguage();
   </script>
 </body>
 </html>
