@@ -3673,7 +3673,7 @@
       canvas.width = clientWidth * DPR;
       canvas.height = clientHeight * DPR;
       ctx.setTransform(1, 0, 0, 1, 0, 0);
-      draw();
+      draw({ sync: true });
     }
 
     function worldToScreen({ x, y }) {
@@ -4254,13 +4254,26 @@
       ctx.restore();
     }
 
-    function draw() {
+    let drawPending = false;
+
+    function render() {
       drawGrid();
       drawLines();
       drawPolygonPreview();
       drawFunctions();
       drawPoints();
       drawTexts();
+      drawPending = false;
+    }
+
+    function draw(options = {}) {
+      if (options && options.sync) {
+        render();
+        return;
+      }
+      if (drawPending) return;
+      drawPending = true;
+      requestAnimationFrame(render);
     }
 
     function clearHighlightedAlgebra(options = {}) {
@@ -8308,7 +8321,7 @@
     if (exportButton && canvas) {
       exportButton.addEventListener('click', () => {
         ensureMoveTool();
-        draw();
+        draw({ sync: true });
         requestAnimationFrame(() => {
           const exportCanvas = document.createElement('canvas');
           exportCanvas.width = canvas.width;
